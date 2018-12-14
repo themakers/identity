@@ -2,16 +2,19 @@ package identity_svc
 
 import (
 	"context"
-	"github.com/themakers/session"
 	"github.com/themakers/identity/identity"
-	"github.com/themakers/identity/identity-svc/identity_proto"
+	"github.com/themakers/identity/identity_svc/identity_proto"
+	"github.com/themakers/session"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
 
 //go:generate protoc -I ../identity-proto ../identity-proto/identity.proto --go_out=plugins=grpc:./identity_proto
 
-const SessionTokenName = "session_token"
+const (
+	SessionTokenName = "session_token"
+	UserIDName       = "user_id"
+)
 
 type IdentitySvc struct {
 	mgr *identity.Manager
@@ -34,7 +37,7 @@ func New(backend identity.Backend, sessMgr *session.Manager, providers ...identi
 }
 
 func (is *IdentitySvc) Register(public, private *grpc.Server) {
-	identity_proto.RegisterAuthenticationServer(public, &PublicIdentityService{
+	identity_proto.RegisterIdentityServer(public, &PublicIdentityService{
 		is: is,
 	})
 }
@@ -104,9 +107,26 @@ func (pis *PublicIdentityService) Type1Result(ctx context.Context, q *identity_p
 		return nil, err
 	}
 
-	// FIXME Handle user id
+	sid, uid, err := sess.Info()
+	if err != nil {
+		return nil, err
+	}
+	{
+		md := make(metadata.MD)
+		if sid != "" {
+			md.Set(SessionTokenName, sid)
+		}
+		if uid != "" {
+			md.Set(UserIDName, uid)
+		}
+		grpc.SetTrailer(ctx, md)
+	}
 
-	return &identity_proto.Type1ResultResp{Error: ""}, nil
+	return &identity_proto.Type1ResultResp{
+		Session: sid,
+		User:    uid,
+		Error:   "",
+	}, nil
 }
 
 func (pis *PublicIdentityService) Type2Request(ctx context.Context, q *identity_proto.Type2VerificationReq) (*identity_proto.Type2VerificationResp, error) {
@@ -132,10 +152,25 @@ func (pis *PublicIdentityService) Type2Verify(ctx context.Context, q *identity_p
 		return nil, err
 	}
 
-	// FIXME Handle user id
+	sid, uid, err := sess.Info()
+	if err != nil {
+		return nil, err
+	}
+	{
+		md := make(metadata.MD)
+		if sid != "" {
+			md.Set(SessionTokenName, sid)
+		}
+		if uid != "" {
+			md.Set(UserIDName, uid)
+		}
+		grpc.SetTrailer(ctx, md)
+	}
 
 	return &identity_proto.Type2ResultResp{
-		Error: "",
+		Session: sid,
+		User:    uid,
+		Error:   "",
 	}, nil
 }
 
@@ -148,10 +183,25 @@ func (pis *PublicIdentityService) OAuth2Verify(ctx context.Context, q *identity_
 		return nil, err
 	}
 
-	// FIXME Handle user id
+	sid, uid, err := sess.Info()
+	if err != nil {
+		return nil, err
+	}
+	{
+		md := make(metadata.MD)
+		if sid != "" {
+			md.Set(SessionTokenName, sid)
+		}
+		if uid != "" {
+			md.Set(UserIDName, uid)
+		}
+		grpc.SetTrailer(ctx, md)
+	}
 
 	return &identity_proto.OAuth2VerifyResp{
-		Error: "",
+		User:    uid,
+		Session: sid,
+		Error:   "",
 	}, nil
 }
 

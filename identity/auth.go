@@ -3,6 +3,7 @@ package identity
 import (
 	"github.com/themakers/session"
 	"errors"
+	"time"
 )
 
 var (
@@ -85,6 +86,11 @@ func (mgr *Manager) Session(token string) *Session {
 	if s, err := mgr.sessMgr.Session(token); err != nil {
 		panic(err)
 	} else {
+		// FIXME Make configurable
+		if err := s.SetTTL(7 * 24 * time.Hour); err != nil {
+			panic(err)
+		}
+
 		sess.sess = s
 	}
 

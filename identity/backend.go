@@ -1,5 +1,7 @@
 package identity
 
+import "time"
+
 type Backend interface {
 	CreateVerification(identity *Identity, securityCode string) (*Verification, error)
 	GetVerification(verificationID string) (*Verification, error)
@@ -25,7 +27,9 @@ type Identity struct {
 
 // TODO introduce security code input error count
 type Verification struct {
-	VerificationID string   `bson:"_id" json:"VerificationID"`
-	SecurityCode   string   `bson:"SecurityCode" json:"SecurityCode"`
-	Identity       Identity `bson:"Identity" json:"Identity"`
+	VerificationID string    `bson:"_id" json:"VerificationID"`
+	SecurityCode   string    `bson:"SecurityCode" json:"SecurityCode"`
+	Identity       Identity  `bson:"Identity" json:"Identity"`
+
+	CreatedTime    time.Time `bson:"CreatedTime" json:"CreatedTime"`
 }

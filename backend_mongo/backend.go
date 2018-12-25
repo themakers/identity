@@ -7,6 +7,7 @@ import (
 	"github.com/rs/xid"
 	"github.com/themakers/identity/identity"
 	"sync"
+	"time"
 )
 
 var _ identity.Backend = new(Backend)
@@ -64,10 +65,21 @@ func (b *Backend) CreateVerification(iden *identity.Identity, securityCode strin
 	}
 	defer close()
 
+	if err := coll.EnsureIndex(mgo.Index{
+		Name:        "VerificationTTL",
+		Key:         []string{"CreatedTime"},
+		Unique:      false,
+		Background:  true,
+		ExpireAfter: 5 * time.Minute,
+	}); err != nil {
+		return nil, err
+	}
+
 	von := identity.Verification{
 		VerificationID: xid.New().String(),
 		SecurityCode:   securityCode,
 		Identity:       *iden,
+		CreatedTime:    time.Now(),
 	}
 
 	if err := coll.Insert(von); err != nil {

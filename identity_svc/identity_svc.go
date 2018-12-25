@@ -7,6 +7,9 @@ import (
 	"github.com/themakers/session"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"log"
+	"google.golang.org/grpc/status"
+	"google.golang.org/grpc/codes"
 )
 
 //go:generate protoc -I ../identity-proto ../identity-proto/identity.proto --go_out=plugins=grpc:./identity_proto
@@ -57,6 +60,10 @@ func GetSessionToken(ctx context.Context) (token string) {
 	} else {
 		return ""
 	}
+}
+
+func statusError(err error) error {
+	return status.Errorf(codes.Internal, "%s", err.Error())
 }
 
 ////////////////////////////////////////////////////////////////
@@ -147,26 +154,37 @@ func (pis *PublicIdentityService) Type2Verify(ctx context.Context, q *identity_p
 	sess := pis.is.mgr.Session(GetSessionToken(ctx))
 	defer sess.Dispose()
 
+	log.Println("Type2Verify():", q)
+
 	err := sess.Type2Verify(ctx, q.VerificationID, q.SecurityCode)
 	if err != nil {
+		log.Println("Type2Verify(): error 1", err)
 		return nil, err
 	}
 
+	log.Println("Type2Verify(): sess info")
 	sid, uid, err := sess.Info()
 	if err != nil {
+		log.Println("Type2Verify(): error 2", err)
 		return nil, err
 	}
+	log.Println("Type2Verify():", sid, uid)
 	{
 		md := make(metadata.MD)
 		if sid != "" {
+			log.Println("Type2Verify(): SID", sid)
 			md.Set(SessionTokenName, sid)
 		}
 		if uid != "" {
+			log.Println("Type2Verify(): UID", uid)
 			md.Set(UserIDName, uid)
 		}
-		grpc.SetTrailer(ctx, md)
+		if err := grpc.SetTrailer(ctx, md); err != nil {
+			panic(err)
+		}
 	}
 
+	log.Println("Type2Verify(): done")
 	return &identity_proto.Type2ResultResp{
 		Session: sid,
 		User:    uid,

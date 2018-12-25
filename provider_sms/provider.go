@@ -49,8 +49,10 @@ func NormalizePhone(phone string) (result string) {
 			result += string(rune(c))
 		}
 	}
-	if result[0] == '8' {
+	if len(result) == 11 && result[0] == '8' {
 		result = string(rune('7')) + result[1:]
+	} else if len(result) == 10 && result[0] == '9' {
+		result = string(rune('7')) + result[:]
 	}
 
 	return
@@ -84,19 +86,21 @@ func (prov *Provider) StartType2Verification(ctx context.Context, idn string) (s
 
 	smc, err := prov.smsg.SendMessage(ctx, idn, sc, false)
 	if err != nil {
+		log.Println("ERROR", idn, sc, err)
 		return "", nil, err
 	}
+	log.Println("OK", idn, sc, err)
 
 	switch accepted := <-smc.Accepted; accepted := accepted.(type) {
 	case error:
-		return "", nil, err
+		return "", nil, accepted
 	case string:
 		log.Println("Message accepted:", accepted)
 	}
 
 	switch sent := <-smc.Sent; sent := sent.(type) {
 	case error:
-		return "", nil, err
+		return "", nil, sent
 	case bool:
 		log.Println("Message sent:", sent)
 	}

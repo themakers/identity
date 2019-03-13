@@ -4,10 +4,11 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
-	"github.com/themakers/identity/identity"
-	"github.com/themakers/smsg/smsg"
 	"log"
 	"unicode"
+
+	"github.com/themakers/identity/identity"
+	"github.com/themakers/smsg/smsg"
 )
 
 type Config struct {

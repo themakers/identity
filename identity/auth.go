@@ -1,9 +1,10 @@
 package identity
 
 import (
-	"github.com/themakers/session"
 	"errors"
 	"time"
+
+	"github.com/themakers/session"
 )
 
 var (
@@ -39,7 +40,7 @@ func New(backend Backend, sessMgr *session.Manager, providers ...Provider) (*Man
 
 			// TODO Start worker
 		}
-		if prov, ok := prov.(Type2Provider); ok {
+		if prov, ok := prov.(RegularProvider); ok {
 			ps.SupportType2 = true
 			ps.internal.type2Ref = prov
 		}
@@ -66,7 +67,7 @@ type ProviderSummary struct {
 
 	internal struct {
 		type1Ref  Type1Provider
-		type2Ref  Type2Provider
+		type2Ref  RegularProvider
 		oauth2Ref OAuth2Provider
 	}
 }

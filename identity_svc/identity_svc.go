@@ -2,14 +2,15 @@ package identity_svc
 
 import (
 	"context"
+	"log"
+
 	"github.com/themakers/identity/identity"
 	"github.com/themakers/identity/identity_svc/identity_proto"
 	"github.com/themakers/session"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
-	"log"
-	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 //go:generate protoc -I ../identity-proto ../identity-proto/identity.proto --go_out=plugins=grpc:./identity_proto
@@ -24,19 +25,13 @@ type IdentitySvc struct {
 }
 
 func New(backend identity.Backend, sessMgr *session.Manager, providers ...identity.Provider) (*IdentitySvc, error) {
-	is := &IdentitySvc{}
 
-	if mgr, err := identity.New(
-		backend,
-		sessMgr,
-		providers...,
-	); err != nil {
+	mgr, err := identity.New(backend, sessMgr, providers...)
+	if err != nil {
 		return nil, err
-	} else {
-		is.mgr = mgr
 	}
 
-	return is, nil
+	return &IdentitySvc{mgr: mgr}, nil
 }
 
 func (is *IdentitySvc) Register(public, private *grpc.Server) {

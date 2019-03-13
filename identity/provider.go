@@ -2,6 +2,7 @@ package identity
 
 import (
 	"context"
+
 	"golang.org/x/oauth2"
 )
 
@@ -38,10 +39,10 @@ type Type1Provider interface {
 	StartType1Worker(ctx context.Context, event chan<- Type1Event) error
 }
 
-type Type2Provider interface {
+type RegularProvider interface {
 	Provider
 
-	StartType2Verification(ctx context.Context, identity string) (securityCode string, iden *Identity, err error)
+	StartRegularVerification(ctx context.Context, identity string) (securityCode string, iden *Identity, err error)
 }
 
 type OAuth2Provider interface {

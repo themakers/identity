@@ -22,14 +22,14 @@ type IdentityFields map[string]string
 type Identity struct {
 	ID       string         `bson:"_id" json:"ID"`
 	Provider string         `bson:"Provider" json:"Provider"`
-	Fields   IdentityFields `bson:"Fields" json:"Fields"`
+	Fields   IdentityFields `bson:"Fields" json:"Fields"` // по сути метаданные пользователя
 }
 
 // TODO introduce security code input error count
 type Verification struct {
-	VerificationID string    `bson:"_id" json:"VerificationID"`
-	SecurityCode   string    `bson:"SecurityCode" json:"SecurityCode"`
-	Identity       Identity  `bson:"Identity" json:"Identity"`
+	VerificationID string   `bson:"_id" json:"VerificationID"`
+	SecurityCode   string   `bson:"SecurityCode" json:"SecurityCode"`
+	Identity       Identity `bson:"Identity" json:"Identity"`
 
-	CreatedTime    time.Time `bson:"CreatedTime" json:"CreatedTime"`
+	CreatedTime time.Time `bson:"CreatedTime" json:"CreatedTime"`
 }

@@ -5,13 +5,12 @@ import (
 	"golang.org/x/oauth2"
 )
 
+//-----------------------------------------------------------------------------------------
+//-------------------------------Provider interfaces and structs---------------------------
+//-----------------------------------------------------------------------------------------
+
 type ProviderInfo struct {
 	Name string
-}
-
-type Type1Event struct {
-	Identity     *Identity
-	SecurityCode string
 }
 
 type VerificationError struct {
@@ -30,12 +29,23 @@ type Provider interface {
 	NormalizeIdentity(idn string) string
 }
 
+//-------------------------------------------------------------------------------------------
+//------------------------Verifications interfaces and structs-------------------------------
+//-------------------------------------------------------------------------------------------
+
+type Type1Event struct {
+	Identity     *Identity
+	SecurityCode string
+}
+
 type Type1Provider interface {
 	Provider
 
 	// identity - optional
+	//authentification process start
 	StartType1Verification(ctx context.Context) (target, securityCode string, err error)
 	StartType1Worker(ctx context.Context, event chan<- Type1Event) error
+	//authentification process finish
 }
 
 type Type2Provider interface {

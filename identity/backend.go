@@ -17,13 +17,14 @@ type User struct {
 	Identities map[string]map[string]Identity `bson:"Identities" json:"Identities"` // /provider/identity/**
 }
 
-type IdentityFields map[string]string
 
-type Identity struct {
-	ID       string         `bson:"_id" json:"ID"`
-	Provider string         `bson:"Provider" json:"Provider"`
-	Fields   IdentityFields `bson:"Fields" json:"Fields"` // по сути метаданные пользователя
+
+type IdentityInfo struct {
+	Name 	 	 string		`bson:"Name" json:"Name"`
+	Identity     string		`bson:"Identity" json:"Identity"`
 }
+
+
 
 // TODO introduce security code input error count
 type Verification struct {

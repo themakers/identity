@@ -1,7 +1,7 @@
 package identity
 
 type Identity interface {
-	Info() IdentityInfo
+	Info() IdentityData
 
-	NormalizeData (identity Identity) (Identity)
+	NormalizeData (identity string) (string)
 }

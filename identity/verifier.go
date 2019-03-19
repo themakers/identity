@@ -5,12 +5,11 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type IdentityFields map[string]string
+
 
 type VerifierInfo struct {
-	Name string
+	Name         string
 	IdentityName string
-	Fields  IdentityFields
 }
 
 type Verifier interface {

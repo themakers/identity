@@ -17,12 +17,13 @@ type Manager struct {
 	backend Backend
 	sessMgr *session.Manager
 
-	providers []Provider
+	identities []Identity
+	verifiers []Verifier
 
 	prov map[string]ProviderSummary
 }
 
-func New(backend Backend, sessMgr *session.Manager, providers ...Provider) (*Manager, error) {
+func New(backend Backend, sessMgr *session.Manager,identities []Identity, verifiers []Verifier) (*Manager, error) {
 	mgr := &Manager{
 		backend: backend,
 		sessMgr: sessMgr,

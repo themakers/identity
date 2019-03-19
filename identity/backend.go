@@ -13,18 +13,20 @@ type Backend interface {
 }
 
 type User struct {
-	ID         string                         `bson:"_id" json:"ID"`
-	Identities map[string]map[string]Identity `bson:"Identities" json:"Identities"` // /provider/identity/**
+	ID string `bson:"_id" json:"ID"`
+
+	Identities []IdentityData `bson:"Identities" json:"Identities"` // /name/identity/**
 }
 
-
-
-type IdentityInfo struct {
-	Name 	 	 string		`bson:"Name" json:"Name"`
-	Identity     string		`bson:"Identity" json:"Identity"`
+type IdentityData struct {
+	Name     string `bson:"Name" json:"Name"`
+	Identity string `bson:"Identity" json:"Identity"`
 }
 
-
+type VerifierData struct {
+	AuthenticationData map[string]string `bson:"AuthenticationData" json:"AuthenticationData"` // /name/value
+	AdditionalData     map[string]string `bson:"AdditionalData" json:"AdditionalData"`
+}
 
 // TODO introduce security code input error count
 type Verification struct {

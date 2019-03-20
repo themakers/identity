@@ -3,5 +3,5 @@ package identity
 type Identity interface {
 	Info() IdentityData
 
-	NormalizeData (identity string) (string)
+	NormalizeandValidateData(identity string) (Identity string, err error)
 }

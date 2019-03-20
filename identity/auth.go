@@ -1,8 +1,8 @@
 package identity
 
 import (
-	"github.com/themakers/session"
 	"errors"
+	"github.com/themakers/session"
 	"time"
 )
 
@@ -18,37 +18,44 @@ type Manager struct {
 	sessMgr *session.Manager
 
 	identities []Identity
-	verifiers []Verifier
-
-	prov map[string]ProviderSummary
+	verifiers  []Verifier
+	ver        map[string]VerifierSummary
+	idn        map[string]Identity
 }
 
-func New(backend Backend, sessMgr *session.Manager,identities []Identity, verifiers []Verifier) (*Manager, error) {
+func New(backend Backend, sessMgr *session.Manager, identities []Identity, verifiers []Verifier) (*Manager, error) {
 	mgr := &Manager{
-		backend: backend,
-		sessMgr: sessMgr,
-		prov:    make(map[string]ProviderSummary),
+		backend:    backend,
+		sessMgr:    sessMgr,
+		identities: identities,
+		verifiers:  verifiers,
+	}
+	for _, ver := range verifiers {
+		vs := VerifierSummary{
+			Name:         ver.Info().Name,
+			IdentityName: ver.Info().IdentityName,
+		}
+		if ver, ok := ver.(RegularVerification); ok {
+			vs.SupportRegular = true
+			vs.internal.regularRef = ver
+		}
+		if ver, ok := ver.(ReverseVerification); ok {
+			vs.SupportReverse = true
+			vs.internal.reverseRef = ver
+		}
+		if ver, ok := ver.(OAuth2Verification); ok {
+			vs.SupportOAuth2 = true
+			vs.internal.oauth2Ref = ver
+		}
+		if ver, ok := ver.(StaticVerification); ok {
+			vs.SupportStatic = true
+			vs.internal.staticRef = ver
+		}
+		mgr.ver[ver.Info().Name] = vs
 	}
 
-	for _, prov := range providers {
-		ps := ProviderSummary{
-			Name: prov.Info().Name,
-		}
-		if prov, ok := prov.(Type1Provider); ok {
-			ps.SupportType1 = true
-			ps.internal.type1Ref = prov
-
-			// TODO Start worker
-		}
-		if prov, ok := prov.(Type2Provider); ok {
-			ps.SupportType2 = true
-			ps.internal.type2Ref = prov
-		}
-		if prov, ok := prov.(OAuth2Provider); ok {
-			ps.SupportOAuth2 = true
-			ps.internal.oauth2Ref = prov
-		}
-		mgr.prov[prov.Info().Name] = ps
+	for _, idn := range identities {
+		mgr.idn[idn.Info().Name] = idn
 	}
 
 	return mgr, nil
@@ -58,25 +65,35 @@ func New(backend Backend, sessMgr *session.Manager,identities []Identity, verifi
 ////
 ////
 
-type ProviderSummary struct {
-	Name string
+type VerifierSummary struct {
+	Name         string
+	IdentityName string
 
-	SupportType1  bool
-	SupportType2  bool
-	SupportOAuth2 bool
-
-	internal struct {
-		type1Ref  Type1Provider
-		type2Ref  Type2Provider
-		oauth2Ref OAuth2Provider
+	SupportRegular bool
+	SupportReverse bool
+	SupportOAuth2  bool
+	SupportStatic  bool
+	internal       struct {
+		regularRef RegularVerification
+		reverseRef ReverseVerification
+		oauth2Ref  OAuth2Verification
+		staticRef  StaticVerification
 	}
 }
 
-func (mgr *Manager) ListProviders() (prov []ProviderSummary) {
-	for _, p := range mgr.providers {
-		prov = append(prov, mgr.prov[p.Info().Name])
+func (mgr *Manager) ListVerifiers() (ver []VerifierSummary) {
+	for _, v := range mgr.verifiers {
+		ver = append(ver, mgr.ver[v.Info().Name])
 	}
 	return
+}
+
+func (mgr *Manager) ListIdentities() (idn []Identity) {
+	for _, i := range mgr.identities {
+		idn = append(idn, mgr.idn[i.Info().Name])
+	}
+	return
+
 }
 
 func (mgr *Manager) Session(token string) *Session {

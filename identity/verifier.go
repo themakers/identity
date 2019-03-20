@@ -5,8 +5,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-
-
 type VerifierInfo struct {
 	Name         string
 	IdentityName string
@@ -19,7 +17,7 @@ type Verifier interface {
 type RegularVerification interface {
 	Verifier
 
-	StartType2Verification(ctx context.Context, identity string) (securityCode string, iden *Identity, err error)
+	StartRegularVerification(ctx context.Context, identity string) (securityCode string, iden *Identity, err error)
 	RegularVerification(ctx context.Context, verificationID, securitycode string)
 }
 
@@ -40,6 +38,5 @@ type OAuth2Verification interface {
 type StaticVerification interface {
 	Verifier
 
-	StartStaticVerification(ctx context.Context) ()
-
+	StartStaticVerification(ctx context.Context)
 }

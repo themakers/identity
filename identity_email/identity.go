@@ -12,11 +12,10 @@ type Identity struct {
 
 func (idn *Identity) Info() identity.IdentityData {
 
-	return identity.IdentityData{Name: "Email"}
+	return identity.IdentityData{Name: "email"}
 }
 
-func (idn *Identity) NormalizeData(identity string) (result string) {
+func (idn *Identity) NormalizeandValidateData(identity string) (result string, err error) {
 	//TODO maybe need a check character @ in email
-	result = strings.ToLower(identity)
-	return
+	return strings.ToLower(identity), nil
 }

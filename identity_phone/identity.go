@@ -15,7 +15,7 @@ func (idn *Identity) Info() identity.IdentityData {
 	return identity.IdentityData{Name: "Phone"}
 }
 
-func (idn *Identity) NormalizeData(identity string) (result string) {
+func (idn *Identity) NormalizeandValidateData(identity string) (result string, err error) {
 	for _, c := range identity {
 		if unicode.IsDigit(c) {
 			result += string(rune(c))
@@ -26,6 +26,6 @@ func (idn *Identity) NormalizeData(identity string) (result string) {
 	} else if len(result) == 10 && result[0] == '9' {
 		result = string(rune('7')) + result[:]
 	}
-	return
+	return result, nil
 
 }

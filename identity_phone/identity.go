@@ -12,7 +12,7 @@ type Identity struct {
 
 func (idn *Identity) Info() identity.IdentityData {
 
-	return identity.IdentityData{Name: "Phone"}
+	return identity.IdentityData{Name: "phone"}
 }
 
 func (idn *Identity) NormalizeandValidateData(identity string) (result string, err error) {

@@ -74,9 +74,9 @@ type PublicIdentityService struct {
 	is *IdentitySvc
 }
 
-func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Context, q *identity_proto.VerifiersDetailsRequest, u *identity_proto.UserDetails) (response *identity_proto.VerifierDetailsResponse, err error) {
+func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Context, u *identity_proto.MyVerifiersDetailRequest) (response *identity_proto.VerifierDetailsResponse, err error) {
 	resp := &identity_proto.VerifierDetailsResponse{}
-	idns, vers := pis.is.mgr.ListMyIdentitiesAndVerifiers(u.ID)
+	idns, vers := pis.is.mgr.ListMyIdentitiesAndVerifiers(u.Uid)
 	for _, ver := range vers {
 		resp.Verifiers = append(resp.Verifiers, &identity_proto.VerifierDetails{
 			Name:           ver.Name,
@@ -161,7 +161,7 @@ func (pis *PublicIdentityService) ReverseResult(ctx context.Context, q *identity
 	}, nil
 }
 
-func (pis *PublicIdentityService) RegularRequest(ctx context.Context, q *identity_proto.ReqularVerificationReq) (resp *identity_proto.RegularResultResp, err error) {
+func (pis *PublicIdentityService) RegularRequest(ctx context.Context, q *identity_proto.ReqularVerificationReq) (resp *identity_proto.RegularVerificationResp, err error) {
 	sess := pis.is.mgr.Session(GetSessionToken(ctx))
 	defer sess.Dispose()
 
@@ -175,13 +175,13 @@ func (pis *PublicIdentityService) RegularRequest(ctx context.Context, q *identit
 	}, nil
 }
 
-func (pis *PublicIdentityService) Type2Verify(ctx context.Context, q *identity_proto.Type2VerifyReq) (*identity_proto.Type2ResultResp, error) {
+func (pis *PublicIdentityService) RegularVerify(ctx context.Context, q *identity_proto.RegularVerifyReq) (resp *identity_proto.RegularResultResp, err error) {
 	sess := pis.is.mgr.Session(GetSessionToken(ctx))
 	defer sess.Dispose()
 
 	log.Println("Type2Verify():", q)
 
-	err := sess.Type2Verify(ctx, q.VerificationID, q.SecurityCode)
+	err = sess.Type2Verify(ctx, q.VerificationID, q.SecurityCode)
 	if err != nil {
 		log.Println("Type2Verify(): error 1", err)
 		return nil, err
@@ -210,7 +210,7 @@ func (pis *PublicIdentityService) Type2Verify(ctx context.Context, q *identity_p
 	}
 
 	log.Println("Type2Verify(): done")
-	return &identity_proto.Type2ResultResp{
+	return &identity_proto.RegularResultResp{
 		Session: sid,
 		User:    uid,
 		Error:   "",
@@ -221,7 +221,7 @@ func (pis *PublicIdentityService) OAuth2Verify(ctx context.Context, q *identity_
 	sess := pis.is.mgr.Session(GetSessionToken(ctx))
 	defer sess.Dispose()
 
-	err := sess.OAuth2Verify(ctx, q.Provider, q.Code)
+	err := sess.OAuth2Verify(ctx, q.Verifier, q.Code)
 	if err != nil {
 		return nil, err
 	}
@@ -246,6 +246,10 @@ func (pis *PublicIdentityService) OAuth2Verify(ctx context.Context, q *identity_
 		Session: sid,
 		Error:   "",
 	}, nil
+}
+
+func (pis *PublicIdentityService) StaticRequest(ctx context.Context, q *identity_proto.StaticVerificationReq) (resp *identity_proto.StaticVerificationResp, err error) {
+	return
 }
 
 ////////////////////////////////////////////////////////////////

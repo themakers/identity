@@ -23,13 +23,14 @@ type IdentitySvc struct {
 	mgr *identity.Manager
 }
 
-func New(backend identity.Backend, sessMgr *session.Manager, providers ...identity.Provider) (*IdentitySvc, error) {
+func New(backend identity.Backend, sessMgr *session.Manager, identities []identity.Identity, verifiers []identity.Verifier) (*IdentitySvc, error) {
 	is := &IdentitySvc{}
 
 	if mgr, err := identity.New(
 		backend,
 		sessMgr,
-		providers...,
+		identities,
+		verifiers,
 	); err != nil {
 		return nil, err
 	} else {

@@ -21,7 +21,6 @@ func (sess *Session) Info() (sid, uid string, err error) {
 	return
 }
 
-
 func (sess *Session) Dispose() {
 	sess.sess.Dispose()
 }

@@ -77,7 +77,7 @@ type PublicIdentityService struct {
 
 func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Context, u *identity_proto.MyVerifiersDetailRequest) (response *identity_proto.VerifierDetailsResponse, err error) {
 	resp := &identity_proto.VerifierDetailsResponse{}
-	idns, vers := pis.is.mgr.ListMyIdentitiesAndVerifiers(u.Uid)
+	idns, vers := pis.is.mgr.ListMyIdentitiesAndVerifiers(u.Identity)
 	for _, ver := range vers {
 		resp.Verifiers = append(resp.Verifiers, &identity_proto.VerifierDetails{
 			Name:           ver.Name,

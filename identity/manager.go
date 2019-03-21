@@ -81,8 +81,8 @@ type VerifierSummary struct {
 	}
 }
 
-func (mgr *Manager) ListMyIdentitiesAndVerifiers(uid string) (idn []string, ver []VerifierSummary) {
-	iden, err := mgr.backend.GetUserByID(uid)
+func (mgr *Manager) ListMyIdentitiesAndVerifiers(identity string) (idn []string, ver []VerifierSummary) {
+	iden, err := mgr.backend.GetUserByIdentity(identity)
 	if err != nil {
 		return nil, nil
 	}

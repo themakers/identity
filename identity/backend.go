@@ -7,7 +7,7 @@ type Backend interface {
 	GetVerification(verificationID string) (*Verification, error)
 
 	GetUserByID(id string) (*User, error)
-	GetUserByIdentity(prov, identity string) (*User, error)
+	GetUserByIdentity(identity string) (*User, error)
 	PutUserIdentity(id string, identity *Identity) (*User, error)
 	CreateUser(identity *Identity) (*User, error)
 }

@@ -6,10 +6,10 @@ import (
 	"github.com/themakers/identity/identity_svc/identity_proto"
 	"github.com/themakers/session"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
-	"log"
-	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
+	"log"
 )
 
 //go:generate protoc -I ../identity-proto ../identity-proto/identity.proto --go_out=plugins=grpc:./identity_proto
@@ -74,42 +74,67 @@ type PublicIdentityService struct {
 	is *IdentitySvc
 }
 
-func (pis *PublicIdentityService) ListProviders(ctx context.Context, q *identity_proto.ProviderDetailsReq) (*identity_proto.ProviderDetailsResp, error) {
-	resp := &identity_proto.ProviderDetailsResp{}
-
-	for _, prov := range pis.is.mgr.ListProviders() {
-		resp.Providers = append(resp.Providers, &identity_proto.ProviderDetails{
-			Name:          prov.Name,
-			SupportType1:  prov.SupportType1,
-			SupportType2:  prov.SupportType2,
-			SupportOAuth2: prov.SupportOAuth2,
+func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Context, q *identity_proto.VerifiersDetailsRequest, u *identity_proto.UserDetails) (response *identity_proto.VerifierDetailsResponse, err error) {
+	resp := &identity_proto.VerifierDetailsResponse{}
+	idns, vers := pis.is.mgr.ListMyIdentitiesAndVerifiers(u.ID)
+	for _, ver := range vers {
+		resp.Verifiers = append(resp.Verifiers, &identity_proto.VerifierDetails{
+			Name:           ver.Name,
+			SupportRegular: ver.SupportRegular,
+			SupportReverse: ver.SupportReverse,
+			SupportOAuth2:  ver.SupportOAuth2,
+			SupportStatic:  ver.SupportStatic,
 		})
+	}
+	for _, idn := range idns {
+		resp.Identities = append(resp.Identities, idn)
+	}
+
+	return
+
+}
+
+func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context, q *identity_proto.VerifiersDetailsRequest) (response *identity_proto.VerifierDetailsResponse, err error) {
+	resp := &identity_proto.VerifierDetailsResponse{}
+	idns, vers := pis.is.mgr.ListIndentitiesAndVerifiers()
+
+	for _, ver := range vers {
+		resp.Verifiers = append(resp.Verifiers, &identity_proto.VerifierDetails{
+			Name:           ver.Name,
+			SupportRegular: ver.SupportRegular,
+			SupportReverse: ver.SupportReverse,
+			SupportOAuth2:  ver.SupportOAuth2,
+			SupportStatic:  ver.SupportStatic,
+		})
+	}
+	for _, idn := range idns {
+		resp.Identities = append(resp.Identities, idn.Info().Name)
 	}
 
 	return resp, nil
 }
 
-func (pis *PublicIdentityService) Type1Request(ctx context.Context, q *identity_proto.Type1VerificationReq) (*identity_proto.Type1VerificationDirections, error) {
+func (pis *PublicIdentityService) ReverseRequest(ctx context.Context, q *identity_proto.ReverseVerificationReq) (directions *identity_proto.ReverseVerificationDirections, err error) {
 	sess := pis.is.mgr.Session(GetSessionToken(ctx))
 	defer sess.Dispose()
-
-	verificationID, target, securityCode, err := sess.StartType1Verification(ctx, q.Provider, q.Identity)
+	//TODO refactor reverse method
+	verificationID, target, securityCode, err := sess.StartType1Verification(ctx, q.Verifier, q.Identity)
 	if err != nil {
 		return nil, err
 	}
 
-	return &identity_proto.Type1VerificationDirections{
+	return &identity_proto.ReverseVerificationDirections{
 		VerificationID: verificationID,
 		Target:         target,
 		SecurityCode:   securityCode,
 	}, nil
 }
 
-func (pis *PublicIdentityService) Type1Result(ctx context.Context, q *identity_proto.Type1ResultRequest) (*identity_proto.Type1ResultResp, error) {
+func (pis *PublicIdentityService) ReverseResult(ctx context.Context, q *identity_proto.ReverseResultRequest) (resp *identity_proto.ReverseResultResp, err error) {
 	sess := pis.is.mgr.Session(GetSessionToken(ctx))
 	defer sess.Dispose()
-
-	err := sess.AwaitType1Result(ctx, q.VerificationID)
+	//TODO refactor reverse method
+	err = sess.AwaitType1Result(ctx, q.VerificationID)
 	if err != nil {
 		return nil, err
 	}
@@ -129,23 +154,23 @@ func (pis *PublicIdentityService) Type1Result(ctx context.Context, q *identity_p
 		grpc.SetTrailer(ctx, md)
 	}
 
-	return &identity_proto.Type1ResultResp{
+	return &identity_proto.ReverseResultResp{
 		Session: sid,
 		User:    uid,
 		Error:   "",
 	}, nil
 }
 
-func (pis *PublicIdentityService) Type2Request(ctx context.Context, q *identity_proto.Type2VerificationReq) (*identity_proto.Type2VerificationResp, error) {
+func (pis *PublicIdentityService) RegularRequest(ctx context.Context, q *identity_proto.ReqularVerificationReq) (resp *identity_proto.RegularResultResp, err error) {
 	sess := pis.is.mgr.Session(GetSessionToken(ctx))
 	defer sess.Dispose()
 
-	verificationID, err := sess.StartType2Verification(ctx, q.Provider, q.Identity)
+	verificationID, err := sess.StartType2Verification(ctx, q.Verifier, q.Identity)
 	if err != nil {
 		return nil, err
 	}
 
-	return &identity_proto.Type2VerificationResp{
+	return &identity_proto.RegularVerificationResp{
 		VerificationID: verificationID,
 	}, nil
 }

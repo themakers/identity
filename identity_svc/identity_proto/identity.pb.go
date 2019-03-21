@@ -3,13 +3,14 @@
 
 package identity_proto
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
-
 import (
-	context "golang.org/x/net/context"
+	context "context"
+	fmt "fmt"
+	proto "github.com/golang/protobuf/proto"
 	grpc "google.golang.org/grpc"
+	codes "google.golang.org/grpc/codes"
+	status "google.golang.org/grpc/status"
+	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -21,7 +22,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type Dummy struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -33,16 +34,17 @@ func (m *Dummy) Reset()         { *m = Dummy{} }
 func (m *Dummy) String() string { return proto.CompactTextString(m) }
 func (*Dummy) ProtoMessage()    {}
 func (*Dummy) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{0}
+	return fileDescriptor_61c7956abb761639, []int{0}
 }
+
 func (m *Dummy) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Dummy.Unmarshal(m, b)
 }
 func (m *Dummy) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_Dummy.Marshal(b, m, deterministic)
 }
-func (dst *Dummy) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Dummy.Merge(dst, src)
+func (m *Dummy) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Dummy.Merge(m, src)
 }
 func (m *Dummy) XXX_Size() int {
 	return xxx_messageInfo_Dummy.Size(m)
@@ -53,186 +55,308 @@ func (m *Dummy) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Dummy proto.InternalMessageInfo
 
-type ProviderDetailsReq struct {
+type VerifiersDetailsRequest struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *ProviderDetailsReq) Reset()         { *m = ProviderDetailsReq{} }
-func (m *ProviderDetailsReq) String() string { return proto.CompactTextString(m) }
-func (*ProviderDetailsReq) ProtoMessage()    {}
-func (*ProviderDetailsReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{1}
-}
-func (m *ProviderDetailsReq) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ProviderDetailsReq.Unmarshal(m, b)
-}
-func (m *ProviderDetailsReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ProviderDetailsReq.Marshal(b, m, deterministic)
-}
-func (dst *ProviderDetailsReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ProviderDetailsReq.Merge(dst, src)
-}
-func (m *ProviderDetailsReq) XXX_Size() int {
-	return xxx_messageInfo_ProviderDetailsReq.Size(m)
-}
-func (m *ProviderDetailsReq) XXX_DiscardUnknown() {
-	xxx_messageInfo_ProviderDetailsReq.DiscardUnknown(m)
+func (m *VerifiersDetailsRequest) Reset()         { *m = VerifiersDetailsRequest{} }
+func (m *VerifiersDetailsRequest) String() string { return proto.CompactTextString(m) }
+func (*VerifiersDetailsRequest) ProtoMessage()    {}
+func (*VerifiersDetailsRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{1}
 }
 
-var xxx_messageInfo_ProviderDetailsReq proto.InternalMessageInfo
+func (m *VerifiersDetailsRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_VerifiersDetailsRequest.Unmarshal(m, b)
+}
+func (m *VerifiersDetailsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_VerifiersDetailsRequest.Marshal(b, m, deterministic)
+}
+func (m *VerifiersDetailsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VerifiersDetailsRequest.Merge(m, src)
+}
+func (m *VerifiersDetailsRequest) XXX_Size() int {
+	return xxx_messageInfo_VerifiersDetailsRequest.Size(m)
+}
+func (m *VerifiersDetailsRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_VerifiersDetailsRequest.DiscardUnknown(m)
+}
 
-type ProviderDetailsResp struct {
-	Providers            []*ProviderDetails `protobuf:"bytes,1,rep,name=Providers,proto3" json:"Providers,omitempty"`
+var xxx_messageInfo_VerifiersDetailsRequest proto.InternalMessageInfo
+
+type VerifierDetailsResponse struct {
+	Identities           []string           `protobuf:"bytes,1,rep,name=Identities,proto3" json:"Identities,omitempty"`
+	Verifiers            []*VerifierDetails `protobuf:"bytes,2,rep,name=Verifiers,proto3" json:"Verifiers,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
 	XXX_unrecognized     []byte             `json:"-"`
 	XXX_sizecache        int32              `json:"-"`
 }
 
-func (m *ProviderDetailsResp) Reset()         { *m = ProviderDetailsResp{} }
-func (m *ProviderDetailsResp) String() string { return proto.CompactTextString(m) }
-func (*ProviderDetailsResp) ProtoMessage()    {}
-func (*ProviderDetailsResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{2}
-}
-func (m *ProviderDetailsResp) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ProviderDetailsResp.Unmarshal(m, b)
-}
-func (m *ProviderDetailsResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ProviderDetailsResp.Marshal(b, m, deterministic)
-}
-func (dst *ProviderDetailsResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ProviderDetailsResp.Merge(dst, src)
-}
-func (m *ProviderDetailsResp) XXX_Size() int {
-	return xxx_messageInfo_ProviderDetailsResp.Size(m)
-}
-func (m *ProviderDetailsResp) XXX_DiscardUnknown() {
-	xxx_messageInfo_ProviderDetailsResp.DiscardUnknown(m)
+func (m *VerifierDetailsResponse) Reset()         { *m = VerifierDetailsResponse{} }
+func (m *VerifierDetailsResponse) String() string { return proto.CompactTextString(m) }
+func (*VerifierDetailsResponse) ProtoMessage()    {}
+func (*VerifierDetailsResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{2}
 }
 
-var xxx_messageInfo_ProviderDetailsResp proto.InternalMessageInfo
+func (m *VerifierDetailsResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_VerifierDetailsResponse.Unmarshal(m, b)
+}
+func (m *VerifierDetailsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_VerifierDetailsResponse.Marshal(b, m, deterministic)
+}
+func (m *VerifierDetailsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VerifierDetailsResponse.Merge(m, src)
+}
+func (m *VerifierDetailsResponse) XXX_Size() int {
+	return xxx_messageInfo_VerifierDetailsResponse.Size(m)
+}
+func (m *VerifierDetailsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_VerifierDetailsResponse.DiscardUnknown(m)
+}
 
-func (m *ProviderDetailsResp) GetProviders() []*ProviderDetails {
+var xxx_messageInfo_VerifierDetailsResponse proto.InternalMessageInfo
+
+func (m *VerifierDetailsResponse) GetIdentities() []string {
 	if m != nil {
-		return m.Providers
+		return m.Identities
 	}
 	return nil
 }
 
-type ProviderDetails struct {
+func (m *VerifierDetailsResponse) GetVerifiers() []*VerifierDetails {
+	if m != nil {
+		return m.Verifiers
+	}
+	return nil
+}
+
+type VerifierDetails struct {
 	Name                 string   `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name,omitempty"`
-	SupportType1         bool     `protobuf:"varint,2,opt,name=SupportType1,proto3" json:"SupportType1,omitempty"`
-	SupportType2         bool     `protobuf:"varint,3,opt,name=SupportType2,proto3" json:"SupportType2,omitempty"`
-	SupportOAuth2        bool     `protobuf:"varint,4,opt,name=SupportOAuth2,proto3" json:"SupportOAuth2,omitempty"`
+	IdentityName         string   `protobuf:"bytes,2,opt,name=IdentityName,proto3" json:"IdentityName,omitempty"`
+	SupportRegular       bool     `protobuf:"varint,3,opt,name=SupportRegular,proto3" json:"SupportRegular,omitempty"`
+	SupportReverse       bool     `protobuf:"varint,4,opt,name=SupportReverse,proto3" json:"SupportReverse,omitempty"`
+	SupportOAuth2        bool     `protobuf:"varint,5,opt,name=SupportOAuth2,proto3" json:"SupportOAuth2,omitempty"`
+	SupportStatic        bool     `protobuf:"varint,6,opt,name=SupportStatic,proto3" json:"SupportStatic,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *ProviderDetails) Reset()         { *m = ProviderDetails{} }
-func (m *ProviderDetails) String() string { return proto.CompactTextString(m) }
-func (*ProviderDetails) ProtoMessage()    {}
-func (*ProviderDetails) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{3}
-}
-func (m *ProviderDetails) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_ProviderDetails.Unmarshal(m, b)
-}
-func (m *ProviderDetails) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_ProviderDetails.Marshal(b, m, deterministic)
-}
-func (dst *ProviderDetails) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ProviderDetails.Merge(dst, src)
-}
-func (m *ProviderDetails) XXX_Size() int {
-	return xxx_messageInfo_ProviderDetails.Size(m)
-}
-func (m *ProviderDetails) XXX_DiscardUnknown() {
-	xxx_messageInfo_ProviderDetails.DiscardUnknown(m)
+func (m *VerifierDetails) Reset()         { *m = VerifierDetails{} }
+func (m *VerifierDetails) String() string { return proto.CompactTextString(m) }
+func (*VerifierDetails) ProtoMessage()    {}
+func (*VerifierDetails) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{3}
 }
 
-var xxx_messageInfo_ProviderDetails proto.InternalMessageInfo
+func (m *VerifierDetails) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_VerifierDetails.Unmarshal(m, b)
+}
+func (m *VerifierDetails) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_VerifierDetails.Marshal(b, m, deterministic)
+}
+func (m *VerifierDetails) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VerifierDetails.Merge(m, src)
+}
+func (m *VerifierDetails) XXX_Size() int {
+	return xxx_messageInfo_VerifierDetails.Size(m)
+}
+func (m *VerifierDetails) XXX_DiscardUnknown() {
+	xxx_messageInfo_VerifierDetails.DiscardUnknown(m)
+}
 
-func (m *ProviderDetails) GetName() string {
+var xxx_messageInfo_VerifierDetails proto.InternalMessageInfo
+
+func (m *VerifierDetails) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-func (m *ProviderDetails) GetSupportType1() bool {
+func (m *VerifierDetails) GetIdentityName() string {
 	if m != nil {
-		return m.SupportType1
+		return m.IdentityName
+	}
+	return ""
+}
+
+func (m *VerifierDetails) GetSupportRegular() bool {
+	if m != nil {
+		return m.SupportRegular
 	}
 	return false
 }
 
-func (m *ProviderDetails) GetSupportType2() bool {
+func (m *VerifierDetails) GetSupportReverse() bool {
 	if m != nil {
-		return m.SupportType2
+		return m.SupportReverse
 	}
 	return false
 }
 
-func (m *ProviderDetails) GetSupportOAuth2() bool {
+func (m *VerifierDetails) GetSupportOAuth2() bool {
 	if m != nil {
 		return m.SupportOAuth2
 	}
 	return false
 }
 
-// //////////////////////////////////////////////////////////////
-// // Type 1
-// //
-type Type1VerificationReq struct {
-	Provider             string   `protobuf:"bytes,1,opt,name=Provider,proto3" json:"Provider,omitempty"`
-	Identity             string   `protobuf:"bytes,2,opt,name=Identity,proto3" json:"Identity,omitempty"`
+func (m *VerifierDetails) GetSupportStatic() bool {
+	if m != nil {
+		return m.SupportStatic
+	}
+	return false
+}
+
+type IdentityData struct {
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Identity             string   `protobuf:"bytes,2,opt,name=identity,proto3" json:"identity,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Type1VerificationReq) Reset()         { *m = Type1VerificationReq{} }
-func (m *Type1VerificationReq) String() string { return proto.CompactTextString(m) }
-func (*Type1VerificationReq) ProtoMessage()    {}
-func (*Type1VerificationReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{4}
-}
-func (m *Type1VerificationReq) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Type1VerificationReq.Unmarshal(m, b)
-}
-func (m *Type1VerificationReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Type1VerificationReq.Marshal(b, m, deterministic)
-}
-func (dst *Type1VerificationReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Type1VerificationReq.Merge(dst, src)
-}
-func (m *Type1VerificationReq) XXX_Size() int {
-	return xxx_messageInfo_Type1VerificationReq.Size(m)
-}
-func (m *Type1VerificationReq) XXX_DiscardUnknown() {
-	xxx_messageInfo_Type1VerificationReq.DiscardUnknown(m)
+func (m *IdentityData) Reset()         { *m = IdentityData{} }
+func (m *IdentityData) String() string { return proto.CompactTextString(m) }
+func (*IdentityData) ProtoMessage()    {}
+func (*IdentityData) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{4}
 }
 
-var xxx_messageInfo_Type1VerificationReq proto.InternalMessageInfo
+func (m *IdentityData) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_IdentityData.Unmarshal(m, b)
+}
+func (m *IdentityData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_IdentityData.Marshal(b, m, deterministic)
+}
+func (m *IdentityData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_IdentityData.Merge(m, src)
+}
+func (m *IdentityData) XXX_Size() int {
+	return xxx_messageInfo_IdentityData.Size(m)
+}
+func (m *IdentityData) XXX_DiscardUnknown() {
+	xxx_messageInfo_IdentityData.DiscardUnknown(m)
+}
 
-func (m *Type1VerificationReq) GetProvider() string {
+var xxx_messageInfo_IdentityData proto.InternalMessageInfo
+
+func (m *IdentityData) GetName() string {
 	if m != nil {
-		return m.Provider
+		return m.Name
 	}
 	return ""
 }
 
-func (m *Type1VerificationReq) GetIdentity() string {
+func (m *IdentityData) GetIdentity() string {
 	if m != nil {
 		return m.Identity
 	}
 	return ""
 }
 
-type Type1VerificationDirections struct {
+type UserDetails struct {
+	ID                   string          `protobuf:"bytes,1,opt,name=ID,proto3" json:"ID,omitempty"`
+	Identities           []*IdentityData `protobuf:"bytes,2,rep,name=identities,proto3" json:"identities,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
+	XXX_unrecognized     []byte          `json:"-"`
+	XXX_sizecache        int32           `json:"-"`
+}
+
+func (m *UserDetails) Reset()         { *m = UserDetails{} }
+func (m *UserDetails) String() string { return proto.CompactTextString(m) }
+func (*UserDetails) ProtoMessage()    {}
+func (*UserDetails) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{5}
+}
+
+func (m *UserDetails) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UserDetails.Unmarshal(m, b)
+}
+func (m *UserDetails) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UserDetails.Marshal(b, m, deterministic)
+}
+func (m *UserDetails) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UserDetails.Merge(m, src)
+}
+func (m *UserDetails) XXX_Size() int {
+	return xxx_messageInfo_UserDetails.Size(m)
+}
+func (m *UserDetails) XXX_DiscardUnknown() {
+	xxx_messageInfo_UserDetails.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UserDetails proto.InternalMessageInfo
+
+func (m *UserDetails) GetID() string {
+	if m != nil {
+		return m.ID
+	}
+	return ""
+}
+
+func (m *UserDetails) GetIdentities() []*IdentityData {
+	if m != nil {
+		return m.Identities
+	}
+	return nil
+}
+
+////////////////////////////////////////////////////////////////
+//// Type 1
+////
+type ReverseVerificationReq struct {
+	Verifier             string   `protobuf:"bytes,1,opt,name=Verifier,proto3" json:"Verifier,omitempty"`
+	Identity             string   `protobuf:"bytes,2,opt,name=Identity,proto3" json:"Identity,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ReverseVerificationReq) Reset()         { *m = ReverseVerificationReq{} }
+func (m *ReverseVerificationReq) String() string { return proto.CompactTextString(m) }
+func (*ReverseVerificationReq) ProtoMessage()    {}
+func (*ReverseVerificationReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{6}
+}
+
+func (m *ReverseVerificationReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReverseVerificationReq.Unmarshal(m, b)
+}
+func (m *ReverseVerificationReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReverseVerificationReq.Marshal(b, m, deterministic)
+}
+func (m *ReverseVerificationReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReverseVerificationReq.Merge(m, src)
+}
+func (m *ReverseVerificationReq) XXX_Size() int {
+	return xxx_messageInfo_ReverseVerificationReq.Size(m)
+}
+func (m *ReverseVerificationReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReverseVerificationReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReverseVerificationReq proto.InternalMessageInfo
+
+func (m *ReverseVerificationReq) GetVerifier() string {
+	if m != nil {
+		return m.Verifier
+	}
+	return ""
+}
+
+func (m *ReverseVerificationReq) GetIdentity() string {
+	if m != nil {
+		return m.Identity
+	}
+	return ""
+}
+
+type ReverseVerificationDirections struct {
 	VerificationID       string   `protobuf:"bytes,1,opt,name=VerificationID,proto3" json:"VerificationID,omitempty"`
 	Target               string   `protobuf:"bytes,2,opt,name=Target,proto3" json:"Target,omitempty"`
 	SecurityCode         string   `protobuf:"bytes,3,opt,name=SecurityCode,proto3" json:"SecurityCode,omitempty"`
@@ -241,90 +365,92 @@ type Type1VerificationDirections struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Type1VerificationDirections) Reset()         { *m = Type1VerificationDirections{} }
-func (m *Type1VerificationDirections) String() string { return proto.CompactTextString(m) }
-func (*Type1VerificationDirections) ProtoMessage()    {}
-func (*Type1VerificationDirections) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{5}
-}
-func (m *Type1VerificationDirections) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Type1VerificationDirections.Unmarshal(m, b)
-}
-func (m *Type1VerificationDirections) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Type1VerificationDirections.Marshal(b, m, deterministic)
-}
-func (dst *Type1VerificationDirections) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Type1VerificationDirections.Merge(dst, src)
-}
-func (m *Type1VerificationDirections) XXX_Size() int {
-	return xxx_messageInfo_Type1VerificationDirections.Size(m)
-}
-func (m *Type1VerificationDirections) XXX_DiscardUnknown() {
-	xxx_messageInfo_Type1VerificationDirections.DiscardUnknown(m)
+func (m *ReverseVerificationDirections) Reset()         { *m = ReverseVerificationDirections{} }
+func (m *ReverseVerificationDirections) String() string { return proto.CompactTextString(m) }
+func (*ReverseVerificationDirections) ProtoMessage()    {}
+func (*ReverseVerificationDirections) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{7}
 }
 
-var xxx_messageInfo_Type1VerificationDirections proto.InternalMessageInfo
+func (m *ReverseVerificationDirections) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReverseVerificationDirections.Unmarshal(m, b)
+}
+func (m *ReverseVerificationDirections) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReverseVerificationDirections.Marshal(b, m, deterministic)
+}
+func (m *ReverseVerificationDirections) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReverseVerificationDirections.Merge(m, src)
+}
+func (m *ReverseVerificationDirections) XXX_Size() int {
+	return xxx_messageInfo_ReverseVerificationDirections.Size(m)
+}
+func (m *ReverseVerificationDirections) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReverseVerificationDirections.DiscardUnknown(m)
+}
 
-func (m *Type1VerificationDirections) GetVerificationID() string {
+var xxx_messageInfo_ReverseVerificationDirections proto.InternalMessageInfo
+
+func (m *ReverseVerificationDirections) GetVerificationID() string {
 	if m != nil {
 		return m.VerificationID
 	}
 	return ""
 }
 
-func (m *Type1VerificationDirections) GetTarget() string {
+func (m *ReverseVerificationDirections) GetTarget() string {
 	if m != nil {
 		return m.Target
 	}
 	return ""
 }
 
-func (m *Type1VerificationDirections) GetSecurityCode() string {
+func (m *ReverseVerificationDirections) GetSecurityCode() string {
 	if m != nil {
 		return m.SecurityCode
 	}
 	return ""
 }
 
-type Type1ResultRequest struct {
+type ReverseResultRequest struct {
 	VerificationID       string   `protobuf:"bytes,1,opt,name=VerificationID,proto3" json:"VerificationID,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Type1ResultRequest) Reset()         { *m = Type1ResultRequest{} }
-func (m *Type1ResultRequest) String() string { return proto.CompactTextString(m) }
-func (*Type1ResultRequest) ProtoMessage()    {}
-func (*Type1ResultRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{6}
-}
-func (m *Type1ResultRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Type1ResultRequest.Unmarshal(m, b)
-}
-func (m *Type1ResultRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Type1ResultRequest.Marshal(b, m, deterministic)
-}
-func (dst *Type1ResultRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Type1ResultRequest.Merge(dst, src)
-}
-func (m *Type1ResultRequest) XXX_Size() int {
-	return xxx_messageInfo_Type1ResultRequest.Size(m)
-}
-func (m *Type1ResultRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_Type1ResultRequest.DiscardUnknown(m)
+func (m *ReverseResultRequest) Reset()         { *m = ReverseResultRequest{} }
+func (m *ReverseResultRequest) String() string { return proto.CompactTextString(m) }
+func (*ReverseResultRequest) ProtoMessage()    {}
+func (*ReverseResultRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{8}
 }
 
-var xxx_messageInfo_Type1ResultRequest proto.InternalMessageInfo
+func (m *ReverseResultRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReverseResultRequest.Unmarshal(m, b)
+}
+func (m *ReverseResultRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReverseResultRequest.Marshal(b, m, deterministic)
+}
+func (m *ReverseResultRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReverseResultRequest.Merge(m, src)
+}
+func (m *ReverseResultRequest) XXX_Size() int {
+	return xxx_messageInfo_ReverseResultRequest.Size(m)
+}
+func (m *ReverseResultRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReverseResultRequest.DiscardUnknown(m)
+}
 
-func (m *Type1ResultRequest) GetVerificationID() string {
+var xxx_messageInfo_ReverseResultRequest proto.InternalMessageInfo
+
+func (m *ReverseResultRequest) GetVerificationID() string {
 	if m != nil {
 		return m.VerificationID
 	}
 	return ""
 }
 
-type Type1ResultResp struct {
+type ReverseResultResp struct {
 	Session              string   `protobuf:"bytes,1,opt,name=Session,proto3" json:"Session,omitempty"`
 	User                 string   `protobuf:"bytes,2,opt,name=User,proto3" json:"User,omitempty"`
 	Error                string   `protobuf:"bytes,3,opt,name=Error,proto3" json:"Error,omitempty"`
@@ -333,185 +459,189 @@ type Type1ResultResp struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Type1ResultResp) Reset()         { *m = Type1ResultResp{} }
-func (m *Type1ResultResp) String() string { return proto.CompactTextString(m) }
-func (*Type1ResultResp) ProtoMessage()    {}
-func (*Type1ResultResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{7}
-}
-func (m *Type1ResultResp) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Type1ResultResp.Unmarshal(m, b)
-}
-func (m *Type1ResultResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Type1ResultResp.Marshal(b, m, deterministic)
-}
-func (dst *Type1ResultResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Type1ResultResp.Merge(dst, src)
-}
-func (m *Type1ResultResp) XXX_Size() int {
-	return xxx_messageInfo_Type1ResultResp.Size(m)
-}
-func (m *Type1ResultResp) XXX_DiscardUnknown() {
-	xxx_messageInfo_Type1ResultResp.DiscardUnknown(m)
+func (m *ReverseResultResp) Reset()         { *m = ReverseResultResp{} }
+func (m *ReverseResultResp) String() string { return proto.CompactTextString(m) }
+func (*ReverseResultResp) ProtoMessage()    {}
+func (*ReverseResultResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{9}
 }
 
-var xxx_messageInfo_Type1ResultResp proto.InternalMessageInfo
+func (m *ReverseResultResp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReverseResultResp.Unmarshal(m, b)
+}
+func (m *ReverseResultResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReverseResultResp.Marshal(b, m, deterministic)
+}
+func (m *ReverseResultResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReverseResultResp.Merge(m, src)
+}
+func (m *ReverseResultResp) XXX_Size() int {
+	return xxx_messageInfo_ReverseResultResp.Size(m)
+}
+func (m *ReverseResultResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReverseResultResp.DiscardUnknown(m)
+}
 
-func (m *Type1ResultResp) GetSession() string {
+var xxx_messageInfo_ReverseResultResp proto.InternalMessageInfo
+
+func (m *ReverseResultResp) GetSession() string {
 	if m != nil {
 		return m.Session
 	}
 	return ""
 }
 
-func (m *Type1ResultResp) GetUser() string {
+func (m *ReverseResultResp) GetUser() string {
 	if m != nil {
 		return m.User
 	}
 	return ""
 }
 
-func (m *Type1ResultResp) GetError() string {
+func (m *ReverseResultResp) GetError() string {
 	if m != nil {
 		return m.Error
 	}
 	return ""
 }
 
-// //////////////////////////////////////////////////////////////
-// // Type 2
-// //
-type Type2VerificationReq struct {
-	Provider             string   `protobuf:"bytes,1,opt,name=Provider,proto3" json:"Provider,omitempty"`
+////////////////////////////////////////////////////////////////
+//// Type 2
+////
+type ReqularVerificationReq struct {
+	Verifier             string   `protobuf:"bytes,1,opt,name=Verifier,proto3" json:"Verifier,omitempty"`
 	Identity             string   `protobuf:"bytes,2,opt,name=Identity,proto3" json:"Identity,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Type2VerificationReq) Reset()         { *m = Type2VerificationReq{} }
-func (m *Type2VerificationReq) String() string { return proto.CompactTextString(m) }
-func (*Type2VerificationReq) ProtoMessage()    {}
-func (*Type2VerificationReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{8}
-}
-func (m *Type2VerificationReq) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Type2VerificationReq.Unmarshal(m, b)
-}
-func (m *Type2VerificationReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Type2VerificationReq.Marshal(b, m, deterministic)
-}
-func (dst *Type2VerificationReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Type2VerificationReq.Merge(dst, src)
-}
-func (m *Type2VerificationReq) XXX_Size() int {
-	return xxx_messageInfo_Type2VerificationReq.Size(m)
-}
-func (m *Type2VerificationReq) XXX_DiscardUnknown() {
-	xxx_messageInfo_Type2VerificationReq.DiscardUnknown(m)
+func (m *ReqularVerificationReq) Reset()         { *m = ReqularVerificationReq{} }
+func (m *ReqularVerificationReq) String() string { return proto.CompactTextString(m) }
+func (*ReqularVerificationReq) ProtoMessage()    {}
+func (*ReqularVerificationReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{10}
 }
 
-var xxx_messageInfo_Type2VerificationReq proto.InternalMessageInfo
+func (m *ReqularVerificationReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ReqularVerificationReq.Unmarshal(m, b)
+}
+func (m *ReqularVerificationReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ReqularVerificationReq.Marshal(b, m, deterministic)
+}
+func (m *ReqularVerificationReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReqularVerificationReq.Merge(m, src)
+}
+func (m *ReqularVerificationReq) XXX_Size() int {
+	return xxx_messageInfo_ReqularVerificationReq.Size(m)
+}
+func (m *ReqularVerificationReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReqularVerificationReq.DiscardUnknown(m)
+}
 
-func (m *Type2VerificationReq) GetProvider() string {
+var xxx_messageInfo_ReqularVerificationReq proto.InternalMessageInfo
+
+func (m *ReqularVerificationReq) GetVerifier() string {
 	if m != nil {
-		return m.Provider
+		return m.Verifier
 	}
 	return ""
 }
 
-func (m *Type2VerificationReq) GetIdentity() string {
+func (m *ReqularVerificationReq) GetIdentity() string {
 	if m != nil {
 		return m.Identity
 	}
 	return ""
 }
 
-type Type2VerificationResp struct {
+type RegularVerificationResp struct {
 	VerificationID       string   `protobuf:"bytes,1,opt,name=VerificationID,proto3" json:"VerificationID,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Type2VerificationResp) Reset()         { *m = Type2VerificationResp{} }
-func (m *Type2VerificationResp) String() string { return proto.CompactTextString(m) }
-func (*Type2VerificationResp) ProtoMessage()    {}
-func (*Type2VerificationResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{9}
-}
-func (m *Type2VerificationResp) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Type2VerificationResp.Unmarshal(m, b)
-}
-func (m *Type2VerificationResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Type2VerificationResp.Marshal(b, m, deterministic)
-}
-func (dst *Type2VerificationResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Type2VerificationResp.Merge(dst, src)
-}
-func (m *Type2VerificationResp) XXX_Size() int {
-	return xxx_messageInfo_Type2VerificationResp.Size(m)
-}
-func (m *Type2VerificationResp) XXX_DiscardUnknown() {
-	xxx_messageInfo_Type2VerificationResp.DiscardUnknown(m)
+func (m *RegularVerificationResp) Reset()         { *m = RegularVerificationResp{} }
+func (m *RegularVerificationResp) String() string { return proto.CompactTextString(m) }
+func (*RegularVerificationResp) ProtoMessage()    {}
+func (*RegularVerificationResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{11}
 }
 
-var xxx_messageInfo_Type2VerificationResp proto.InternalMessageInfo
+func (m *RegularVerificationResp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RegularVerificationResp.Unmarshal(m, b)
+}
+func (m *RegularVerificationResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RegularVerificationResp.Marshal(b, m, deterministic)
+}
+func (m *RegularVerificationResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RegularVerificationResp.Merge(m, src)
+}
+func (m *RegularVerificationResp) XXX_Size() int {
+	return xxx_messageInfo_RegularVerificationResp.Size(m)
+}
+func (m *RegularVerificationResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_RegularVerificationResp.DiscardUnknown(m)
+}
 
-func (m *Type2VerificationResp) GetVerificationID() string {
+var xxx_messageInfo_RegularVerificationResp proto.InternalMessageInfo
+
+func (m *RegularVerificationResp) GetVerificationID() string {
 	if m != nil {
 		return m.VerificationID
 	}
 	return ""
 }
 
-type Type2VerifyReq struct {
+type RegularVerifyReq struct {
 	VerificationID       string   `protobuf:"bytes,1,opt,name=VerificationID,proto3" json:"VerificationID,omitempty"`
-	SecurityCode         string   `protobuf:"bytes,3,opt,name=SecurityCode,proto3" json:"SecurityCode,omitempty"`
+	SecurityCode         string   `protobuf:"bytes,2,opt,name=SecurityCode,proto3" json:"SecurityCode,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Type2VerifyReq) Reset()         { *m = Type2VerifyReq{} }
-func (m *Type2VerifyReq) String() string { return proto.CompactTextString(m) }
-func (*Type2VerifyReq) ProtoMessage()    {}
-func (*Type2VerifyReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{10}
-}
-func (m *Type2VerifyReq) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Type2VerifyReq.Unmarshal(m, b)
-}
-func (m *Type2VerifyReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Type2VerifyReq.Marshal(b, m, deterministic)
-}
-func (dst *Type2VerifyReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Type2VerifyReq.Merge(dst, src)
-}
-func (m *Type2VerifyReq) XXX_Size() int {
-	return xxx_messageInfo_Type2VerifyReq.Size(m)
-}
-func (m *Type2VerifyReq) XXX_DiscardUnknown() {
-	xxx_messageInfo_Type2VerifyReq.DiscardUnknown(m)
+func (m *RegularVerifyReq) Reset()         { *m = RegularVerifyReq{} }
+func (m *RegularVerifyReq) String() string { return proto.CompactTextString(m) }
+func (*RegularVerifyReq) ProtoMessage()    {}
+func (*RegularVerifyReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{12}
 }
 
-var xxx_messageInfo_Type2VerifyReq proto.InternalMessageInfo
+func (m *RegularVerifyReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RegularVerifyReq.Unmarshal(m, b)
+}
+func (m *RegularVerifyReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RegularVerifyReq.Marshal(b, m, deterministic)
+}
+func (m *RegularVerifyReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RegularVerifyReq.Merge(m, src)
+}
+func (m *RegularVerifyReq) XXX_Size() int {
+	return xxx_messageInfo_RegularVerifyReq.Size(m)
+}
+func (m *RegularVerifyReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_RegularVerifyReq.DiscardUnknown(m)
+}
 
-func (m *Type2VerifyReq) GetVerificationID() string {
+var xxx_messageInfo_RegularVerifyReq proto.InternalMessageInfo
+
+func (m *RegularVerifyReq) GetVerificationID() string {
 	if m != nil {
 		return m.VerificationID
 	}
 	return ""
 }
 
-func (m *Type2VerifyReq) GetSecurityCode() string {
+func (m *RegularVerifyReq) GetSecurityCode() string {
 	if m != nil {
 		return m.SecurityCode
 	}
 	return ""
 }
 
-type Type2ResultResp struct {
+type RegularResultResp struct {
 	Session              string   `protobuf:"bytes,1,opt,name=Session,proto3" json:"Session,omitempty"`
 	User                 string   `protobuf:"bytes,2,opt,name=User,proto3" json:"User,omitempty"`
 	Error                string   `protobuf:"bytes,3,opt,name=Error,proto3" json:"Error,omitempty"`
@@ -520,45 +650,46 @@ type Type2ResultResp struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *Type2ResultResp) Reset()         { *m = Type2ResultResp{} }
-func (m *Type2ResultResp) String() string { return proto.CompactTextString(m) }
-func (*Type2ResultResp) ProtoMessage()    {}
-func (*Type2ResultResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{11}
-}
-func (m *Type2ResultResp) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_Type2ResultResp.Unmarshal(m, b)
-}
-func (m *Type2ResultResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_Type2ResultResp.Marshal(b, m, deterministic)
-}
-func (dst *Type2ResultResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Type2ResultResp.Merge(dst, src)
-}
-func (m *Type2ResultResp) XXX_Size() int {
-	return xxx_messageInfo_Type2ResultResp.Size(m)
-}
-func (m *Type2ResultResp) XXX_DiscardUnknown() {
-	xxx_messageInfo_Type2ResultResp.DiscardUnknown(m)
+func (m *RegularResultResp) Reset()         { *m = RegularResultResp{} }
+func (m *RegularResultResp) String() string { return proto.CompactTextString(m) }
+func (*RegularResultResp) ProtoMessage()    {}
+func (*RegularResultResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{13}
 }
 
-var xxx_messageInfo_Type2ResultResp proto.InternalMessageInfo
+func (m *RegularResultResp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_RegularResultResp.Unmarshal(m, b)
+}
+func (m *RegularResultResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_RegularResultResp.Marshal(b, m, deterministic)
+}
+func (m *RegularResultResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_RegularResultResp.Merge(m, src)
+}
+func (m *RegularResultResp) XXX_Size() int {
+	return xxx_messageInfo_RegularResultResp.Size(m)
+}
+func (m *RegularResultResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_RegularResultResp.DiscardUnknown(m)
+}
 
-func (m *Type2ResultResp) GetSession() string {
+var xxx_messageInfo_RegularResultResp proto.InternalMessageInfo
+
+func (m *RegularResultResp) GetSession() string {
 	if m != nil {
 		return m.Session
 	}
 	return ""
 }
 
-func (m *Type2ResultResp) GetUser() string {
+func (m *RegularResultResp) GetUser() string {
 	if m != nil {
 		return m.User
 	}
 	return ""
 }
 
-func (m *Type2ResultResp) GetError() string {
+func (m *RegularResultResp) GetError() string {
 	if m != nil {
 		return m.Error
 	}
@@ -566,7 +697,7 @@ func (m *Type2ResultResp) GetError() string {
 }
 
 type OAuth2Req struct {
-	Provider             string   `protobuf:"bytes,1,opt,name=Provider,proto3" json:"Provider,omitempty"`
+	Verifier             string   `protobuf:"bytes,1,opt,name=Verifier,proto3" json:"Verifier,omitempty"`
 	Code                 string   `protobuf:"bytes,2,opt,name=Code,proto3" json:"Code,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -577,16 +708,17 @@ func (m *OAuth2Req) Reset()         { *m = OAuth2Req{} }
 func (m *OAuth2Req) String() string { return proto.CompactTextString(m) }
 func (*OAuth2Req) ProtoMessage()    {}
 func (*OAuth2Req) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{12}
+	return fileDescriptor_61c7956abb761639, []int{14}
 }
+
 func (m *OAuth2Req) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_OAuth2Req.Unmarshal(m, b)
 }
 func (m *OAuth2Req) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_OAuth2Req.Marshal(b, m, deterministic)
 }
-func (dst *OAuth2Req) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OAuth2Req.Merge(dst, src)
+func (m *OAuth2Req) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_OAuth2Req.Merge(m, src)
 }
 func (m *OAuth2Req) XXX_Size() int {
 	return xxx_messageInfo_OAuth2Req.Size(m)
@@ -597,9 +729,9 @@ func (m *OAuth2Req) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_OAuth2Req proto.InternalMessageInfo
 
-func (m *OAuth2Req) GetProvider() string {
+func (m *OAuth2Req) GetVerifier() string {
 	if m != nil {
-		return m.Provider
+		return m.Verifier
 	}
 	return ""
 }
@@ -624,16 +756,17 @@ func (m *OAuth2VerifyResp) Reset()         { *m = OAuth2VerifyResp{} }
 func (m *OAuth2VerifyResp) String() string { return proto.CompactTextString(m) }
 func (*OAuth2VerifyResp) ProtoMessage()    {}
 func (*OAuth2VerifyResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_beb2bef2a5ddaaf0, []int{13}
+	return fileDescriptor_61c7956abb761639, []int{15}
 }
+
 func (m *OAuth2VerifyResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_OAuth2VerifyResp.Unmarshal(m, b)
 }
 func (m *OAuth2VerifyResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_OAuth2VerifyResp.Marshal(b, m, deterministic)
 }
-func (dst *OAuth2VerifyResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_OAuth2VerifyResp.Merge(dst, src)
+func (m *OAuth2VerifyResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_OAuth2VerifyResp.Merge(m, src)
 }
 func (m *OAuth2VerifyResp) XXX_Size() int {
 	return xxx_messageInfo_OAuth2VerifyResp.Size(m)
@@ -665,21 +798,255 @@ func (m *OAuth2VerifyResp) GetError() string {
 	return ""
 }
 
+/////////////////////////////////////////////////////////////////
+/////StaticVer
+/////
+type StaticVerificationReq struct {
+	Verifier             string   `protobuf:"bytes,1,opt,name=Verifier,proto3" json:"Verifier,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *StaticVerificationReq) Reset()         { *m = StaticVerificationReq{} }
+func (m *StaticVerificationReq) String() string { return proto.CompactTextString(m) }
+func (*StaticVerificationReq) ProtoMessage()    {}
+func (*StaticVerificationReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{16}
+}
+
+func (m *StaticVerificationReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StaticVerificationReq.Unmarshal(m, b)
+}
+func (m *StaticVerificationReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StaticVerificationReq.Marshal(b, m, deterministic)
+}
+func (m *StaticVerificationReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StaticVerificationReq.Merge(m, src)
+}
+func (m *StaticVerificationReq) XXX_Size() int {
+	return xxx_messageInfo_StaticVerificationReq.Size(m)
+}
+func (m *StaticVerificationReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_StaticVerificationReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StaticVerificationReq proto.InternalMessageInfo
+
+func (m *StaticVerificationReq) GetVerifier() string {
+	if m != nil {
+		return m.Verifier
+	}
+	return ""
+}
+
+type StaticVerificationResp struct {
+	VerificationID       string   `protobuf:"bytes,1,opt,name=VerificationID,proto3" json:"VerificationID,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *StaticVerificationResp) Reset()         { *m = StaticVerificationResp{} }
+func (m *StaticVerificationResp) String() string { return proto.CompactTextString(m) }
+func (*StaticVerificationResp) ProtoMessage()    {}
+func (*StaticVerificationResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{17}
+}
+
+func (m *StaticVerificationResp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_StaticVerificationResp.Unmarshal(m, b)
+}
+func (m *StaticVerificationResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_StaticVerificationResp.Marshal(b, m, deterministic)
+}
+func (m *StaticVerificationResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StaticVerificationResp.Merge(m, src)
+}
+func (m *StaticVerificationResp) XXX_Size() int {
+	return xxx_messageInfo_StaticVerificationResp.Size(m)
+}
+func (m *StaticVerificationResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_StaticVerificationResp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StaticVerificationResp proto.InternalMessageInfo
+
+func (m *StaticVerificationResp) GetVerificationID() string {
+	if m != nil {
+		return m.VerificationID
+	}
+	return ""
+}
+
+type LoginAsReq struct {
+	User                 string   `protobuf:"bytes,1,opt,name=User,proto3" json:"User,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *LoginAsReq) Reset()         { *m = LoginAsReq{} }
+func (m *LoginAsReq) String() string { return proto.CompactTextString(m) }
+func (*LoginAsReq) ProtoMessage()    {}
+func (*LoginAsReq) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{18}
+}
+
+func (m *LoginAsReq) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LoginAsReq.Unmarshal(m, b)
+}
+func (m *LoginAsReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LoginAsReq.Marshal(b, m, deterministic)
+}
+func (m *LoginAsReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LoginAsReq.Merge(m, src)
+}
+func (m *LoginAsReq) XXX_Size() int {
+	return xxx_messageInfo_LoginAsReq.Size(m)
+}
+func (m *LoginAsReq) XXX_DiscardUnknown() {
+	xxx_messageInfo_LoginAsReq.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LoginAsReq proto.InternalMessageInfo
+
+func (m *LoginAsReq) GetUser() string {
+	if m != nil {
+		return m.User
+	}
+	return ""
+}
+
+type LoginAsResp struct {
+	Session              string   `protobuf:"bytes,1,opt,name=Session,proto3" json:"Session,omitempty"`
+	User                 string   `protobuf:"bytes,2,opt,name=User,proto3" json:"User,omitempty"`
+	Error                string   `protobuf:"bytes,3,opt,name=Error,proto3" json:"Error,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *LoginAsResp) Reset()         { *m = LoginAsResp{} }
+func (m *LoginAsResp) String() string { return proto.CompactTextString(m) }
+func (*LoginAsResp) ProtoMessage()    {}
+func (*LoginAsResp) Descriptor() ([]byte, []int) {
+	return fileDescriptor_61c7956abb761639, []int{19}
+}
+
+func (m *LoginAsResp) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_LoginAsResp.Unmarshal(m, b)
+}
+func (m *LoginAsResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_LoginAsResp.Marshal(b, m, deterministic)
+}
+func (m *LoginAsResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LoginAsResp.Merge(m, src)
+}
+func (m *LoginAsResp) XXX_Size() int {
+	return xxx_messageInfo_LoginAsResp.Size(m)
+}
+func (m *LoginAsResp) XXX_DiscardUnknown() {
+	xxx_messageInfo_LoginAsResp.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_LoginAsResp proto.InternalMessageInfo
+
+func (m *LoginAsResp) GetSession() string {
+	if m != nil {
+		return m.Session
+	}
+	return ""
+}
+
+func (m *LoginAsResp) GetUser() string {
+	if m != nil {
+		return m.User
+	}
+	return ""
+}
+
+func (m *LoginAsResp) GetError() string {
+	if m != nil {
+		return m.Error
+	}
+	return ""
+}
+
 func init() {
 	proto.RegisterType((*Dummy)(nil), "api.themakers.identity.Dummy")
-	proto.RegisterType((*ProviderDetailsReq)(nil), "api.themakers.identity.ProviderDetailsReq")
-	proto.RegisterType((*ProviderDetailsResp)(nil), "api.themakers.identity.ProviderDetailsResp")
-	proto.RegisterType((*ProviderDetails)(nil), "api.themakers.identity.ProviderDetails")
-	proto.RegisterType((*Type1VerificationReq)(nil), "api.themakers.identity.Type1VerificationReq")
-	proto.RegisterType((*Type1VerificationDirections)(nil), "api.themakers.identity.Type1VerificationDirections")
-	proto.RegisterType((*Type1ResultRequest)(nil), "api.themakers.identity.Type1ResultRequest")
-	proto.RegisterType((*Type1ResultResp)(nil), "api.themakers.identity.Type1ResultResp")
-	proto.RegisterType((*Type2VerificationReq)(nil), "api.themakers.identity.Type2VerificationReq")
-	proto.RegisterType((*Type2VerificationResp)(nil), "api.themakers.identity.Type2VerificationResp")
-	proto.RegisterType((*Type2VerifyReq)(nil), "api.themakers.identity.Type2VerifyReq")
-	proto.RegisterType((*Type2ResultResp)(nil), "api.themakers.identity.Type2ResultResp")
+	proto.RegisterType((*VerifiersDetailsRequest)(nil), "api.themakers.identity.VerifiersDetailsRequest")
+	proto.RegisterType((*VerifierDetailsResponse)(nil), "api.themakers.identity.VerifierDetailsResponse")
+	proto.RegisterType((*VerifierDetails)(nil), "api.themakers.identity.VerifierDetails")
+	proto.RegisterType((*IdentityData)(nil), "api.themakers.identity.IdentityData")
+	proto.RegisterType((*UserDetails)(nil), "api.themakers.identity.UserDetails")
+	proto.RegisterType((*ReverseVerificationReq)(nil), "api.themakers.identity.ReverseVerificationReq")
+	proto.RegisterType((*ReverseVerificationDirections)(nil), "api.themakers.identity.ReverseVerificationDirections")
+	proto.RegisterType((*ReverseResultRequest)(nil), "api.themakers.identity.ReverseResultRequest")
+	proto.RegisterType((*ReverseResultResp)(nil), "api.themakers.identity.ReverseResultResp")
+	proto.RegisterType((*ReqularVerificationReq)(nil), "api.themakers.identity.ReqularVerificationReq")
+	proto.RegisterType((*RegularVerificationResp)(nil), "api.themakers.identity.RegularVerificationResp")
+	proto.RegisterType((*RegularVerifyReq)(nil), "api.themakers.identity.RegularVerifyReq")
+	proto.RegisterType((*RegularResultResp)(nil), "api.themakers.identity.RegularResultResp")
 	proto.RegisterType((*OAuth2Req)(nil), "api.themakers.identity.OAuth2Req")
 	proto.RegisterType((*OAuth2VerifyResp)(nil), "api.themakers.identity.OAuth2VerifyResp")
+	proto.RegisterType((*StaticVerificationReq)(nil), "api.themakers.identity.StaticVerificationReq")
+	proto.RegisterType((*StaticVerificationResp)(nil), "api.themakers.identity.StaticVerificationResp")
+	proto.RegisterType((*LoginAsReq)(nil), "api.themakers.identity.LoginAsReq")
+	proto.RegisterType((*LoginAsResp)(nil), "api.themakers.identity.LoginAsResp")
+}
+
+func init() { proto.RegisterFile("identity.proto", fileDescriptor_61c7956abb761639) }
+
+var fileDescriptor_61c7956abb761639 = []byte{
+	// 746 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x56, 0x5d, 0x6b, 0x13, 0x4b,
+	0x18, 0x66, 0xd3, 0x8f, 0x34, 0x6f, 0xdb, 0xb4, 0x67, 0xe8, 0x49, 0xf7, 0x2c, 0xe7, 0x1c, 0xe2,
+	0x58, 0x34, 0x82, 0x6e, 0x21, 0xc5, 0x2b, 0xa1, 0x18, 0xdd, 0x5e, 0x04, 0xaa, 0xd6, 0x8d, 0x56,
+	0x50, 0x50, 0xd6, 0x64, 0x6c, 0x07, 0x9b, 0xdd, 0xcd, 0xcc, 0x6c, 0x25, 0x37, 0x52, 0xf0, 0x3f,
+	0xf8, 0x0f, 0xfd, 0x1f, 0x32, 0xbb, 0xb3, 0x9f, 0xec, 0x36, 0x09, 0x04, 0xbc, 0xca, 0xce, 0xfb,
+	0x35, 0xcf, 0xfb, 0x3e, 0x33, 0xcf, 0x04, 0x9a, 0x74, 0x44, 0x5c, 0x41, 0xc5, 0xd4, 0xf4, 0x99,
+	0x27, 0x3c, 0xd4, 0x72, 0x7c, 0x6a, 0x8a, 0x4b, 0x32, 0x76, 0xbe, 0x12, 0xc6, 0xcd, 0xd8, 0x8b,
+	0xeb, 0xb0, 0x66, 0x05, 0xe3, 0xf1, 0x14, 0xff, 0x03, 0xfb, 0xe7, 0x84, 0xd1, 0x2f, 0x94, 0x30,
+	0x6e, 0x11, 0xe1, 0xd0, 0x2b, 0x6e, 0x93, 0x49, 0x40, 0xb8, 0xc0, 0x37, 0x5a, 0xea, 0x4b, 0x5c,
+	0xdc, 0xf7, 0x5c, 0x4e, 0xd0, 0xff, 0x00, 0xfd, 0xa8, 0x16, 0x25, 0x5c, 0xd7, 0xda, 0x2b, 0x9d,
+	0x86, 0x9d, 0xb1, 0xa0, 0x13, 0x68, 0x24, 0x65, 0xf5, 0x5a, 0x7b, 0xa5, 0xb3, 0xd9, 0xbd, 0x6f,
+	0x96, 0x63, 0x31, 0x8b, 0x7b, 0xa4, 0x99, 0xf8, 0x97, 0x06, 0x3b, 0x05, 0x37, 0x42, 0xb0, 0xfa,
+	0xd2, 0x19, 0x13, 0x5d, 0x6b, 0x6b, 0x9d, 0x86, 0x1d, 0x7e, 0x23, 0x0c, 0x5b, 0x6a, 0xf3, 0x69,
+	0xe8, 0xab, 0x85, 0xbe, 0x9c, 0x0d, 0xdd, 0x83, 0xe6, 0x20, 0xf0, 0x7d, 0x8f, 0x09, 0x9b, 0x5c,
+	0x04, 0x57, 0x0e, 0xd3, 0x57, 0xda, 0x5a, 0x67, 0xc3, 0x2e, 0x58, 0x73, 0x71, 0xd7, 0x84, 0x71,
+	0xa2, 0xaf, 0x16, 0xe2, 0x42, 0x2b, 0x3a, 0x80, 0x6d, 0x65, 0x79, 0xd5, 0x0b, 0xc4, 0x65, 0x57,
+	0x5f, 0x0b, 0xc3, 0xf2, 0xc6, 0x4c, 0xd4, 0x40, 0x38, 0x82, 0x0e, 0xf5, 0xf5, 0x5c, 0x54, 0x64,
+	0xc4, 0xc7, 0x29, 0x7e, 0xcb, 0x11, 0x8e, 0xec, 0xd1, 0xcd, 0xf4, 0x28, 0xbf, 0x91, 0x01, 0x1b,
+	0xf1, 0xc8, 0x54, 0x7f, 0xc9, 0x1a, 0x0f, 0x61, 0xf3, 0x2d, 0x4f, 0x47, 0xd4, 0x84, 0x5a, 0xdf,
+	0x52, 0xc9, 0xb5, 0xbe, 0x85, 0x2c, 0x00, 0x9a, 0xb2, 0x15, 0xd1, 0x71, 0x50, 0x45, 0x47, 0x16,
+	0x88, 0x9d, 0xc9, 0xc3, 0x67, 0xd0, 0x52, 0xbd, 0x47, 0x94, 0x0c, 0x1d, 0x41, 0x3d, 0xd7, 0x26,
+	0x13, 0x09, 0x2d, 0x66, 0x49, 0xed, 0x9a, 0xac, 0xa5, 0xaf, 0x5f, 0x80, 0x1d, 0xaf, 0xf1, 0x0f,
+	0x0d, 0xfe, 0x2b, 0x29, 0x69, 0x51, 0x46, 0x86, 0xf2, 0x83, 0x4b, 0x32, 0xb2, 0x9e, 0xa4, 0xab,
+	0x82, 0x15, 0xb5, 0x60, 0xfd, 0x8d, 0xc3, 0x2e, 0x88, 0x50, 0x7b, 0xa8, 0x95, 0x3c, 0x18, 0x03,
+	0x32, 0x0c, 0x18, 0x15, 0xd3, 0xe7, 0xde, 0x88, 0x84, 0x94, 0x37, 0xec, 0x9c, 0x0d, 0x1f, 0xc3,
+	0x9e, 0x02, 0x61, 0x13, 0x1e, 0x5c, 0x09, 0x75, 0xfe, 0xe7, 0xdd, 0x1b, 0xbf, 0x83, 0xbf, 0x0a,
+	0xf9, 0xdc, 0x47, 0x3a, 0xd4, 0x07, 0x84, 0x73, 0xea, 0xb9, 0x2a, 0x2b, 0x5e, 0x4a, 0x6e, 0x25,
+	0x57, 0x0a, 0x68, 0xf8, 0x8d, 0xf6, 0x60, 0xed, 0x84, 0x31, 0x8f, 0x29, 0x7c, 0xd1, 0x22, 0x1a,
+	0xf8, 0x44, 0x1e, 0xca, 0x65, 0x0d, 0xbc, 0x07, 0xfb, 0xea, 0x98, 0xe7, 0x2b, 0x72, 0x7f, 0xee,
+	0x6e, 0x3f, 0xc2, 0x6e, 0xb6, 0xc4, 0x54, 0xc2, 0x99, 0x97, 0xa5, 0x22, 0x1b, 0xb5, 0x12, 0x36,
+	0xc2, 0x69, 0x86, 0xf5, 0x97, 0x3c, 0xcd, 0x27, 0xd0, 0x88, 0xee, 0xe4, 0xac, 0x01, 0x22, 0x58,
+	0xcd, 0xa0, 0x0b, 0xbf, 0xf1, 0x39, 0xec, 0x46, 0xc9, 0x71, 0xd3, 0x4b, 0x02, 0x75, 0x04, 0x7f,
+	0x47, 0x12, 0xb0, 0x00, 0xc3, 0xf8, 0x29, 0xb4, 0xca, 0x92, 0x16, 0x20, 0xb1, 0x0d, 0x70, 0xea,
+	0x5d, 0x50, 0xb7, 0x27, 0xc5, 0x3e, 0x81, 0xab, 0xa5, 0x70, 0xf1, 0x6b, 0xd8, 0x4c, 0x22, 0x96,
+	0xd3, 0x6b, 0xf7, 0x67, 0x3d, 0x3d, 0x99, 0xe8, 0x46, 0x83, 0x7f, 0x4f, 0x29, 0x17, 0x2f, 0xa6,
+	0xe9, 0xab, 0xd1, 0x73, 0x47, 0x89, 0xf4, 0xa3, 0xc3, 0x59, 0xcf, 0x45, 0xe1, 0xb9, 0x32, 0x0e,
+	0xe7, 0x7d, 0x5f, 0xe2, 0x37, 0xec, 0x3b, 0x18, 0x12, 0xc1, 0x1f, 0xdb, 0xff, 0x1b, 0x34, 0x13,
+	0xdd, 0x88, 0x14, 0xc7, 0xac, 0x2a, 0x51, 0xae, 0xbb, 0xc6, 0xe3, 0x05, 0xe2, 0x33, 0xa2, 0x7a,
+	0x09, 0xdb, 0x39, 0xc1, 0x42, 0x0f, 0x67, 0xd4, 0xc9, 0xe9, 0xa2, 0xf1, 0x60, 0xce, 0x68, 0xee,
+	0xa3, 0x89, 0x6c, 0x51, 0x5d, 0xe6, 0x99, 0x2d, 0x96, 0x29, 0x5d, 0xf5, 0x54, 0xab, 0x74, 0x6c,
+	0x24, 0x9b, 0xcb, 0xe8, 0x13, 0xea, 0xcc, 0x53, 0x41, 0xca, 0xd8, 0x6d, 0x8d, 0x15, 0x05, 0xe9,
+	0x03, 0x6c, 0x65, 0xf5, 0x00, 0xdd, 0xa9, 0x4a, 0x4d, 0x24, 0xc7, 0xe8, 0xdc, 0x1e, 0x92, 0x11,
+	0x16, 0x17, 0xb6, 0xa3, 0xfb, 0x1d, 0x0f, 0xed, 0x51, 0x55, 0x6a, 0xa9, 0x76, 0x18, 0xe6, 0x22,
+	0xe1, 0xdc, 0xef, 0x12, 0xd8, 0x89, 0xef, 0xe5, 0x19, 0xa3, 0xd7, 0x8e, 0x20, 0xc8, 0x86, 0xba,
+	0xba, 0xfe, 0x08, 0x57, 0x55, 0x4b, 0x15, 0xc4, 0xb8, 0x3b, 0x33, 0x86, 0xfb, 0xcf, 0x76, 0xdf,
+	0x27, 0xff, 0x4e, 0x3f, 0x85, 0xff, 0x4e, 0x3f, 0xaf, 0x87, 0x3f, 0x47, 0xbf, 0x03, 0x00, 0x00,
+	0xff, 0xff, 0x6b, 0xe3, 0xc9, 0x07, 0xb6, 0x0a, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -694,15 +1061,19 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type IdentityClient interface {
-	ListProviders(ctx context.Context, in *ProviderDetailsReq, opts ...grpc.CallOption) (*ProviderDetailsResp, error)
-	// Type 1
-	Type1Request(ctx context.Context, in *Type1VerificationReq, opts ...grpc.CallOption) (*Type1VerificationDirections, error)
-	Type1Result(ctx context.Context, in *Type1ResultRequest, opts ...grpc.CallOption) (*Type1ResultResp, error)
-	// Type 2
-	Type2Request(ctx context.Context, in *Type2VerificationReq, opts ...grpc.CallOption) (*Type2VerificationResp, error)
-	Type2Verify(ctx context.Context, in *Type2VerifyReq, opts ...grpc.CallOption) (*Type2ResultResp, error)
-	// Type 3
+	//method for give identities and verifiers for user
+	ListMyIdentitiesAndVerifiers(ctx context.Context, in *VerifiersDetailsRequest, opts ...grpc.CallOption) (*VerifierDetailsResponse, error)
+	//method for give identities and verifiers for server
+	ListIdentitiesAndVerifiers(ctx context.Context, in *VerifiersDetailsRequest, opts ...grpc.CallOption) (*VerifierDetailsResponse, error)
+	ReverseRequest(ctx context.Context, in *ReverseVerificationReq, opts ...grpc.CallOption) (*ReverseVerificationDirections, error)
+	ReverseResult(ctx context.Context, in *ReverseResultRequest, opts ...grpc.CallOption) (*ReverseResultResp, error)
+	// Regular
+	RegularRequest(ctx context.Context, in *ReqularVerificationReq, opts ...grpc.CallOption) (*RegularVerificationResp, error)
+	RegularVerify(ctx context.Context, in *RegularVerifyReq, opts ...grpc.CallOption) (*RegularResultResp, error)
+	// Oauth2
 	OAuth2Verify(ctx context.Context, in *OAuth2Req, opts ...grpc.CallOption) (*OAuth2VerifyResp, error)
+	//StaticVerification
+	StaticRequest(ctx context.Context, in *StaticVerificationReq, opts ...grpc.CallOption) (*StaticVerificationResp, error)
 }
 
 type identityClient struct {
@@ -713,45 +1084,54 @@ func NewIdentityClient(cc *grpc.ClientConn) IdentityClient {
 	return &identityClient{cc}
 }
 
-func (c *identityClient) ListProviders(ctx context.Context, in *ProviderDetailsReq, opts ...grpc.CallOption) (*ProviderDetailsResp, error) {
-	out := new(ProviderDetailsResp)
-	err := c.cc.Invoke(ctx, "/api.themakers.identity.Identity/ListProviders", in, out, opts...)
+func (c *identityClient) ListMyIdentitiesAndVerifiers(ctx context.Context, in *VerifiersDetailsRequest, opts ...grpc.CallOption) (*VerifierDetailsResponse, error) {
+	out := new(VerifierDetailsResponse)
+	err := c.cc.Invoke(ctx, "/api.themakers.identity.Identity/ListMyIdentitiesAndVerifiers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *identityClient) Type1Request(ctx context.Context, in *Type1VerificationReq, opts ...grpc.CallOption) (*Type1VerificationDirections, error) {
-	out := new(Type1VerificationDirections)
-	err := c.cc.Invoke(ctx, "/api.themakers.identity.Identity/Type1Request", in, out, opts...)
+func (c *identityClient) ListIdentitiesAndVerifiers(ctx context.Context, in *VerifiersDetailsRequest, opts ...grpc.CallOption) (*VerifierDetailsResponse, error) {
+	out := new(VerifierDetailsResponse)
+	err := c.cc.Invoke(ctx, "/api.themakers.identity.Identity/ListIdentitiesAndVerifiers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *identityClient) Type1Result(ctx context.Context, in *Type1ResultRequest, opts ...grpc.CallOption) (*Type1ResultResp, error) {
-	out := new(Type1ResultResp)
-	err := c.cc.Invoke(ctx, "/api.themakers.identity.Identity/Type1Result", in, out, opts...)
+func (c *identityClient) ReverseRequest(ctx context.Context, in *ReverseVerificationReq, opts ...grpc.CallOption) (*ReverseVerificationDirections, error) {
+	out := new(ReverseVerificationDirections)
+	err := c.cc.Invoke(ctx, "/api.themakers.identity.Identity/ReverseRequest", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *identityClient) Type2Request(ctx context.Context, in *Type2VerificationReq, opts ...grpc.CallOption) (*Type2VerificationResp, error) {
-	out := new(Type2VerificationResp)
-	err := c.cc.Invoke(ctx, "/api.themakers.identity.Identity/Type2Request", in, out, opts...)
+func (c *identityClient) ReverseResult(ctx context.Context, in *ReverseResultRequest, opts ...grpc.CallOption) (*ReverseResultResp, error) {
+	out := new(ReverseResultResp)
+	err := c.cc.Invoke(ctx, "/api.themakers.identity.Identity/ReverseResult", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *identityClient) Type2Verify(ctx context.Context, in *Type2VerifyReq, opts ...grpc.CallOption) (*Type2ResultResp, error) {
-	out := new(Type2ResultResp)
-	err := c.cc.Invoke(ctx, "/api.themakers.identity.Identity/Type2Verify", in, out, opts...)
+func (c *identityClient) RegularRequest(ctx context.Context, in *ReqularVerificationReq, opts ...grpc.CallOption) (*RegularVerificationResp, error) {
+	out := new(RegularVerificationResp)
+	err := c.cc.Invoke(ctx, "/api.themakers.identity.Identity/RegularRequest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *identityClient) RegularVerify(ctx context.Context, in *RegularVerifyReq, opts ...grpc.CallOption) (*RegularResultResp, error) {
+	out := new(RegularResultResp)
+	err := c.cc.Invoke(ctx, "/api.themakers.identity.Identity/RegularVerify", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -767,109 +1147,169 @@ func (c *identityClient) OAuth2Verify(ctx context.Context, in *OAuth2Req, opts .
 	return out, nil
 }
 
+func (c *identityClient) StaticRequest(ctx context.Context, in *StaticVerificationReq, opts ...grpc.CallOption) (*StaticVerificationResp, error) {
+	out := new(StaticVerificationResp)
+	err := c.cc.Invoke(ctx, "/api.themakers.identity.Identity/StaticRequest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // IdentityServer is the server API for Identity service.
 type IdentityServer interface {
-	ListProviders(context.Context, *ProviderDetailsReq) (*ProviderDetailsResp, error)
-	// Type 1
-	Type1Request(context.Context, *Type1VerificationReq) (*Type1VerificationDirections, error)
-	Type1Result(context.Context, *Type1ResultRequest) (*Type1ResultResp, error)
-	// Type 2
-	Type2Request(context.Context, *Type2VerificationReq) (*Type2VerificationResp, error)
-	Type2Verify(context.Context, *Type2VerifyReq) (*Type2ResultResp, error)
-	// Type 3
+	//method for give identities and verifiers for user
+	ListMyIdentitiesAndVerifiers(context.Context, *VerifiersDetailsRequest) (*VerifierDetailsResponse, error)
+	//method for give identities and verifiers for server
+	ListIdentitiesAndVerifiers(context.Context, *VerifiersDetailsRequest) (*VerifierDetailsResponse, error)
+	ReverseRequest(context.Context, *ReverseVerificationReq) (*ReverseVerificationDirections, error)
+	ReverseResult(context.Context, *ReverseResultRequest) (*ReverseResultResp, error)
+	// Regular
+	RegularRequest(context.Context, *ReqularVerificationReq) (*RegularVerificationResp, error)
+	RegularVerify(context.Context, *RegularVerifyReq) (*RegularResultResp, error)
+	// Oauth2
 	OAuth2Verify(context.Context, *OAuth2Req) (*OAuth2VerifyResp, error)
+	//StaticVerification
+	StaticRequest(context.Context, *StaticVerificationReq) (*StaticVerificationResp, error)
+}
+
+// UnimplementedIdentityServer can be embedded to have forward compatible implementations.
+type UnimplementedIdentityServer struct {
+}
+
+func (*UnimplementedIdentityServer) ListMyIdentitiesAndVerifiers(ctx context.Context, req *VerifiersDetailsRequest) (*VerifierDetailsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMyIdentitiesAndVerifiers not implemented")
+}
+func (*UnimplementedIdentityServer) ListIdentitiesAndVerifiers(ctx context.Context, req *VerifiersDetailsRequest) (*VerifierDetailsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListIdentitiesAndVerifiers not implemented")
+}
+func (*UnimplementedIdentityServer) ReverseRequest(ctx context.Context, req *ReverseVerificationReq) (*ReverseVerificationDirections, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReverseRequest not implemented")
+}
+func (*UnimplementedIdentityServer) ReverseResult(ctx context.Context, req *ReverseResultRequest) (*ReverseResultResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReverseResult not implemented")
+}
+func (*UnimplementedIdentityServer) RegularRequest(ctx context.Context, req *ReqularVerificationReq) (*RegularVerificationResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegularRequest not implemented")
+}
+func (*UnimplementedIdentityServer) RegularVerify(ctx context.Context, req *RegularVerifyReq) (*RegularResultResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RegularVerify not implemented")
+}
+func (*UnimplementedIdentityServer) OAuth2Verify(ctx context.Context, req *OAuth2Req) (*OAuth2VerifyResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OAuth2Verify not implemented")
+}
+func (*UnimplementedIdentityServer) StaticRequest(ctx context.Context, req *StaticVerificationReq) (*StaticVerificationResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StaticRequest not implemented")
 }
 
 func RegisterIdentityServer(s *grpc.Server, srv IdentityServer) {
 	s.RegisterService(&_Identity_serviceDesc, srv)
 }
 
-func _Identity_ListProviders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ProviderDetailsReq)
+func _Identity_ListMyIdentitiesAndVerifiers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifiersDetailsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(IdentityServer).ListProviders(ctx, in)
+		return srv.(IdentityServer).ListMyIdentitiesAndVerifiers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.themakers.identity.Identity/ListProviders",
+		FullMethod: "/api.themakers.identity.Identity/ListMyIdentitiesAndVerifiers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IdentityServer).ListProviders(ctx, req.(*ProviderDetailsReq))
+		return srv.(IdentityServer).ListMyIdentitiesAndVerifiers(ctx, req.(*VerifiersDetailsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Identity_Type1Request_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Type1VerificationReq)
+func _Identity_ListIdentitiesAndVerifiers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifiersDetailsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(IdentityServer).Type1Request(ctx, in)
+		return srv.(IdentityServer).ListIdentitiesAndVerifiers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.themakers.identity.Identity/Type1Request",
+		FullMethod: "/api.themakers.identity.Identity/ListIdentitiesAndVerifiers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IdentityServer).Type1Request(ctx, req.(*Type1VerificationReq))
+		return srv.(IdentityServer).ListIdentitiesAndVerifiers(ctx, req.(*VerifiersDetailsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Identity_Type1Result_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Type1ResultRequest)
+func _Identity_ReverseRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReverseVerificationReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(IdentityServer).Type1Result(ctx, in)
+		return srv.(IdentityServer).ReverseRequest(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.themakers.identity.Identity/Type1Result",
+		FullMethod: "/api.themakers.identity.Identity/ReverseRequest",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IdentityServer).Type1Result(ctx, req.(*Type1ResultRequest))
+		return srv.(IdentityServer).ReverseRequest(ctx, req.(*ReverseVerificationReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Identity_Type2Request_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Type2VerificationReq)
+func _Identity_ReverseResult_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReverseResultRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(IdentityServer).Type2Request(ctx, in)
+		return srv.(IdentityServer).ReverseResult(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.themakers.identity.Identity/Type2Request",
+		FullMethod: "/api.themakers.identity.Identity/ReverseResult",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IdentityServer).Type2Request(ctx, req.(*Type2VerificationReq))
+		return srv.(IdentityServer).ReverseResult(ctx, req.(*ReverseResultRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Identity_Type2Verify_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Type2VerifyReq)
+func _Identity_RegularRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ReqularVerificationReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(IdentityServer).Type2Verify(ctx, in)
+		return srv.(IdentityServer).RegularRequest(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/api.themakers.identity.Identity/Type2Verify",
+		FullMethod: "/api.themakers.identity.Identity/RegularRequest",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(IdentityServer).Type2Verify(ctx, req.(*Type2VerifyReq))
+		return srv.(IdentityServer).RegularRequest(ctx, req.(*ReqularVerificationReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Identity_RegularVerify_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegularVerifyReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IdentityServer).RegularVerify(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.themakers.identity.Identity/RegularVerify",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IdentityServer).RegularVerify(ctx, req.(*RegularVerifyReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -892,75 +1332,133 @@ func _Identity_OAuth2Verify_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Identity_StaticRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StaticVerificationReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IdentityServer).StaticRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.themakers.identity.Identity/StaticRequest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IdentityServer).StaticRequest(ctx, req.(*StaticVerificationReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Identity_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "api.themakers.identity.Identity",
 	HandlerType: (*IdentityServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ListProviders",
-			Handler:    _Identity_ListProviders_Handler,
+			MethodName: "ListMyIdentitiesAndVerifiers",
+			Handler:    _Identity_ListMyIdentitiesAndVerifiers_Handler,
 		},
 		{
-			MethodName: "Type1Request",
-			Handler:    _Identity_Type1Request_Handler,
+			MethodName: "ListIdentitiesAndVerifiers",
+			Handler:    _Identity_ListIdentitiesAndVerifiers_Handler,
 		},
 		{
-			MethodName: "Type1Result",
-			Handler:    _Identity_Type1Result_Handler,
+			MethodName: "ReverseRequest",
+			Handler:    _Identity_ReverseRequest_Handler,
 		},
 		{
-			MethodName: "Type2Request",
-			Handler:    _Identity_Type2Request_Handler,
+			MethodName: "ReverseResult",
+			Handler:    _Identity_ReverseResult_Handler,
 		},
 		{
-			MethodName: "Type2Verify",
-			Handler:    _Identity_Type2Verify_Handler,
+			MethodName: "RegularRequest",
+			Handler:    _Identity_RegularRequest_Handler,
+		},
+		{
+			MethodName: "RegularVerify",
+			Handler:    _Identity_RegularVerify_Handler,
 		},
 		{
 			MethodName: "OAuth2Verify",
 			Handler:    _Identity_OAuth2Verify_Handler,
+		},
+		{
+			MethodName: "StaticRequest",
+			Handler:    _Identity_StaticRequest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "identity.proto",
 }
 
-func init() { proto.RegisterFile("identity.proto", fileDescriptor_identity_beb2bef2a5ddaaf0) }
+// IdentityPrivateClient is the client API for IdentityPrivate service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
+type IdentityPrivateClient interface {
+	LoginAs(ctx context.Context, in *LoginAsReq, opts ...grpc.CallOption) (*LoginAsResp, error)
+}
 
-var fileDescriptor_identity_beb2bef2a5ddaaf0 = []byte{
-	// 537 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0x4b, 0x6f, 0xd3, 0x40,
-	0x10, 0x96, 0x69, 0xfa, 0xc8, 0x34, 0x4d, 0xab, 0x21, 0x54, 0x96, 0xb9, 0x04, 0x0b, 0xb5, 0x11,
-	0x8f, 0x48, 0xb8, 0x47, 0x90, 0x10, 0x90, 0x1e, 0x2a, 0xa1, 0x82, 0xdc, 0xc7, 0x01, 0x2a, 0x90,
-	0x9b, 0x0c, 0x64, 0xd5, 0x26, 0xde, 0xec, 0xae, 0x91, 0x7c, 0xe4, 0x37, 0xf0, 0x5b, 0xb9, 0x23,
-	0xaf, 0xd7, 0x8e, 0xe3, 0x24, 0xad, 0x91, 0x72, 0xca, 0xce, 0xec, 0xcc, 0xec, 0xf7, 0xcd, 0x7c,
-	0x13, 0x43, 0x93, 0x0d, 0x68, 0xac, 0x98, 0x8a, 0xbb, 0x5c, 0x84, 0x2a, 0xc4, 0xfd, 0x80, 0xb3,
-	0xae, 0x1a, 0xd2, 0x28, 0xb8, 0x21, 0x21, 0xbb, 0xd9, 0xad, 0xbb, 0x09, 0xeb, 0xbd, 0x68, 0x34,
-	0x8a, 0xdd, 0x16, 0xe0, 0x67, 0x11, 0xfe, 0x62, 0x03, 0x12, 0x3d, 0x52, 0x01, 0xbb, 0x95, 0x3e,
-	0x4d, 0xdc, 0x2b, 0x78, 0x38, 0xe7, 0x95, 0x1c, 0x8f, 0xa1, 0x9e, 0xb9, 0xa5, 0x6d, 0xb5, 0xd7,
-	0x3a, 0xdb, 0xde, 0x61, 0x77, 0xf1, 0x0b, 0xdd, 0x72, 0xfe, 0x34, 0xd3, 0xfd, 0x63, 0xc1, 0x6e,
-	0xe9, 0x1a, 0x11, 0x6a, 0xa7, 0xc1, 0x88, 0x6c, 0xab, 0x6d, 0x75, 0xea, 0xbe, 0x3e, 0xa3, 0x0b,
-	0x8d, 0xb3, 0x88, 0xf3, 0x50, 0xa8, 0xf3, 0x98, 0xd3, 0x2b, 0xfb, 0x41, 0xdb, 0xea, 0x6c, 0xf9,
-	0x33, 0xbe, 0x52, 0x8c, 0x67, 0xaf, 0xcd, 0xc5, 0x78, 0xf8, 0x14, 0x76, 0x8c, 0xfd, 0xe9, 0x5d,
-	0xa4, 0x86, 0x9e, 0x5d, 0xd3, 0x41, 0xb3, 0x4e, 0xf7, 0x14, 0x5a, 0xba, 0xe4, 0x25, 0x09, 0xf6,
-	0x83, 0xf5, 0x03, 0xc5, 0xc2, 0xb1, 0x4f, 0x13, 0x74, 0x60, 0x2b, 0x03, 0x6b, 0xd0, 0xe5, 0x76,
-	0x72, 0x77, 0x62, 0x08, 0x6b, 0x74, 0x75, 0x3f, 0xb7, 0xdd, 0xdf, 0x16, 0x3c, 0x9e, 0x2b, 0xd8,
-	0x63, 0x82, 0xfa, 0xc9, 0x41, 0xe2, 0x01, 0x34, 0x8b, 0x37, 0x27, 0x3d, 0x53, 0xbd, 0xe4, 0xc5,
-	0x7d, 0xd8, 0x38, 0x0f, 0xc4, 0x4f, 0x52, 0xe6, 0x05, 0x63, 0x69, 0xe6, 0xd4, 0x8f, 0x04, 0x53,
-	0xf1, 0x87, 0x70, 0x40, 0x9a, 0x79, 0xdd, 0x9f, 0xf1, 0xb9, 0x6f, 0x00, 0x35, 0x04, 0x9f, 0x64,
-	0x74, 0xab, 0x7c, 0x9a, 0x44, 0x24, 0x55, 0xd5, 0x97, 0xdd, 0x0b, 0xd8, 0x9d, 0xc9, 0x96, 0x1c,
-	0x6d, 0xd8, 0x3c, 0x23, 0x29, 0x59, 0x38, 0x36, 0x39, 0x99, 0x99, 0x0c, 0xf0, 0x42, 0x92, 0x30,
-	0x20, 0xf5, 0x19, 0x5b, 0xb0, 0x7e, 0x2c, 0x44, 0x28, 0x0c, 0xb6, 0xd4, 0xc8, 0x1a, 0xed, 0xad,
-	0xaa, 0xd1, 0x6f, 0xe1, 0xd1, 0x82, 0x7a, 0x92, 0x57, 0xe6, 0x79, 0x05, 0xcd, 0x69, 0x81, 0x38,
-	0x81, 0x52, 0x75, 0x36, 0x55, 0x66, 0x60, 0xba, 0xe8, 0xad, 0xb8, 0x8b, 0xaf, 0xa1, 0x9e, 0x0a,
-	0xf7, 0xbe, 0xd6, 0x21, 0xd4, 0x34, 0x36, 0x53, 0x52, 0x63, 0xba, 0x84, 0xbd, 0x34, 0x39, 0xa3,
-	0xbc, 0x1a, 0x50, 0xde, 0xdf, 0xda, 0x74, 0x4e, 0x38, 0x84, 0x9d, 0x8f, 0x4c, 0xaa, 0x7c, 0xef,
-	0xf1, 0x59, 0xd5, 0xff, 0x0a, 0x9a, 0x38, 0xcf, 0x2b, 0xc7, 0x4a, 0x8e, 0x13, 0x68, 0x18, 0xa1,
-	0xa6, 0x02, 0x7f, 0xb1, 0x2c, 0x79, 0xd1, 0x82, 0x3b, 0x47, 0x95, 0xa3, 0x0b, 0xdb, 0x7b, 0x0d,
-	0xdb, 0x85, 0xdd, 0x58, 0x4e, 0x6d, 0x7e, 0xfd, 0x9c, 0xc3, 0x4a, 0xb1, 0x92, 0xe3, 0x4d, 0x4a,
-	0xcb, 0xab, 0x44, 0xab, 0xbc, 0x4e, 0xce, 0xcb, 0xff, 0x88, 0x96, 0x1c, 0xbf, 0xa5, 0x84, 0x8c,
-	0x22, 0xf0, 0xe0, 0xfe, 0xec, 0x64, 0x53, 0xee, 0x26, 0x53, 0xd4, 0xfc, 0x57, 0x68, 0x14, 0x25,
-	0x87, 0x4f, 0x96, 0x25, 0xe6, 0xaa, 0x76, 0x3a, 0x77, 0x87, 0x4c, 0xb5, 0xfb, 0x7e, 0xef, 0x4b,
-	0xfe, 0xe1, 0xfb, 0xae, 0x3f, 0x7c, 0xd7, 0x1b, 0xfa, 0xe7, 0xe8, 0x5f, 0x00, 0x00, 0x00, 0xff,
-	0xff, 0xd0, 0x53, 0x52, 0x6f, 0x11, 0x07, 0x00, 0x00,
+type identityPrivateClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewIdentityPrivateClient(cc *grpc.ClientConn) IdentityPrivateClient {
+	return &identityPrivateClient{cc}
+}
+
+func (c *identityPrivateClient) LoginAs(ctx context.Context, in *LoginAsReq, opts ...grpc.CallOption) (*LoginAsResp, error) {
+	out := new(LoginAsResp)
+	err := c.cc.Invoke(ctx, "/api.themakers.identity.IdentityPrivate/LoginAs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// IdentityPrivateServer is the server API for IdentityPrivate service.
+type IdentityPrivateServer interface {
+	LoginAs(context.Context, *LoginAsReq) (*LoginAsResp, error)
+}
+
+// UnimplementedIdentityPrivateServer can be embedded to have forward compatible implementations.
+type UnimplementedIdentityPrivateServer struct {
+}
+
+func (*UnimplementedIdentityPrivateServer) LoginAs(ctx context.Context, req *LoginAsReq) (*LoginAsResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoginAs not implemented")
+}
+
+func RegisterIdentityPrivateServer(s *grpc.Server, srv IdentityPrivateServer) {
+	s.RegisterService(&_IdentityPrivate_serviceDesc, srv)
+}
+
+func _IdentityPrivate_LoginAs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginAsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IdentityPrivateServer).LoginAs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.themakers.identity.IdentityPrivate/LoginAs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IdentityPrivateServer).LoginAs(ctx, req.(*LoginAsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _IdentityPrivate_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "api.themakers.identity.IdentityPrivate",
+	HandlerType: (*IdentityPrivateServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "LoginAs",
+			Handler:    _IdentityPrivate_LoginAs_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "identity.proto",
 }

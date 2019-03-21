@@ -13,8 +13,7 @@ type Backend interface {
 }
 
 type User struct {
-	ID string `bson:"_id" json:"ID"`
-
+	ID         string         `bson:"_id" json:"ID"`
 	Identities []IdentityData `bson:"Identities" json:"Identities"` // /name/identity/**
 }
 

@@ -1,3 +1,3 @@
 [submodule "identity-proto"]
 	path = identity-proto
-	url = git@github.com:themakers/identity-proto.git
+	url = https://github.com/themakers/identity-proto.git

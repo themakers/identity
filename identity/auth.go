@@ -81,19 +81,32 @@ type VerifierSummary struct {
 	}
 }
 
-func (mgr *Manager) ListVerifiers() (ver []VerifierSummary) {
-	for _, v := range mgr.verifiers {
-		ver = append(ver, mgr.ver[v.Info().Name])
+func (mgr *Manager) ListMyIdentitiesAndVerifiers(uid string) (idn []string, ver []VerifierSummary) {
+	iden, err := mgr.backend.GetUserByID(uid)
+	if err != nil {
+		return nil, nil
 	}
+	for _, uiden := range iden.Identities {
+		idn = append(idn, uiden.Name)
+		for _, v := range mgr.verifiers {
+			if uiden.Name == v.Info().IdentityName {
+				ver = append(ver, mgr.ver[v.Info().Name])
+			}
+		}
+	}
+
 	return
 }
 
-func (mgr *Manager) ListIdentities() (idn []Identity) {
+func (mgr *Manager) ListIndentitiesAndVerifiers() (idn []Identity, ver []VerifierSummary) {
+
+	for _, v := range mgr.verifiers {
+		ver = append(ver, mgr.ver[v.Info().Name])
+	}
 	for _, i := range mgr.identities {
 		idn = append(idn, mgr.idn[i.Info().Name])
 	}
-	return
-
+	return idn, ver
 }
 
 func (mgr *Manager) Session(token string) *Session {

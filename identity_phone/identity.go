@@ -10,12 +10,17 @@ var _ identity.Identity = new(Identity)
 type Identity struct {
 }
 
+func New() *Identity {
+	idn := &Identity{}
+	return idn
+}
+
 func (idn *Identity) Info() identity.IdentityData {
 
 	return identity.IdentityData{Name: "phone"}
 }
 
-func (idn *Identity) NormalizeandValidateData(identity string) (result string, err error) {
+func (idn *Identity) NormalizeAndValidateData(identity string) (result string, err error) {
 	for _, c := range identity {
 		if unicode.IsDigit(c) {
 			result += string(rune(c))

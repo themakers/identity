@@ -1,4 +1,4 @@
-package provider_github
+package verifier_github
 
 import (
 	"context"

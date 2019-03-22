@@ -1,4 +1,4 @@
-package provider_sms
+package verifier_sms
 
 import (
 	"context"

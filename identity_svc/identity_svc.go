@@ -88,7 +88,7 @@ func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Conte
 		})
 	}
 	for _, idn := range idns {
-		resp.Identities = append(resp.Identities, idn)
+		resp.Identities = append(resp.Identities, idn.Name)
 	}
 
 	return
@@ -97,7 +97,7 @@ func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Conte
 
 func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context, q *identity_proto.VerifiersDetailsRequest) (response *identity_proto.VerifierDetailsResponse, err error) {
 	resp := &identity_proto.VerifierDetailsResponse{}
-	idns, vers := pis.is.mgr.ListIndentitiesAndVerifiers()
+	idns, vers := pis.is.mgr.ListAllIndentitiesAndVerifiers()
 
 	for _, ver := range vers {
 		resp.Verifiers = append(resp.Verifiers, &identity_proto.VerifierDetails{
@@ -109,7 +109,7 @@ func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context
 		})
 	}
 	for _, idn := range idns {
-		resp.Identities = append(resp.Identities, idn.Info().Name)
+		resp.Identities = append(resp.Identities, idn.Name)
 	}
 
 	return resp, nil
@@ -134,7 +134,7 @@ func (pis *PublicIdentityService) ReverseResult(ctx context.Context, q *identity
 	sess := pis.is.mgr.Session(GetSessionToken(ctx))
 	defer sess.Dispose()
 	//TODO refactor reverse method
-	err = sess.AwaitType1Result(ctx, q.VerificationID)
+	err = sess.ReverseResult(ctx, q.VerificationID)
 	if err != nil {
 		return nil, err
 	}
@@ -258,4 +258,9 @@ func (pis *PublicIdentityService) StaticRequest(ctx context.Context, q *identity
 
 type PrivateAuthenticationService struct {
 	auth *IdentitySvc
+}
+
+func Intt(ch int) int {
+	return ch * 2
+
 }

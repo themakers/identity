@@ -118,8 +118,7 @@ func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context
 func (pis *PublicIdentityService) ReverseRequest(ctx context.Context, q *identity_proto.ReverseVerificationReq) (directions *identity_proto.ReverseVerificationDirections, err error) {
 	sess := pis.is.mgr.Session(GetSessionToken(ctx))
 	defer sess.Dispose()
-	//TODO refactor reverse method
-	verificationID, target, securityCode, err := sess.StartType1Verification(ctx, q.Verifier, q.Identity)
+	verificationID, target, securityCode, err := sess.StartReverseVerification(ctx, q.Verifier, q.Identity)
 	if err != nil {
 		return nil, err
 	}
@@ -166,7 +165,7 @@ func (pis *PublicIdentityService) RegularRequest(ctx context.Context, q *identit
 	sess := pis.is.mgr.Session(GetSessionToken(ctx))
 	defer sess.Dispose()
 
-	verificationID, err := sess.StartType2Verification(ctx, q.Verifier, q.Identity)
+	verificationID, err := sess.StartRegularVerification(ctx, q.Verifier, q.Identity)
 	if err != nil {
 		return nil, err
 	}
@@ -180,29 +179,29 @@ func (pis *PublicIdentityService) RegularVerify(ctx context.Context, q *identity
 	sess := pis.is.mgr.Session(GetSessionToken(ctx))
 	defer sess.Dispose()
 
-	log.Println("Type2Verify():", q)
+	log.Println("RegularVerify():", q)
 
-	err = sess.Type2Verify(ctx, q.VerificationID, q.SecurityCode)
+	err = sess.RegularVerify(ctx, q.VerificationID, q.SecurityCode)
 	if err != nil {
-		log.Println("Type2Verify(): error 1", err)
+		log.Println("RegularVerify(): error 1", err)
 		return nil, err
 	}
 
-	log.Println("Type2Verify(): sess info")
+	log.Println("RegularVerify(): sess info")
 	sid, uid, err := sess.Info()
 	if err != nil {
-		log.Println("Type2Verify(): error 2", err)
+		log.Println("RegularVerify(): error 2", err)
 		return nil, err
 	}
-	log.Println("Type2Verify():", sid, uid)
+	log.Println("RegularVerify():", sid, uid)
 	{
 		md := make(metadata.MD)
 		if sid != "" {
-			log.Println("Type2Verify(): SID", sid)
+			log.Println("RegularVerify(): SID", sid)
 			md.Set(SessionTokenName, sid)
 		}
 		if uid != "" {
-			log.Println("Type2Verify(): UID", uid)
+			log.Println("RegularVerify(): UID", uid)
 			md.Set(UserIDName, uid)
 		}
 		if err := grpc.SetTrailer(ctx, md); err != nil {
@@ -210,7 +209,7 @@ func (pis *PublicIdentityService) RegularVerify(ctx context.Context, q *identity
 		}
 	}
 
-	log.Println("Type2Verify(): done")
+	log.Println("RegularVerify(): done")
 	return &identity_proto.RegularResultResp{
 		Session: sid,
 		User:    uid,

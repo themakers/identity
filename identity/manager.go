@@ -81,16 +81,18 @@ type VerifierSummary struct {
 	}
 }
 
-func (mgr *Manager) ListMyIdentitiesAndVerifiers(identity string) (idn []string, ver []VerifierSummary) {
-	iden, err := mgr.backend.GetUserByIdentity(identity)
-	if err != nil {
-		return nil, nil
-	}
-	for _, uiden := range iden.Identities {
-		idn = append(idn, uiden.Name)
-		for _, v := range mgr.verifiers {
-			if uiden.Name == v.Info().IdentityName {
-				ver = append(ver, mgr.ver[v.Info().Name])
+func (mgr *Manager) ListMyIdentitiesAndVerifiers(identity []string) (idn []string, ver []VerifierSummary) {
+	for _, id := range identity {
+		iden, err := mgr.backend.GetUserByIdentity(id)
+		if err != nil {
+			return nil, nil
+		}
+		for _, uiden := range iden.Identities {
+			idn = append(idn, uiden.Name)
+			for _, v := range mgr.verifiers {
+				if uiden.Name == v.Info().IdentityName {
+					ver = append(ver, mgr.ver[v.Info().Name])
+				}
 			}
 		}
 	}

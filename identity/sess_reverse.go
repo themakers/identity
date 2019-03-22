@@ -2,10 +2,10 @@ package identity
 
 import "context"
 
-func (sess *Session) StartType1Verification(ctx context.Context, prov, identity string) (verificationID, target, securityCode string, err error) {
-	p := sess.manager.prov[prov].internal.type1Ref
+func (sess *Session) StartReverseVerification(ctx context.Context, ver, identity string) (verificationID, target, securityCode string, err error) {
+	p := sess.manager.ver[ver].internal.reverseRef
 
-	target, securityCode, err = p.StartType1Verification(ctx)
+	target, securityCode, err = p.StartReverseVerification(ctx)
 	if err != nil {
 		return "", "", "", err
 	}
@@ -15,7 +15,7 @@ func (sess *Session) StartType1Verification(ctx context.Context, prov, identity 
 	return "", "", "", nil
 }
 
-func (sess *Session) AwaitType1Result(ctx context.Context, verificationID string) (err error) {
+func (sess *Session) ReverseResult(ctx context.Context, verificationID string) (err error) {
 	// TODO // sess.manager.backend.AwaitVerification
 	return nil
 }

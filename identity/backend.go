@@ -8,8 +8,8 @@ type Backend interface {
 
 	GetUserByID(id string) (*User, error)
 	GetUserByIdentity(identity string) (*User, error)
-	PutUserIdentity(id string, identity *Identity) (*User, error)
-	CreateUser(identity *Identity) (*User, error)
+	PutUserIdentity(id string, identity *IdentityData) (*User, error)
+	CreateUser(identity *IdentityData) (*User, error)
 }
 
 type User struct {

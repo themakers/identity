@@ -5,16 +5,16 @@ import (
 	"log"
 )
 
-func (sess *Session) StartType2Verification(ctx context.Context, prov, idn string) (verificationID string, err error) {
-	p := sess.manager.prov[prov].internal.type2Ref
+func (sess *Session) StartRegularVerification(ctx context.Context, ver, idn string) (verificationID string, err error) {
+	p := sess.manager.ver[ver].internal.regularRef
 
-	log.Println("PROVIDER", sess.manager.prov[prov], p, p.Info().Name)
+	log.Println("VERIFIER", sess.manager.ver[ver], p, p.Info().Name)
 
-	securityCode, identity, err := p.StartType2Verification(ctx, p.NormalizeIdentity(idn))
+	securityCode, identity, err := p.StartRegularVerification(ctx, idn)
 	if err != nil {
 		return "", err
 	}
-	log.Println("StartType2Verification", securityCode, identity, err)
+	log.Println("StartRegularVerification", securityCode, identity, err)
 
 	if von, err := sess.manager.backend.CreateVerification(identity, securityCode); err != nil {
 		return "", err
@@ -23,7 +23,7 @@ func (sess *Session) StartType2Verification(ctx context.Context, prov, idn strin
 	}
 }
 
-func (sess *Session) Type2Verify(ctx context.Context, verificationID, securityCode string) (err error) {
+func (sess *Session) RegularVerify(ctx context.Context, verificationID, securityCode string) (err error) {
 	von, err := sess.manager.backend.GetVerification(verificationID)
 	if err != nil {
 		return err

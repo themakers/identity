@@ -5,13 +5,13 @@ import (
 	"log"
 )
 
-func (sess *Session) handleIncomingIdentity(ctx context.Context, identity *Identity) (err error) {
+func (sess *Session) handleIncomingIdentity(ctx context.Context, identity *IdentityData) (err error) {
 	userID, err := sess.sess.GetUser()
 	if err != nil {
 		return err
 	}
 
-	user, err := sess.manager.backend.GetUserByIdentity(identity.Provider, identity.ID)
+	user, err := sess.manager.backend.GetUserByIdentity(identity.Identity)
 	if err != nil {
 		return err
 	}

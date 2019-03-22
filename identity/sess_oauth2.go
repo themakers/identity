@@ -4,8 +4,8 @@ import (
 	"context"
 )
 
-func (sess *Session) OAuth2Verify(ctx context.Context, prov, code string) (err error) {
-	p := sess.manager.prov[prov].internal.oauth2Ref
+func (sess *Session) OAuth2Verify(ctx context.Context, ver, code string) (err error) {
+	p := sess.manager.ver[ver].internal.oauth2Ref
 
 	token, err := p.HandleOAuth2Callback(ctx, code)
 	if err != nil {

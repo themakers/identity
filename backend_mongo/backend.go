@@ -58,7 +58,7 @@ func (b *Backend) session(coll string) (*mgo.Collection, func(), error) {
 	}, nil
 }
 
-func (b *Backend) CreateVerification(iden *identity.Identity, securityCode string) (*identity.Verification, error) {
+func (b *Backend) CreateVerification(iden *identity.IdentityData, securityCode string) (*identity.Verification, error) {
 	coll, close, err := b.session(collVerifications)
 	if err != nil {
 		return nil, err
@@ -123,7 +123,7 @@ func (b *Backend) GetUserByID(id string) (*identity.User, error) {
 	return &user, nil
 }
 
-func (b *Backend) GetUserByIdentity(prov, idn string) (*identity.User, error) {
+func (b *Backend) GetUserByIdentity(idn string) (*identity.User, error) {
 	coll, close, err := b.session(collUsers)
 	if err != nil {
 		return nil, err
@@ -133,7 +133,7 @@ func (b *Backend) GetUserByIdentity(prov, idn string) (*identity.User, error) {
 	user := identity.User{}
 
 	if err := coll.Find(bson.M{
-		fmt.Sprintf("Identities.%s.%s", prov, idn): bson.M{"$exists": true},
+		fmt.Sprintf("Identities.%s.%s", idn, idn): bson.M{"$exists": true},
 	}).One(&user); err != nil && err == mgo.ErrNotFound {
 		return nil, nil
 	} else if err != nil {
@@ -143,7 +143,7 @@ func (b *Backend) GetUserByIdentity(prov, idn string) (*identity.User, error) {
 	return &user, nil
 }
 
-func (b *Backend) PutUserIdentity(id string, iden *identity.Identity) (*identity.User, error) {
+func (b *Backend) AddUserIdentity(id string, iden *identity.IdentityData) (*identity.User, error) {
 	coll, close, err := b.session(collUsers)
 	if err != nil {
 		return nil, err
@@ -156,7 +156,7 @@ func (b *Backend) PutUserIdentity(id string, iden *identity.Identity) (*identity
 	if _, err := coll.Find(bson.M{"_id": id}).Apply(mgo.Change{
 		Update: bson.M{
 			"$set": bson.M{
-				fmt.Sprintf("Identities.%s.%s", iden.Provider, iden.ID): iden,
+				fmt.Sprintf("Identities.%s.%s", iden.Name, iden.Identity): iden,
 			},
 		},
 		ReturnNew: true,
@@ -169,7 +169,7 @@ func (b *Backend) PutUserIdentity(id string, iden *identity.Identity) (*identity
 	return &user, nil
 }
 
-func (b *Backend) CreateUser(iden *identity.Identity) (*identity.User, error) {
+func (b *Backend) CreateUser(iden *identity.IdentityData) (*identity.User, error) {
 	coll, close, err := b.session(collUsers)
 	if err != nil {
 		return nil, err
@@ -177,12 +177,8 @@ func (b *Backend) CreateUser(iden *identity.Identity) (*identity.User, error) {
 	defer close()
 
 	user := identity.User{
-		ID: xid.New().String(),
-		Identities: map[string]map[string]identity.Identity{
-			iden.Provider: {
-				iden.ID: *iden,
-			},
-		},
+		ID:         xid.New().String(),
+		Identities: []identity.IdentityData{identity.IdentityData{iden.Name, iden.Identity}},
 	}
 
 	if err := coll.Insert(user); err != nil {

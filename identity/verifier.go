@@ -17,7 +17,7 @@ type Verifier interface {
 type RegularVerification interface {
 	Verifier
 
-	StartRegularVerification(ctx context.Context, identity string) (securityCode string, iden *Identity, err error)
+	StartRegularVerification(ctx context.Context, identity string) (securityCode string, iden *IdentityData, err error)
 	RegularVerification(ctx context.Context, verificationID, securitycode string)
 }
 
@@ -32,7 +32,7 @@ type OAuth2Verification interface {
 
 	GetOAuth2URL(code string) string
 	HandleOAuth2Callback(ctx context.Context, code string) (token *oauth2.Token, err error)
-	GetOAuth2Identity(ctx context.Context, accessToken string) (identity *Identity, err error)
+	GetOAuth2Identity(ctx context.Context, accessToken string) (identity *IdentityData, err error)
 }
 
 type StaticVerification interface {

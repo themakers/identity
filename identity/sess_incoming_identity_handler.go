@@ -26,9 +26,9 @@ func (sess *Session) handleIncomingIdentity(ctx context.Context, identity *Ident
 	case userID == "" && user != nil: // Empty session AND existing identity => own new session
 		log.Println("Empty session AND existing identity => own new session")
 		// OK
-	case userID != "" && user == nil: // Authenticated session AND new identity => add user identity OR reauthenticate // FIXME
+	case userID != "" && user == nil: // Authenticated session AND user adding new identity => add user identity OR reauthenticate // FIXME
 		log.Println("Authenticated session AND new identity")
-		user, err = sess.manager.backend.PutUserIdentity(userID, identity)
+		user, err = sess.manager.backend.AddUserIdentity(userID, identity)
 		if err != nil {
 			return err
 		}

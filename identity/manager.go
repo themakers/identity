@@ -81,18 +81,18 @@ type VerifierSummary struct {
 	}
 }
 
-func (mgr *Manager) ListMyIdentitiesAndVerifiers(identity []string) (idn []string, ver []VerifierSummary) {
-	for _, id := range identity {
-		iden, err := mgr.backend.GetUserByIdentity(id)
-		if err != nil {
-			return nil, nil
-		}
-		for _, uiden := range iden.Identities {
-			idn = append(idn, uiden.Name)
-			for _, v := range mgr.verifiers {
-				if uiden.Name == v.Info().IdentityName {
-					ver = append(ver, mgr.ver[v.Info().Name])
-				}
+// TODO modificate ListIdentities
+func (mgr *Manager) ListMyIdentitiesAndVerifiers(identity string) (idn []IdentityData, ver []VerifierSummary) {
+	user, err := mgr.backend.GetUserByIdentity(identity)
+	if err != nil {
+		return nil, nil
+	}
+	for _, uiden := range user.Identities {
+		idn = append(idn, IdentityData{Name: uiden.Name,
+			Identity: uiden.Identity})
+		for _, v := range mgr.verifiers {
+			if uiden.Name == v.Info().IdentityName {
+				ver = append(ver, mgr.ver[v.Info().Name])
 			}
 		}
 	}
@@ -100,13 +100,14 @@ func (mgr *Manager) ListMyIdentitiesAndVerifiers(identity []string) (idn []strin
 	return
 }
 
-func (mgr *Manager) ListIndentitiesAndVerifiers() (idn []Identity, ver []VerifierSummary) {
+func (mgr *Manager) ListAllIndentitiesAndVerifiers() (idn []IdentityData, ver []VerifierSummary) {
 
 	for _, v := range mgr.verifiers {
 		ver = append(ver, mgr.ver[v.Info().Name])
 	}
 	for _, i := range mgr.identities {
-		idn = append(idn, mgr.idn[i.Info().Name])
+		idn = append(idn, IdentityData{Name: i.Info().Name,
+			Identity: i.Info().Identity})
 	}
 	return idn, ver
 }

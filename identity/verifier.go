@@ -18,7 +18,7 @@ type RegularVerification interface {
 	Verifier
 
 	StartRegularVerification(ctx context.Context, identity string) (securityCode string, iden *IdentityData, err error)
-	RegularVerification(ctx context.Context, verificationID, securitycode string)
+	//RegularVerification(ctx context.Context, verificationID, securitycode string)
 }
 
 type ReverseVerification interface {

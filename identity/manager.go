@@ -29,6 +29,8 @@ func New(backend Backend, sessMgr *session.Manager, identities []Identity, verif
 		sessMgr:    sessMgr,
 		identities: identities,
 		verifiers:  verifiers,
+		idn:        make(map[string]Identity),
+		ver:        make(map[string]VerifierSummary),
 	}
 	for _, ver := range verifiers {
 		vs := VerifierSummary{

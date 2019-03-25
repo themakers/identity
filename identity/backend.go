@@ -14,6 +14,7 @@ type Backend interface {
 type User struct {
 	ID         string         `bson:"_id" json:"ID"`
 	Identities []IdentityData `bson:"Identities" json:"Identities"` // /name/identity/**
+	Staticdata []VerifierData `bson:"StaticData" json:"Staticdata"`
 }
 
 type IdentityData struct {
@@ -21,11 +22,13 @@ type IdentityData struct {
 	Identity string `bson:"Identity" json:"Identity"`
 }
 
+//--------------------------------------------------------------------------------------------------------
 type VerifierData struct {
 	AuthenticationData map[string]string `bson:"AuthenticationData" json:"AuthenticationData"` // /name/value
 	AdditionalData     map[string]string `bson:"AdditionalData" json:"AdditionalData"`
 }
 
+//--------------------------------------------------------------------------------------------------------
 // TODO introduce security code input error count
 type Verification struct {
 	VerificationID string       `bson:"_id" json:"VerificationID"`

@@ -9,11 +9,14 @@ import (
 	"github.com/themakers/identity/identity_email"
 	"github.com/themakers/identity/identity_phone"
 	"github.com/themakers/identity/identity_svc/identity_proto"
+	"github.com/themakers/identity/verifier_email"
 	"github.com/themakers/session"
 	"google.golang.org/grpc"
 	"net"
 	"testing"
 )
+
+type request struct{}
 
 /*
 func TestPublicIdentityService_ListIdentitiesAndVerifiers(t *testing.T) {
@@ -31,10 +34,8 @@ func serve(ctx context.Context) (port int) {
 		panic(err)
 	}
 	backend, err := backend_mongo.New("identity", "idn", "127.0.0.1", 27017)
-
-	idenSvc, err := New(backend, &session.Manager{}, []identity.Identity{
-		identity_phone.New(), identity_email.New(),
-	}, []identity.Verifier{})
+	// TODO incorrect usage of constructor returned panic assignment to entry in nil map
+	idenSvc, err := New(backend, &session.Manager{}, []identity.Identity{identity_phone.New(), identity_email.New()}, []identity.Verifier{verifier_email.New()})
 
 	idenSvc.Register(server, server)
 
@@ -51,23 +52,29 @@ func TestIntt(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	<-ctx.Done()
+	select {
 
+	case <-ctx.Done():
+		panic("somthing went wrong")
+	default:
+	}
+
+	// создаем новый сервер и сохранеяем порт, на котором он работает
 	port := serve(ctx)
-
+	//
 	cc, err := grpc.DialContext(ctx, fmt.Sprintf("127.0.0.1:%d", port), grpc.WithInsecure())
 	if err != nil {
 		panic(err)
 	}
 	client := identity_proto.NewIdentityClient(cc)
-	iden, err := client.ListIdentitiesAndVerifiers(ctx, nil)
 
+	// стартуем тестирование
 	convey.Convey("Test list of identities", t, func() {
-		convey.So(iden.Identities, convey.ShouldEqual, []string{"phone", "email"})
+		iden, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{})
+		if err != nil {
+			panic(err)
+		}
+		convey.So(iden.Identities, convey.ShouldResemble, []string{"phone", "email"})
+
 	})
-	//TODO realise test for verifier list
-	/*
-		convey.Convey("Test of list verifiers", t, func() {
-			convey.So(iden.Verifiers, convey.ShouldEqual, [])
-		})*/
 }

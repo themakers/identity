@@ -6,17 +6,15 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 	"github.com/themakers/identity/backend_mongo"
 	"github.com/themakers/identity/identity"
-	"github.com/themakers/identity/identity_email"
-	"github.com/themakers/identity/identity_phone"
 	"github.com/themakers/identity/identity_svc/identity_proto"
 	"github.com/themakers/identity/mock/identity_mock"
 	"github.com/themakers/identity/mock/verifier_mock_regular"
-	"github.com/themakers/identity/verifier_email"
+
 	"github.com/themakers/session"
 	"google.golang.org/grpc"
-	"math/rand"
+
 	"net"
-	"strconv"
+
 	"testing"
 )
 
@@ -92,16 +90,23 @@ func TestIntt(t *testing.T) {
 	Convey("Test new user start verification", t, func() {
 
 		// пользователь получает список доступных identity and verifiers
-		resp, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{})
+		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{})
 		if err != nil {
 			panic(err)
 		}
 		// пользователь выбирает имя identity
 
 		Convey("Test one-factor authentication", func() {
-			resp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{Identity: "79991112233", VerificationData: "", VerifierName: ""})
+			//todo use a authentication session
+			_, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{Identity: "79991112233", VerificationData: "", VerifierName: "mock_regular"})
+			if err != nil {
+				panic(err)
+			}
 			Convey("", func() {
-				resp, err := client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", Identity: regularVerificationData.Identity, IdentityName: "mock_identity", VerificationCode: regularVerificationData.Code})
+				_, err := client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", Identity: regularVerificationData.Identity, IdentityName: "mock_identity", VerificationCode: regularVerificationData.Code})
+				if err != nil {
+					panic(err)
+				}
 			})
 		})
 

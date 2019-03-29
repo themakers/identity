@@ -21,7 +21,8 @@ func (sess *Session) StartRegularVerification(ctx context.Context, ver, idn stri
 	verifierData := user.Verifiers
 
 	securityCode, eruser, err := sess.manager.backend.GetUserByIdentity(idn)
-	verifierData := user.Verifiers := p.StartRegularVerification(ctx, idn, verifierData)
+	verifierData := user.Verifiers
+	resp, err := p.StartRegularVerification(ctx, idn, verifierData)
 	if err != nil {
 		return "", err
 	}

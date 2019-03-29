@@ -5,10 +5,9 @@ type Backend interface {
 	GetVerification(verificationID string) (*Verification, error)
 	GetUserByID(id string) (*User, error)
 	GetUserByIdentity(identity string) (*User, error)
-	GetUserBySesionID(id string) (*User, error)
 	AddUserIdentity(uid string, identity *IdentityData) (*User, error)
 	CreateUser(identity *IdentityData) (*User, error)
-	DropIdentity(identity *IdentityData) error
+	//DropIdentity(identity *IdentityData) error
 }
 
 // TODO add a multifactor criterea
@@ -34,9 +33,9 @@ type VerifierData struct {
 
 type Authentication struct {
 	SessionToken string `bson:"_id" json:"SessionToken"`
-	UserID       string
+	UserID       string `bson:"UserID" json:"UserID"`
 
 	//	Receipt string
 	//	User    User
-	Factors map[string]bool // /name/status
+	//Factors map[string]bool // /name/status
 }

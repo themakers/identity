@@ -10,11 +10,22 @@ func (sess *Session) StartRegularVerification(ctx context.Context, ver, idn stri
 
 	log.Println("VERIFIER", sess.manager.ver[ver], p, p.Info().Name)
 
-	securityCode, identity, err := p.StartRegularVerification(ctx, idn)
+	// TODO Make Normalization and validation in mongo_backend when add new identity
+	// TODO Make check of absolutely new user
+
+	idn, err = sess.manager.idn[p.Info().IdentityName].NormalizeAndValidateData(idn)
+
+	// TODO Obtain verifier data frombackend
+	// TODO realise search by two parameters
+	user, err := sess.manager.backend.GetUserByIdentity(idnName, idn)
+	verifierData := user.Verifiers
+
+	securityCode, eruser, err := sess.manager.backend.GetUserByIdentity(idn)
+	verifierData := user.Verifiers := p.StartRegularVerification(ctx, idn, verifierData)
 	if err != nil {
 		return "", err
 	}
-	log.Println("StartRegularVerification", securityCode, identity, err)
+	log.Println("StartRegularVerification", securityCode, idn, err)
 
 	if von, err := sess.manager.backend.CreateVerification(identity, securityCode); err != nil {
 		return "", err

@@ -1,25 +1,29 @@
 package identity
 
-import "time"
-
 type Backend interface {
 	CreateVerification(identity *IdentityData, securityCode string) (*Verification, error)
 	GetVerification(verificationID string) (*Verification, error)
 	GetUserByID(id string) (*User, error)
 	GetUserByIdentity(identity string) (*User, error)
+	GetUserBySesionID(id string) (*User, error)
 	AddUserIdentity(uid string, identity *IdentityData) (*User, error)
 	CreateUser(identity *IdentityData) (*User, error)
+	DropIdentity(identity *IdentityData) error
 }
 
+// TODO add a multifactor criterea
 type User struct {
-	ID         string         `bson:"_id" json:"ID"`
-	Identities []IdentityData `bson:"Identities" json:"Identities"` // /name/identity/**
-	Staticdata []VerifierData `bson:"StaticData" json:"Staticdata"`
+	ID string `bson:"_id" json:"ID"`
+	//	SessionID  []string         `bson:"session_id" json:"Session_id"`
+	Identities        []IdentityData `bson:"Identities" json:"Identities"` // /name/identity/**
+	Verifiers         []VerifierData `bson:"Verifiers" json:"Verifiers"`
+	AuthFactorsNumber int            `bson:"AuthFactorsNumber" json:"AuthFactorsNumber"`
 }
 
 type IdentityData struct {
 	Name     string `bson:"Name" json:"Name"`
 	Identity string `bson:"Identity" json:"Identity"`
+	//Attrib   string `bson:"Attrib" json:"Attrib"` // optional, to get ability use multi identities of such type
 }
 
 //--------------------------------------------------------------------------------------------------------
@@ -28,11 +32,11 @@ type VerifierData struct {
 	AdditionalData     map[string]string `bson:"AdditionalData" json:"AdditionalData"`
 }
 
-//--------------------------------------------------------------------------------------------------------
-// TODO introduce security code input error count
-type Verification struct {
-	VerificationID string       `bson:"_id" json:"VerificationID"`
-	SecurityCode   string       `bson:"SecurityCode" json:"SecurityCode"`
-	Identity       IdentityData `bson:"Identity" json:"Identity"`
-	CreatedTime    time.Time    `bson:"CreatedTime" json:"CreatedTime"`
+type Authentication struct {
+	SessionToken string `bson:"_id" json:"SessionToken"`
+	UserID       string
+
+	//	Receipt string
+	//	User    User
+	Factors map[string]bool // /name/status
 }

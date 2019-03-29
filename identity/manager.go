@@ -1,8 +1,11 @@
 package identity
 
 import (
+	"context"
 	"errors"
 	"github.com/themakers/session"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"time"
 )
 
@@ -83,7 +86,7 @@ type VerifierSummary struct {
 	}
 }
 
-// TODO modificate ListIdentities
+// TODO modificate MyListIdentities
 func (mgr *Manager) ListMyIdentitiesAndVerifiers(identity string) (idn []IdentityData, ver []VerifierSummary) {
 	user, err := mgr.backend.GetUserByIdentity(identity)
 	if err != nil {
@@ -114,12 +117,27 @@ func (mgr *Manager) ListAllIndentitiesAndVerifiers() (idn []IdentityData, ver []
 	return idn, ver
 }
 
-func (mgr *Manager) Session(token string) *Session {
+const SessionTokenName = "session_token"
+
+func GetSessionToken(ctx context.Context) (token string) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return ""
+	}
+
+	if at := md.Get(SessionTokenName); len(at) != 0 {
+		return at[0]
+	} else {
+		return ""
+	}
+}
+
+func (mgr *Manager) Session(ctx context.Context) *Session {
 	sess := &Session{
 		manager: mgr,
 	}
 
-	if s, err := mgr.sessMgr.Session(token); err != nil {
+	if s, err := mgr.sessMgr.Session(GetSessionToken(ctx)); err != nil {
 		panic(err)
 	} else {
 		// FIXME Make configurable
@@ -128,6 +146,15 @@ func (mgr *Manager) Session(token string) *Session {
 		}
 
 		sess.sess = s
+	}
+
+	{
+		md := make(metadata.MD)
+		token, _ := sess.sess.GetID()
+		md.Set(SessionTokenName, token)
+		if err := grpc.SetTrailer(ctx, md); err != nil {
+			panic(err)
+		}
 	}
 
 	return sess

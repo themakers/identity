@@ -15,8 +15,7 @@ import (
 //go:generate protoc -I ../identity-proto ../identity-proto/identity.proto --go_out=plugins=grpc:./identity_proto
 
 const (
-	SessionTokenName = "session_token"
-	UserIDName       = "user_id"
+	UserIDName = "user_id"
 )
 
 type IdentitySvc struct {
@@ -49,19 +48,6 @@ func (is *IdentitySvc) Register(public, private *grpc.Server) {
 ////////////////////////////////////////////////////////////////
 //// Helpers
 ////
-
-func GetSessionToken(ctx context.Context) (token string) {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return ""
-	}
-
-	if at := md.Get(SessionTokenName); len(at) != 0 {
-		return at[0]
-	} else {
-		return ""
-	}
-}
 
 func statusError(err error) error {
 	return status.Errorf(codes.Internal, "%s", err.Error())
@@ -115,6 +101,24 @@ func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context
 	return resp, nil
 }
 
+func (pis *PublicIdentityService) StartAuthentication() (token string, err error) {
+
+}
+
+func (pis *PublicIdentityService) Verify() (result bool, err error) {
+	//TODO get session and user
+}
+
+func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_proto.StatusReq) (*identity_proto.Status, error) {
+
+	// TODO check sessionid from context
+
+	sess := pis.is.mgr.Session(ctx)
+	defer sess.Dispose()
+
+}
+
+/*
 func (pis *PublicIdentityService) ReverseRequest(ctx context.Context, q *identity_proto.ReverseVerificationReq) (directions *identity_proto.ReverseVerificationDirections, err error) {
 	sess := pis.is.mgr.Session(GetSessionToken(ctx))
 	defer sess.Dispose()
@@ -165,7 +169,7 @@ func (pis *PublicIdentityService) RegularRequest(ctx context.Context, q *identit
 	sess := pis.is.mgr.Session(GetSessionToken(ctx))
 	defer sess.Dispose()
 
-	verificationID, err := sess.StartRegularVerification(ctx, q.Verifier, q.Identity)
+	verificationID, err := sess.StartRegularVerification(ctx, q.VerifierName, q.Identity)
 	if err != nil {
 		return nil, err
 	}
@@ -251,7 +255,7 @@ func (pis *PublicIdentityService) OAuth2Verify(ctx context.Context, q *identity_
 func (pis *PublicIdentityService) StaticRequest(ctx context.Context, q *identity_proto.StaticVerificationReq) (resp *identity_proto.StaticVerificationResp, err error) {
 	return
 }
-
+*/
 ////////////////////////////////////////////////////////////////
 //// PrivateAuthenticationService
 ////

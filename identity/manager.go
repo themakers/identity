@@ -86,7 +86,6 @@ type VerifierSummary struct {
 	}
 }
 
-// TODO modificate MyListIdentities
 func (mgr *Manager) ListMyIdentitiesAndVerifiers(identity string) (idn []IdentityData, ver []VerifierSummary) {
 	user, err := mgr.backend.GetUserByIdentity(identity)
 	if err != nil {
@@ -112,7 +111,7 @@ func (mgr *Manager) ListAllIndentitiesAndVerifiers() (idn []IdentityData, ver []
 	}
 	for _, i := range mgr.identities {
 		idn = append(idn, IdentityData{Name: i.Info().Name,
-			Identity: i.Info().Identity})
+			Identity: i.Info().Name})
 	}
 	return idn, ver
 }

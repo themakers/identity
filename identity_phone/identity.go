@@ -15,9 +15,9 @@ func New() *Identity {
 	return idn
 }
 
-func (idn *Identity) Info() identity.IdentityData {
+func (idn *Identity) Info() identity.IdentityInfo {
 
-	return identity.IdentityData{Name: "phone"}
+	return identity.IdentityInfo{Name: "phone"}
 }
 
 func (idn *Identity) NormalizeAndValidateData(identity string) (result string, err error) {

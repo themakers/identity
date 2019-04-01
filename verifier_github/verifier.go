@@ -3,7 +3,6 @@ package verifier_github
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
@@ -20,7 +19,7 @@ type Config struct {
 	Scopes       []string
 }
 
-var _ identity.OAuth2Provider = new(Provider)
+var _ identity.OAuth2Verification = new(Provider)
 
 type Provider struct {
 	oacfg *oauth2.Config
@@ -41,8 +40,8 @@ func New(cfg Config) *Provider {
 	return prov
 }
 
-func (prov *Provider) Info() identity.ProviderInfo {
-	return identity.ProviderInfo{
+func (prov *Provider) Info() identity.VerifierInfo {
+	return identity.VerifierInfo{
 		Name: "github",
 	}
 }
@@ -64,7 +63,7 @@ func (prov *Provider) HandleOAuth2Callback(ctx context.Context, code string) (to
 	return token, nil
 }
 
-func (prov *Provider) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.Identity, err error) {
+func (prov *Provider) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, err error) {
 	u, err := url.Parse("https://api.github.com/user")
 	if err != nil {
 		return nil, err
@@ -99,16 +98,7 @@ func (prov *Provider) GetOAuth2Identity(ctx context.Context, accessToken string)
 		return nil, err
 	}
 
-	return &identity.Identity{
-		Provider: prov.Info().Name,
-		ID:       fmt.Sprint(user.ID),
-		Fields: identity.IdentityFields{
-			"login":  user.Login,
-			"email":  user.Email,
-			"name":   user.Name,
-			"avatar": user.AvatarURL,
-		},
-	}, nil
+	return &identity.IdentityData{}, nil
 }
 
 type UserInfo struct {

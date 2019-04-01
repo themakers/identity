@@ -15,8 +15,8 @@ type Config struct {
 	AccessToken string
 }
 
-var _ identity.Type1Provider = new(Provider)
-var _ identity.Type2Provider = new(Provider)
+var _ identity.RegularVerification = new(Provider)
+var _ identity.ReverseVerification = new(Provider)
 
 type Provider struct {
 	smsg *smsg.Client
@@ -33,8 +33,8 @@ func New(cfg Config) *Provider {
 	return prov
 }
 
-func (prov *Provider) Info() identity.ProviderInfo {
-	return identity.ProviderInfo{
+func (prov *Provider) Info() identity.VerifierInfo {
+	return identity.VerifierInfo{
 		Name: "sms",
 	}
 }
@@ -68,7 +68,7 @@ func (prov *Provider) StartType1Verification(ctx context.Context) (target, secur
 	return
 }
 
-func (prov *Provider) StartType1Worker(ctx context.Context, event chan<- identity.Type1Event) (err error) {
+func (prov *Provider) StartType1Worker(ctx context.Context, event chan<- identity.ReverseVerification) (err error) {
 	prov.smsg.StartWorker(ctx)
 
 	// TODO

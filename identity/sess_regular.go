@@ -17,22 +17,22 @@ func (sess *Session) StartRegularVerification(ctx context.Context, ver, idn stri
 
 	// TODO Obtain verifier data frombackend
 	// TODO realise search by two parameters
-	user, err := sess.manager.backend.GetUserByIdentity(idnName, idn)
-	verifierData := user.Verifiers
+	// TODO modificate starting function
+	/*
+		securityCode, eruser, err := sess.manager.backend.GetUserByIdentity(idn)
+		verifierData := user.Verifiers
+		resp, err := p.StartRegularVerification(ctx, idn, verifierData)
+		if err != nil {
+			return "", err
+		}
+		log.Println("StartRegularVerification", securityCode, idn, err)
 
-	securityCode, eruser, err := sess.manager.backend.GetUserByIdentity(idn)
-	verifierData := user.Verifiers
-	resp, err := p.StartRegularVerification(ctx, idn, verifierData)
-	if err != nil {
-		return "", err
-	}
-	log.Println("StartRegularVerification", securityCode, idn, err)
-
-	if von, err := sess.manager.backend.CreateVerification(identity, securityCode); err != nil {
-		return "", err
-	} else {
-		return von.VerificationID, nil
-	}
+		if von, err := sess.manager.backend.CreateVerification(identity, securityCode); err != nil {
+			return "", err
+		} else {
+			return von.VerificationID, nil
+		}*/
+	return
 }
 
 func (sess *Session) RegularVerify(ctx context.Context, verificationID, securityCode string) (err error) {
@@ -40,14 +40,16 @@ func (sess *Session) RegularVerify(ctx context.Context, verificationID, security
 	if err != nil {
 		return err
 	}
+	// todo modificate regular verification
+	von.SessionToken = "asflkas"
+	/*
+		if von.SecurityCode != securityCode {
+			return ErrSecurityCodeMismatch
+		}
 
-	if von.SecurityCode != securityCode {
-		return ErrSecurityCodeMismatch
-	}
-
-	if err := sess.handleIncomingIdentity(ctx, &von.Identity); err != nil {
-		return err
-	}
-
+		if err := sess.handleIncomingIdentity(ctx, &von.Identity); err != nil {
+			return err
+		}
+	*/
 	return nil
 }

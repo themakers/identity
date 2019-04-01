@@ -54,11 +54,11 @@ func TestIntt(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	//select {
-	//case <-ctx.Done():
-	//	panic("something went wrong")
-	//default:
-	//}
+	select {
+	case <-ctx.Done():
+		panic("something went wrong")
+	default:
+	}
 
 	regularVerificationData := struct {
 		Code     string
@@ -84,7 +84,7 @@ func TestIntt(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		So(iden.IdentitiyNames, ShouldResemble, []string{"phone", "email"})
+		So(iden.IdentitiyNames, ShouldResemble, []string{"mock_identity"})
 
 	})
 	Convey("Test new user start verification", t, func() {
@@ -98,7 +98,9 @@ func TestIntt(t *testing.T) {
 
 		Convey("Test one-factor authentication", func() {
 			//todo use a authentication session
-			_, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{Identity: "79991112233", VerificationData: "", VerifierName: "mock_regular"})
+			vd := make(map[string][]byte)
+			vd["phone"] = []byte{1, 2, 3, 4}
+			_, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{Identity: "79991112233", VerificationData: vd, VerifierName: "mock_regular"})
 			if err != nil {
 				panic(err)
 			}

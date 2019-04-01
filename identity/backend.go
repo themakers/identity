@@ -1,8 +1,8 @@
 package identity
 
 type Backend interface {
-	CreateVerification(identity *IdentityData, securityCode string) (*Verification, error)
-	GetVerification(verificationID string) (*Verification, error)
+	CreateVerification(identity *IdentityData, securityCode string) (*Authentication, error)
+	GetVerification(verificationID string) (*Authentication, error)
 	GetUserByID(id string) (*User, error)
 	GetUserByIdentity(identity string) (*User, error)
 	AddUserIdentity(uid string, identity *IdentityData) (*User, error)
@@ -37,5 +37,5 @@ type Authentication struct {
 
 	//	Receipt string
 	//	User    User
-	//Factors map[string]bool // /name/status
+	Factors map[string]bool // /name/status
 }

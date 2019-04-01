@@ -7,9 +7,7 @@ import (
 	"github.com/themakers/session"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"log"
 )
 
 //go:generate protoc -I ../identity-proto ../identity-proto/identity.proto --go_out=plugins=grpc:./identity_proto
@@ -61,6 +59,29 @@ type PublicIdentityService struct {
 	is *IdentitySvc
 }
 
+func (pis *PublicIdentityService) InitializeStaticVerifier(ctx context.Context, req *identity_proto.InitializeStaticVerifierReq) (resp *identity_proto.InitializeStaticVerifierResp, err error) {
+	return
+
+}
+
+func (pis *PublicIdentityService) Logout(ctx context.Context, req *identity_proto.LogoutReq) (resp *identity_proto.Status, err error) {
+	return
+}
+
+func (pis *PublicIdentityService) UserMerge(ctx context.Context, req *identity_proto.UserMergeReq) (resp *identity_proto.UserMergeResp, err error) {
+	return
+}
+
+func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *identity_proto.StartVerificationReq) (resp *identity_proto.StartVerificationResp, err error) {
+	//resp := &identity_proto.StartVerificationResp{}
+
+	return resp, nil
+}
+
+func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, req *identity_proto.CancelAuthenticationReq) (resp *identity_proto.Status, err error) {
+	return
+}
+
 func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Context, u *identity_proto.MyVerifiersDetailRequest) (response *identity_proto.VerifierDetailsResponse, err error) {
 	resp := &identity_proto.VerifierDetailsResponse{}
 	idns, vers := pis.is.mgr.ListMyIdentitiesAndVerifiers(u.Identity)
@@ -74,7 +95,7 @@ func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Conte
 		})
 	}
 	for _, idn := range idns {
-		resp.Identities = append(resp.Identities, idn.Name)
+		resp.IdentitiyNames = append(resp.IdentitiyNames, idn.Name)
 	}
 
 	return
@@ -95,18 +116,19 @@ func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context
 		})
 	}
 	for _, idn := range idns {
-		resp.Identities = append(resp.Identities, idn.Name)
+		resp.IdentitiyNames = append(resp.IdentitiyNames, idn.Name)
 	}
 
 	return resp, nil
 }
 
 func (pis *PublicIdentityService) StartAuthentication() (token string, err error) {
-
+	return
 }
 
-func (pis *PublicIdentityService) Verify() (result bool, err error) {
+func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_proto.VerifyReq) (resp *identity_proto.VerifyResp, err error) {
 	//TODO get session and user
+	return
 }
 
 func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_proto.StatusReq) (*identity_proto.Status, error) {
@@ -115,6 +137,7 @@ func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_p
 
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
+	return &identity_proto.Status{}, nil
 
 }
 

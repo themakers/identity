@@ -58,7 +58,7 @@ func (b *Backend) session(coll string) (*mgo.Collection, func(), error) {
 	}, nil
 }
 
-func (b *Backend) CreateVerification(iden *identity.IdentityData, securityCode string) (*identity.Verification, error) {
+func (b *Backend) CreateVerification(iden *identity.IdentityData, securityCode string) (*identity.Authentication, error) {
 	coll, close, err := b.session(collVerifications)
 	if err != nil {
 		return nil, err
@@ -75,12 +75,7 @@ func (b *Backend) CreateVerification(iden *identity.IdentityData, securityCode s
 		return nil, err
 	}
 
-	von := identity.Verification{
-		VerificationID: xid.New().String(),
-		SecurityCode:   securityCode,
-		Identity:       *iden,
-		CreatedTime:    time.Now(),
-	}
+	von := identity.Authentication{}
 
 	if err := coll.Insert(von); err != nil {
 		return nil, err
@@ -89,14 +84,14 @@ func (b *Backend) CreateVerification(iden *identity.IdentityData, securityCode s
 	return &von, nil
 }
 
-func (b *Backend) GetVerification(verificationID string) (*identity.Verification, error) {
+func (b *Backend) GetVerification(verificationID string) (*identity.Authentication, error) {
 	coll, close, err := b.session(collVerifications)
 	if err != nil {
 		return nil, err
 	}
 	defer close()
 
-	von := identity.Verification{}
+	von := identity.Authentication{}
 
 	if err := coll.Find(bson.M{"_id": verificationID}).One(&von); err != nil {
 		return nil, err

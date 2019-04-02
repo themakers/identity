@@ -34,8 +34,8 @@ type VerifierData struct {
 type Authentication struct {
 	SessionToken string `bson:"_id" json:"SessionToken"`
 	UserID       string `bson:"UserID" json:"UserID"`
-
+	FactorsCount int    `bson:"FactorsCount" json:"FactorsCount"`
 	//	Receipt string
 	//	User    User
-	Factors map[string]bool // /name/status
+	FactorsStatus map[string]bool `bson:"FactorsStatus" json:"FactorsStatus"` // /name/status
 }

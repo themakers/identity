@@ -131,6 +131,8 @@ func GetSessionToken(ctx context.Context) (token string) {
 	}
 }
 
+// todo have a nil pointer to session
+
 func (mgr *Manager) Session(ctx context.Context) *Session {
 	sess := &Session{
 		manager: mgr,
@@ -157,6 +159,42 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 	}
 
 	return sess
+}
+
+/* todo realise start auth method
+func (mgr *Manager) StartAuthentication()  {
+	_, err := mgr.backend.CreateAuthentication()
+	if err != nil {
+		panic(err)
+	}
+
+	return
+}
+*/
+func (mgr *Manager) GetStatus(SessionToken string) (*Authentication, error) {
+	auth, err := mgr.backend.GetAuthenticationBySessionToken(SessionToken)
+	if err != nil {
+		return &Authentication{}, errors.New("No auth")
+	}
+
+	return &Authentication{auth.SessionToken, auth.UserID, auth.FactorsCount, auth.FactorsStatus}, nil
+}
+
+func (mgr *Manager) StartVerification(idn, vn string) *VerifierSummary {
+
+	var CurVerifier Verifier
+	for _, ver := range mgr.verifiers {
+		if ver.Info().Name == vn {
+			CurVerifier = ver
+		}
+
+	}
+	if CurVerifier == nil {
+		panic("Not such verifier")
+	}
+	vi := mgr.ver[CurVerifier.Info().Name]
+
+	return &vi
 }
 
 ////////////////////////////////////////////////////////////////

@@ -1,7 +1,9 @@
 package identity
 
 type Backend interface {
-	CreateVerification(identity *IdentityData, securityCode string) (*Authentication, error)
+	CreateVerification(iden *IdentityData, securityCode string) (*Authentication, error)
+	GetAuthenticationBySessionToken(SessionToken string) (*Authentication, error)
+	CreateAuthentication() (*Authentication, error)
 	GetVerification(verificationID string) (*Authentication, error)
 	GetUserByID(id string) (*User, error)
 	GetUserByIdentity(identity string) (*User, error)
@@ -32,10 +34,8 @@ type VerifierData struct {
 }
 
 type Authentication struct {
-	SessionToken string `bson:"_id" json:"SessionToken"`
-	UserID       string `bson:"UserID" json:"UserID"`
-	FactorsCount int    `bson:"FactorsCount" json:"FactorsCount"`
-	//	Receipt string
-	//	User    User
+	SessionToken  string          `bson:"_id" json:"SessionToken"`
+	UserID        string          `bson:"UserID" json:"UserID"`
+	FactorsCount  int             `bson:"FactorsCount" json:"FactorsCount"`
 	FactorsStatus map[string]bool `bson:"FactorsStatus" json:"FactorsStatus"` // /name/status
 }

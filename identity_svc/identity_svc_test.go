@@ -80,11 +80,11 @@ func TestIntt(t *testing.T) {
 
 	// стартуем тестирование
 	Convey("Test list of identities", t, func() {
-		iden, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{})
+		idn, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{})
 		if err != nil {
 			panic(err)
 		}
-		So(iden.IdentitiyNames, ShouldResemble, []string{"mock_identity"})
+		So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity"})
 
 	})
 	Convey("Test new user start verification", t, func() {

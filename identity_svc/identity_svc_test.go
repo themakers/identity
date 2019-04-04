@@ -118,7 +118,8 @@ func TestIntt(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		So(auth.Authenticated, ShouldEqual, true)
+		fmt.Print(auth.Authenticated)
+		So(auth.Authenticated, ShouldNotEqual, true)
 		/*
 			Convey("Test one-factor authentication" , func() {
 				_, err := client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{SessionToken:GetSessionTokenFromContext(ctx)})

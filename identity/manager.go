@@ -169,7 +169,7 @@ func (mgr *Manager) GetStatus(SessionToken string) (*Authentication, error) {
 	if auth == nil {
 		auth, err = mgr.backend.CreateAuthentication(SessionToken)
 		if err != nil {
-			panic(err)
+			panic("No method")
 		}
 	}
 

@@ -184,9 +184,11 @@ func (b *Backend) CreateUser(iden *identity.IdentityData) (*identity.User, error
 }
 
 func (b *Backend) CreateAuthentication(SessionToken string) (*identity.Authentication, error) {
-	return &identity.Authentication{}, nil
+	fs := make(map[string]bool)
+	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 1, UserID: "5566", FactorsStatus: fs}, nil
 }
 
 func (b *Backend) GetAuthenticationBySessionToken(SessionToken string) (*identity.Authentication, error) {
-	return &identity.Authentication{}, nil
+	fs := make(map[string]bool)
+	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 1, UserID: "5566", FactorsStatus: fs}, nil
 }

@@ -17,6 +17,8 @@ const (
 	UserIDName = "user_id"
 )
 
+const SessionTokenName = "session_token"
+
 type IdentitySvc struct {
 	mgr *identity.Manager
 }
@@ -80,7 +82,7 @@ func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *id
 
 	//resp := &identity_proto.StartVerificationResp{}
 
-	return resp, nil
+	return &identity_proto.StartVerificationResp{IdentityName: "mock", VerifierName: "", VerificationCode: "1234"}, nil
 }
 
 func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, req *identity_proto.CancelAuthenticationReq) (resp *identity_proto.Status, err error) {
@@ -88,14 +90,18 @@ func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, req 
 }
 
 func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *identity_proto.StartAuthenticationReq) (resp *identity_proto.StartAuthenticationResp, err error) {
+	sess := pis.is.mgr.Session(ctx)
+	defer sess.Dispose()
+
 	sessToken := GetSessionTokenFromContext(ctx)
 	auth, err := pis.is.mgr.GetStatus(sessToken)
 	if err != nil {
 		panic(err)
 	}
 	auth.FactorsCount = 1
+	verdir := make(map[string]string)
+	return &identity_proto.StartAuthenticationResp{VerificationDirections: verdir}, nil
 
-	return
 }
 
 func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Context, u *identity_proto.MyVerifiersDetailRequest) (response *identity_proto.VerifierDetailsResponse, err error) {
@@ -185,10 +191,15 @@ type PrivateAuthenticationService struct {
 
 func GetSessionTokenFromContext(ctx context.Context) string {
 	md, ok := metadata.FromIncomingContext(ctx)
-	if ok == false {
+	if !ok {
 		// todo modificate to empty context
 		panic(ok)
 	}
-	return md.Get("SessionTokenName")[0]
+
+	if at := md.Get(SessionTokenName); len(at) != 0 {
+		return at[0]
+	} else {
+		return ""
+	}
 
 }

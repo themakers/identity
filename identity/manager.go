@@ -161,16 +161,6 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 	return sess
 }
 
-/* todo realise start auth method
-func (mgr *Manager) StartAuthentication()  {
-	_, err := mgr.backend.CreateAuthentication()
-	if err != nil {
-		panic(err)
-	}
-
-	return
-}
-*/
 func (mgr *Manager) GetStatus(SessionToken string) (*Authentication, error) {
 	auth, err := mgr.backend.GetAuthenticationBySessionToken(SessionToken)
 	if err != nil {

@@ -9,6 +9,7 @@ import (
 	"github.com/themakers/identity/identity_svc/identity_proto"
 	"github.com/themakers/identity/mock/identity_mock"
 	"github.com/themakers/identity/mock/verifier_mock_regular"
+	"github.com/themakers/session/session_redis"
 
 	"github.com/themakers/session"
 	"google.golang.org/grpc"
@@ -37,7 +38,9 @@ func serve(ctx context.Context, verifiers ...identity.Verifier) (port int) {
 	}
 	backend, err := backend_mongo.New("identity", "idn", "127.0.0.1", 27017)
 
-	idenSvc, err := New(backend, &session.Manager{}, []identity.Identity{identity_mock.New()}, verifiers)
+	stPoll := session_redis.NewStoragePool("127.0.0.1:6379", "redis")
+
+	idenSvc, err := New(backend, &session.Manager{Storage: stPoll, DefaultLifetime: 5}, []identity.Identity{identity_mock.New()}, verifiers)
 
 	idenSvc.Register(server, server)
 
@@ -94,24 +97,33 @@ func TestIntt(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		// пользователь выбирает имя identity
+		/*
+			Convey("Test one-factor authentication" , func() {
+				_, err := client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{SessionToken:GetSessionTokenFromContext(ctx)})
+				if err != nil {
 
-		Convey("Test one-factor authentication", func() {
-			//todo use a authentication session
-			vd := make(map[string][]byte)
-			vd["phone"] = []byte{1, 2, 3, 4}
-			_, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{Identity: "79991112233", VerificationData: vd, VerifierName: "mock_regular"})
-			if err != nil {
-				panic(err)
-			}
-			Convey("", func() {
-				_, err := client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", Identity: regularVerificationData.Identity, IdentityName: "mock_identity", VerificationCode: regularVerificationData.Code})
+				}
+			})
+
+		*/
+		// пользователь выбирает имя identity
+		/*
+			Convey("Test one-factor authentication", func() {
+				//todo use a authentication session
+				vd := make(map[string][]byte)
+				vd["phone"] = []byte{1, 2, 3, 4}
+				_, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{Identity: "79991112233", VerificationData: vd, VerifierName: "mock_regular"})
 				if err != nil {
 					panic(err)
 				}
+				Convey("", func() {
+					_, err := client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", Identity: regularVerificationData.Identity, IdentityName: "mock_identity", VerificationCode: regularVerificationData.Code})
+					if err != nil {
+						panic(err)
+					}
+				})
 			})
-		})
-
+		*/
 		// after get resp_1 user can switch a verification method
 		// test fo new user
 		// ListIdentitiesAndVerifiers

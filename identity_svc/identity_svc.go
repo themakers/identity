@@ -88,6 +88,13 @@ func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, req 
 }
 
 func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *identity_proto.StartAuthenticationReq) (resp *identity_proto.StartAuthenticationResp, err error) {
+	sessToken := GetSessionTokenFromContext(ctx)
+	auth, err := pis.is.mgr.GetStatus(sessToken)
+	if err != nil {
+		panic(err)
+	}
+	auth.FactorsCount = 1
+
 	return
 }
 
@@ -136,7 +143,9 @@ func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context
 
 func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_proto.VerifyReq) (resp *identity_proto.VerifyResp, err error) {
 	//TODO get session and user
-	return
+	resp = &identity_proto.VerifyResp{}
+	resp.VerifyStatus = true
+	return resp, nil
 }
 
 func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_proto.StatusReq) (*identity_proto.Status, error) {

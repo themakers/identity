@@ -3,7 +3,7 @@ package identity
 type Backend interface {
 	CreateVerification(iden *IdentityData, securityCode string) (*Authentication, error)
 	GetAuthenticationBySessionToken(SessionToken string) (*Authentication, error)
-	CreateAuthentication() (*Authentication, error)
+	CreateAuthentication(SessionToken string) (*Authentication, error)
 	GetVerification(verificationID string) (*Authentication, error)
 	GetUserByID(id string) (*User, error)
 	GetUserByIdentity(identity string) (*User, error)

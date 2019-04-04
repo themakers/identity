@@ -97,6 +97,28 @@ func TestIntt(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
+		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{})
+		if err != nil {
+			panic(err)
+		}
+		vd := make(map[string][]byte)
+		vd["mock_identity"] = []byte{}
+		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
+		if err != nil {
+			panic(err)
+		}
+
+		_, err = client.Verify(ctx, &identity_proto.VerifyReq{Identity: regularVerificationData.Identity, VerificationCode: regularVerificationData.Code, VerifierName: svResp.VerifierName, IdentityName: svResp.IdentityName})
+
+		if err != nil {
+			panic(err)
+		}
+
+		auth, err := client.CheckStatus(ctx, &identity_proto.StatusReq{})
+		if err != nil {
+			panic(err)
+		}
+		So(auth.Authenticated, ShouldEqual, true)
 		/*
 			Convey("Test one-factor authentication" , func() {
 				_, err := client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{SessionToken:GetSessionTokenFromContext(ctx)})

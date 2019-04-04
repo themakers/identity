@@ -183,7 +183,7 @@ func (b *Backend) CreateUser(iden *identity.IdentityData) (*identity.User, error
 	return &user, nil
 }
 
-func (b *Backend) CreateAuthentication() (*identity.Authentication, error) {
+func (b *Backend) CreateAuthentication(SessionToken string) (*identity.Authentication, error) {
 	return &identity.Authentication{}, nil
 }
 

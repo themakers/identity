@@ -166,6 +166,12 @@ func (mgr *Manager) GetStatus(SessionToken string) (*Authentication, error) {
 	if err != nil {
 		return &Authentication{}, errors.New("No auth")
 	}
+	if auth == nil {
+		auth, err = mgr.backend.CreateAuthentication(SessionToken)
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	return &Authentication{auth.SessionToken, auth.UserID, auth.FactorsCount, auth.FactorsStatus}, nil
 }

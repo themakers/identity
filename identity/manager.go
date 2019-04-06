@@ -118,7 +118,7 @@ func (mgr *Manager) ListAllIndentitiesAndVerifiers() (idn []IdentityData, ver []
 
 const SessionTokenName = "session_token"
 
-func GetSessionToken(ctx context.Context) (token string) {
+func (mgr *Manager) GetSessionToken(ctx context.Context) (token string) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return ""
@@ -131,14 +131,12 @@ func GetSessionToken(ctx context.Context) (token string) {
 	}
 }
 
-// todo have a nil pointer to session
-
 func (mgr *Manager) Session(ctx context.Context) *Session {
 	sess := &Session{
 		manager: mgr,
 	}
 
-	if s, err := mgr.sessMgr.Session(GetSessionToken(ctx)); err != nil {
+	if s, err := mgr.sessMgr.Session(mgr.GetSessionToken(ctx)); err != nil {
 		panic(err)
 	} else {
 		// FIXME Make configurable
@@ -149,14 +147,14 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 		sess.sess = s
 	}
 
-	{
+
 		md := make(metadata.MD)
 		token, _ := sess.sess.GetID()
 		md.Set(SessionTokenName, token)
 		if err := grpc.SetTrailer(ctx, md); err != nil {
 			panic(err)
 		}
-	}
+
 
 	return sess
 }
@@ -166,6 +164,7 @@ func (mgr *Manager) GetStatus(SessionToken string) (*Authentication, error) {
 	if err != nil {
 		return &Authentication{}, errors.New("No auth")
 	}
+
 	if auth == nil {
 		auth, err = mgr.backend.CreateAuthentication(SessionToken)
 		if err != nil {
@@ -176,7 +175,7 @@ func (mgr *Manager) GetStatus(SessionToken string) (*Authentication, error) {
 	return &Authentication{auth.SessionToken, auth.UserID, auth.FactorsCount, auth.FactorsStatus}, nil
 }
 
-func (mgr *Manager) StartVerification(idn, vn string) *VerifierSummary {
+func (mgr *Manager) StartVerification(idn, vn string, ctx context.Context, vd []VerifierData)  (Code, IdnetityName string) {
 
 	var CurVerifier Verifier
 	for _, ver := range mgr.verifiers {
@@ -189,9 +188,38 @@ func (mgr *Manager) StartVerification(idn, vn string) *VerifierSummary {
 		panic("Not such verifier")
 	}
 	vi := mgr.ver[CurVerifier.Info().Name]
+	securitycode, _ := vi.internal.regularRef.StartRegularVerification(ctx, idn, vd)
 
-	return &vi
+	return securitycode, vi.IdentityName
 }
+
+func (mgr *Manager) StartAuthentication(sesstoken string) bool  {
+	_, err := mgr.backend.CreateAuthentication(sesstoken)
+	if err != nil {
+		return false
+	}
+	return true
+
+}
+
+func (mgr *Manager) GetVerificationCode(sessiontoken, vname string) string {
+	auth, err := mgr.backend.GetAuthenticationBySessionToken(sessiontoken)
+	if err != nil {
+		panic(err)
+	}
+	user, err := mgr.backend.GetUserByID(auth.UserID)
+	if err != nil {
+		panic(err)
+	}
+	code := ""
+	for _, ver := range user.Verifiers {
+		code = ver.AuthenticationData[vname]
+
+	}
+	return code
+
+}
+
 
 ////////////////////////////////////////////////////////////////
 ////

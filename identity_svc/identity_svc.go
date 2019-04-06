@@ -79,10 +79,12 @@ func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *id
 	//resp := &identity_proto.StartVerificationResp{}
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
+	vd :=[]identity.VerifierData{}
+	code, idnn :=pis.is.mgr.StartVerification(req.Identity, req.VerifierName, ctx,vd)
 
 	//resp := &identity_proto.StartVerificationResp{}
 
-	return &identity_proto.StartVerificationResp{IdentityName: "mock", VerifierName: "", VerificationCode: "1234"}, nil
+	return &identity_proto.StartVerificationResp{IdentityName: idnn, VerifierName: req.VerifierName, VerificationCode: code}, nil
 }
 
 func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, req *identity_proto.CancelAuthenticationReq) (resp *identity_proto.Status, err error) {
@@ -93,14 +95,16 @@ func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 
-	sessToken := GetSessionTokenFromContext(ctx)
-	auth, err := pis.is.mgr.GetStatus(sessToken)
-	if err != nil {
-		panic(err)
-	}
-	auth.FactorsCount = 1
+	sessToken := pis.is.mgr.GetSessionToken(ctx)
+	/*if sessToken == "" {
+		panic("No session")
+	}*/
+	authres := pis.is.mgr.StartAuthentication(sessToken)
+	if authres {
+
 	verdir := make(map[string]string)
-	return &identity_proto.StartAuthenticationResp{VerificationDirections: verdir}, nil
+	return &identity_proto.StartAuthenticationResp{VerificationDirections: verdir}, nil}
+	return &identity_proto.StartAuthenticationResp{}, nil
 
 }
 
@@ -149,8 +153,17 @@ func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context
 
 func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_proto.VerifyReq) (resp *identity_proto.VerifyResp, err error) {
 	//TODO get session and user
+	sess := pis.is.mgr.Session(ctx)
+	defer sess.Dispose()
 	resp = &identity_proto.VerifyResp{}
-	resp.VerifyStatus = true
+	code := pis.is.mgr.GetVerificationCode(pis.is.mgr.GetSessionToken(ctx), req.VerifierName)
+	if code == req.VerificationCode {
+		resp.VerifyStatus = true
+	} else {
+		resp.VerifyStatus = false
+	}
+
+
 	return resp, nil
 }
 
@@ -160,10 +173,10 @@ func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_p
 	defer sess.Dispose()
 	resp := &identity_proto.Status{}
 
-	sessionToken := GetSessionTokenFromContext(ctx)
-	if sessionToken == "" {
+	sessionToken := pis.is.mgr.GetSessionToken(ctx)
+	/*if sessionToken == "" {
 		panic("No session")
-	}
+	}*/
 	authentication, err := pis.is.mgr.GetStatus(sessionToken)
 	if err != nil {
 		panic(err)
@@ -176,6 +189,10 @@ func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_p
 
 	return resp, nil
 
+}
+
+func (pis *PublicIdentityService) TestGetSessionToken(ctx context.Context) string  {
+	return pis.is.mgr.GetSessionToken(ctx)
 }
 
 ////////////////////////////////////////////////////////////////

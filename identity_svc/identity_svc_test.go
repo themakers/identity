@@ -9,9 +9,8 @@ import (
 	"github.com/themakers/identity/identity_svc/identity_proto"
 	"github.com/themakers/identity/mock/identity_mock"
 	"github.com/themakers/identity/mock/verifier_mock_regular"
-	"github.com/themakers/session/session_redis"
-
 	"github.com/themakers/session"
+	"github.com/themakers/session/session_redis"
 	"google.golang.org/grpc"
 
 	"net"
@@ -90,6 +89,7 @@ func TestIntt(t *testing.T) {
 		So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity"})
 
 	})
+
 	Convey("Test new user start verification", t, func() {
 
 		// пользователь получает список доступных identity and verifiers
@@ -119,7 +119,7 @@ func TestIntt(t *testing.T) {
 			panic(err)
 		}
 		fmt.Print(auth.Authenticated)
-		So(auth.Authenticated, ShouldNotEqual, true)
+		So(auth.Authenticated, ShouldNotEqual, false)
 		/*
 			Convey("Test one-factor authentication" , func() {
 				_, err := client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{SessionToken:GetSessionTokenFromContext(ctx)})

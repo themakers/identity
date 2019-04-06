@@ -185,10 +185,10 @@ func (b *Backend) CreateUser(iden *identity.IdentityData) (*identity.User, error
 
 func (b *Backend) CreateAuthentication(SessionToken string) (*identity.Authentication, error) {
 	fs := make(map[string]bool)
-	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 1, UserID: "5566", FactorsStatus: fs}, nil
+	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 99, UserID: "", FactorsStatus: fs}, nil
 }
 
 func (b *Backend) GetAuthenticationBySessionToken(SessionToken string) (*identity.Authentication, error) {
 	fs := make(map[string]bool)
-	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 1, UserID: "5566", FactorsStatus: fs}, nil
+	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 1, UserID: "", FactorsStatus: fs}, nil
 }

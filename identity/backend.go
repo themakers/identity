@@ -29,7 +29,7 @@ type IdentityData struct {
 
 //--------------------------------------------------------------------------------------------------------
 type VerifierData struct {
-	AuthenticationData map[string]string `bson:"AuthenticationData" json:"AuthenticationData"` // /name/value
+	AuthenticationData map[string]string `bson:"AuthenticationData" json:"AuthenticationData"` // /identity/value
 	AdditionalData     map[string]string `bson:"AdditionalData" json:"AdditionalData"`
 }
 

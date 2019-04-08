@@ -87,6 +87,7 @@ func TestIntt(t *testing.T) {
 			panic(err)
 		}
 		So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity"})
+		So(idn.Verifiers[0].Name, ShouldEqual, "mock_regular")
 
 	})
 
@@ -120,67 +121,40 @@ func TestIntt(t *testing.T) {
 		}
 		fmt.Print(auth.Authenticated)
 		So(auth.Authenticated, ShouldNotEqual, false)
-		/*
-			Convey("Test one-factor authentication" , func() {
-				_, err := client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{SessionToken:GetSessionTokenFromContext(ctx)})
-				if err != nil {
-
-				}
-			})
-
-		*/
-		// пользователь выбирает имя identity
-		/*
-			Convey("Test one-factor authentication", func() {
-				//todo use a authentication session
-				vd := make(map[string][]byte)
-				vd["phone"] = []byte{1, 2, 3, 4}
-				_, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{Identity: "79991112233", VerificationData: vd, VerifierName: "mock_regular"})
-				if err != nil {
-					panic(err)
-				}
-				Convey("", func() {
-					_, err := client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", Identity: regularVerificationData.Identity, IdentityName: "mock_identity", VerificationCode: regularVerificationData.Code})
-					if err != nil {
-						panic(err)
-					}
-				})
-			})
-		*/
-		// after get resp_1 user can switch a verification method
-		// test fo new user
-		// ListIdentitiesAndVerifiers
-		//// ListMyIdentitiesAndVerifiers - выбираем количество факторов
-		////// StartAuthentication --- Старт процесса аутентификации (список verifier, identity(auth data))
-		/////// Verify  <- сюда я передаю sessionid(from context), user (from session), verifierName, identity(auth data) /if user == nil -> add user
-		//-------------------Новый план теста
-		// ListIdentitiesAndVerifiers
-		//// StartAuthentication
-		///// Verify
-		////// ListMyIdentitesAndVerifiers
-		//////// Verify
-
-		// Test scenario #1 - 1F auth by regular
-		//// CheckStatus
-		////// ListIdentitiesAndVerifiers
-		/////// StartVerification
-		//////// Verify
-
-		// Test scenario #2 - 1F auth by oauth
-
-		// Test scenario #3 - 1F auth by static
-
-		// Test scenario #4 - 2F auth by regular and oauth
-
-		// Test scenario #5 - 2F auth by regular and static
-
-		// Test scenario #6 - 2F auth by oauth and regular
-
-		// Test scenario #7 - 2F auth by oauth and static
-
-		// Test scenario #8 - 2F auth by regular and oauth
-
-		// Test scenario #9 - 2F auth by regular and oauth
-
 	})
 }
+
+// after get resp_1 user can switch a verification method
+// test fo new user
+// ListIdentitiesAndVerifiers
+//// ListMyIdentitiesAndVerifiers - выбираем количество факторов
+////// StartAuthentication --- Старт процесса аутентификации (список verifier, identity(auth data))
+/////// Verify  <- сюда я передаю sessionid(from context), user (from session), verifierName, identity(auth data) /if user == nil -> add user
+//-------------------Новый план теста
+// ListIdentitiesAndVerifiers
+//// StartAuthentication
+///// Verify
+////// ListMyIdentitesAndVerifiers
+//////// Verify
+
+// Test scenario #1 - 1F auth by regular
+//// CheckStatus
+////// ListIdentitiesAndVerifiers
+/////// StartVerification
+//////// Verify
+
+// Test scenario #2 - 1F auth by oauth
+
+// Test scenario #3 - 1F auth by static
+
+// Test scenario #4 - 2F auth by regular and oauth
+
+// Test scenario #5 - 2F auth by regular and static
+
+// Test scenario #6 - 2F auth by oauth and regular
+
+// Test scenario #7 - 2F auth by oauth and static
+
+// Test scenario #8 - 2F auth by regular and oauth
+
+// Test scenario #9 - 2F auth by regular and oauth

@@ -24,7 +24,6 @@ type User struct {
 type IdentityData struct {
 	Name     string `bson:"Name" json:"Name"`
 	Identity string `bson:"Identity" json:"Identity"`
-	//Attrib   string `bson:"Attrib" json:"Attrib"` // optional, to get ability use multi identities of such type
 }
 
 //--------------------------------------------------------------------------------------------------------

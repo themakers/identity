@@ -7,7 +7,6 @@ import (
 	"github.com/themakers/session"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -181,9 +180,20 @@ func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_p
 	if err != nil {
 		panic(err)
 	}
+
+	updateFactorsCount := 0
+	for _, value := range authentication.FactorsStatus {
+		if !value {
+			updateFactorsCount++
+		}
+	}
+	authentication.FactorsCount = updateFactorsCount
+
 	if authentication.FactorsCount != 0 {
 		resp.Authenticated = true
+		resp.Authenticating = false
 	} else {
+		resp.Authenticating = true
 		resp.Authenticated = false
 	}
 
@@ -197,22 +207,4 @@ func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_p
 
 type PrivateAuthenticationService struct {
 	auth *IdentitySvc
-}
-
-////////////////////////////////////////////////////
-///// Helpers
-
-func GetSessionTokenFromContext(ctx context.Context) string {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		// todo modificate to empty context
-		panic(ok)
-	}
-
-	if at := md.Get(SessionTokenName); len(at) != 0 {
-		return at[0]
-	} else {
-		return ""
-	}
-
 }

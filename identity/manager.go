@@ -160,17 +160,18 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 func (mgr *Manager) GetStatus(SessionToken string) (*Authentication, error) {
 	auth, err := mgr.backend.GetAuthenticationBySessionToken(SessionToken)
 	if err != nil {
-		return &Authentication{}, errors.New("No auth")
+		return &Authentication{}, err
 	}
 
 	if auth == nil {
 		auth, err = mgr.backend.CreateAuthentication(SessionToken)
 		if err != nil {
-			panic("No method")
+			panic(err)
 		}
+		return auth, nil
 	}
 
-	return &Authentication{auth.SessionToken, auth.UserID, auth.FactorsCount, auth.FactorsStatus}, nil
+	return auth, nil
 }
 
 func (mgr *Manager) StartVerification(idn, vn string, ctx context.Context, vd []VerifierData) (Code, IdnetityName string) {

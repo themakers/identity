@@ -147,14 +147,12 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 		sess.sess = s
 	}
 
-
-		md := make(metadata.MD)
-		token, _ := sess.sess.GetID()
-		md.Set(SessionTokenName, token)
-		if err := grpc.SetTrailer(ctx, md); err != nil {
-			panic(err)
-		}
-
+	md := make(metadata.MD)
+	token, _ := sess.sess.GetID()
+	md.Set(SessionTokenName, token)
+	if err := grpc.SetTrailer(ctx, md); err != nil {
+		panic(err)
+	}
 
 	return sess
 }
@@ -175,7 +173,7 @@ func (mgr *Manager) GetStatus(SessionToken string) (*Authentication, error) {
 	return &Authentication{auth.SessionToken, auth.UserID, auth.FactorsCount, auth.FactorsStatus}, nil
 }
 
-func (mgr *Manager) StartVerification(idn, vn string, ctx context.Context, vd []VerifierData)  (Code, IdnetityName string) {
+func (mgr *Manager) StartVerification(idn, vn string, ctx context.Context, vd []VerifierData) (Code, IdnetityName string) {
 
 	var CurVerifier Verifier
 	for _, ver := range mgr.verifiers {
@@ -193,7 +191,7 @@ func (mgr *Manager) StartVerification(idn, vn string, ctx context.Context, vd []
 	return securitycode, vi.IdentityName
 }
 
-func (mgr *Manager) StartAuthentication(sesstoken string) bool  {
+func (mgr *Manager) StartAuthentication(sesstoken string) bool {
 	_, err := mgr.backend.CreateAuthentication(sesstoken)
 	if err != nil {
 		return false
@@ -212,14 +210,17 @@ func (mgr *Manager) GetVerificationCode(sessiontoken, vname string) string {
 		panic(err)
 	}
 	code := ""
-	for _, ver := range user.Verifiers {
-		code = ver.AuthenticationData[vname]
+	if user == nil {
+		code = ""
+	} else {
+		for _, ver := range user.Verifiers {
+			code = ver.AuthenticationData[vname]
 
+		}
 	}
 	return code
 
 }
-
 
 ////////////////////////////////////////////////////////////////
 ////

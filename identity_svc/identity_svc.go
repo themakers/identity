@@ -79,8 +79,8 @@ func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *id
 	//resp := &identity_proto.StartVerificationResp{}
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
-	vd :=[]identity.VerifierData{}
-	code, idnn :=pis.is.mgr.StartVerification(req.Identity, req.VerifierName, ctx,vd)
+	vd := []identity.VerifierData{}
+	code, idnn := pis.is.mgr.StartVerification(req.Identity, req.VerifierName, ctx, vd)
 
 	//resp := &identity_proto.StartVerificationResp{}
 
@@ -102,8 +102,9 @@ func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *
 	authres := pis.is.mgr.StartAuthentication(sessToken)
 	if authres {
 
-	verdir := make(map[string]string)
-	return &identity_proto.StartAuthenticationResp{VerificationDirections: verdir}, nil}
+		verdir := make(map[string]string)
+		return &identity_proto.StartAuthenticationResp{VerificationDirections: verdir}, nil
+	}
 	return &identity_proto.StartAuthenticationResp{}, nil
 
 }
@@ -163,7 +164,6 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_prot
 		resp.VerifyStatus = false
 	}
 
-
 	return resp, nil
 }
 
@@ -189,10 +189,6 @@ func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_p
 
 	return resp, nil
 
-}
-
-func (pis *PublicIdentityService) TestGetSessionToken(ctx context.Context) string  {
-	return pis.is.mgr.GetSessionToken(ctx)
 }
 
 ////////////////////////////////////////////////////////////////

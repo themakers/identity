@@ -153,7 +153,7 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 	if err := grpc.SetTrailer(ctx, md); err != nil {
 		panic(err)
 	}
-
+	// todo create authentication when create a session
 	return sess
 }
 
@@ -170,7 +170,6 @@ func (mgr *Manager) GetStatus(SessionToken string) (*Authentication, error) {
 		}
 		return auth, nil
 	}
-
 	return auth, nil
 }
 

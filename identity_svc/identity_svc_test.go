@@ -91,7 +91,7 @@ func TestIntt(t *testing.T) {
 
 	})
 
-	Convey("Test new user start verification", t, func() {
+	Convey("Test user start verification", t, func() {
 
 		// пользователь получает список доступных identity and verifiers
 		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{})

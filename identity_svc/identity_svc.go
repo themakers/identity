@@ -80,7 +80,11 @@ func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *id
 	defer sess.Dispose()
 	vd := []identity.VerifierData{}
 	// TODO use session function to start verification
-
+	verType := pis.is.mgr.GetVerifierType(req.VerifierName)
+	// todo use switch to choose verification method
+	if verType == "regular" {
+		sess.StartRegularVerification(ctx, req.VerifierName, req.Identity, vd)
+	}
 	code, idnn := pis.is.mgr.StartVerification(req.Identity, req.VerifierName, ctx, vd)
 
 	return &identity_proto.StartVerificationResp{IdentityName: idnn, VerifierName: req.VerifierName, VerificationCode: code, Identity: req.Identity}, nil
@@ -93,7 +97,8 @@ func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, req 
 func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *identity_proto.StartAuthenticationReq) (resp *identity_proto.StartAuthenticationResp, err error) {
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
-	_ = sess.HandleIncomingIdentity(ctx, &identity.IdentityData{})
+
+	//_ = sess.HandleIncomingIdentity(ctx, &identity.IdentityData{Identity:"mock_identity", Name:"mock_identity"})
 
 	authres, err := pis.is.mgr.StartAuthentication(ctx)
 	if err != nil {
@@ -161,8 +166,8 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_prot
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	resp = &identity_proto.VerifyResp{}
+
 	code := pis.is.mgr.GetVerificationCode(ctx, req.VerifierName)
-	code = "2326" // todo delete after using mongo backend
 	if code == req.VerificationCode {
 		resp.VerifyStatus = true
 	} else {

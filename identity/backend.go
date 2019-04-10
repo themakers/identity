@@ -14,8 +14,7 @@ type Backend interface {
 
 // TODO add a multifactor criterea
 type User struct {
-	ID string `bson:"_id" json:"ID"`
-	//	SessionID  []string         `bson:"session_id" json:"Session_id"`
+	ID                string         `bson:"_id" json:"ID"`
 	Identities        []IdentityData `bson:"Identities" json:"Identities"` // /name/identity/**
 	Verifiers         []VerifierData `bson:"Verifiers" json:"Verifiers"`
 	AuthFactorsNumber int            `bson:"AuthFactorsNumber" json:"AuthFactorsNumber"`

@@ -15,15 +15,15 @@ type Config struct {
 	AccessToken string
 }
 
-var _ identity.RegularVerification = new(Provider)
-var _ identity.ReverseVerification = new(Provider)
+var _ identity.RegularVerification = new(Verifier)
+var _ identity.ReverseVerification = new(Verifier)
 
-type Provider struct {
+type Verifier struct {
 	smsg *smsg.Client
 }
 
-func New(cfg Config) *Provider {
-	prov := &Provider{
+func New(cfg Config) *Verifier {
+	prov := &Verifier{
 		smsg: &smsg.Client{
 			ServiceID:   cfg.ServiceID,
 			AccessToken: cfg.AccessToken,
@@ -33,13 +33,13 @@ func New(cfg Config) *Provider {
 	return prov
 }
 
-func (prov *Provider) Info() identity.VerifierInfo {
+func (prov *Verifier) Info() identity.VerifierInfo {
 	return identity.VerifierInfo{
 		Name: "sms",
 	}
 }
 
-func (prov *Provider) NormalizeIdentity(idn string) string {
+func (prov *Verifier) NormalizeIdentity(idn string) string {
 	return NormalizePhone(idn)
 }
 
@@ -62,13 +62,13 @@ func NormalizePhone(phone string) (result string) {
 //// Type 1
 ////
 
-func (prov *Provider) StartType1Verification(ctx context.Context) (target, securityCode string, err error) {
+func (prov *Verifier) StartType1Verification(ctx context.Context) (target, securityCode string, err error) {
 	target = "4947"
 	securityCode = newSecurityCode(6)
 	return
 }
 
-func (prov *Provider) StartType1Worker(ctx context.Context, event chan<- identity.ReverseVerification) (err error) {
+func (prov *Verifier) StartType1Worker(ctx context.Context, event chan<- identity.ReverseVerification) (err error) {
 	prov.smsg.StartWorker(ctx)
 
 	// TODO
@@ -80,7 +80,7 @@ func (prov *Provider) StartType1Worker(ctx context.Context, event chan<- identit
 //// Type 2
 ////
 
-func (prov *Provider) StartType2Verification(ctx context.Context, idn string) (securityCode string, iden *identity.Identity, err error) {
+func (prov *Verifier) StartType2Verification(ctx context.Context, idn string) (securityCode string, iden *identity.Identity, err error) {
 	idn = NormalizePhone(idn)
 	sc := newSecurityCode(6)
 
@@ -113,7 +113,7 @@ func (prov *Provider) StartType2Verification(ctx context.Context, idn string) (s
 	}
 
 	return sc, &identity.Identity{
-		Provider: prov.Info().Name,
+		Verifier: prov.Info().Name,
 		ID:       idn,
 		// TODO fields
 	}, nil

@@ -19,15 +19,15 @@ type Config struct {
 	Scopes       []string
 }
 
-var _ identity.OAuth2Verification = new(Provider)
+var _ identity.OAuth2Verification = new(Verifier)
 
-type Provider struct {
+type Verifier struct {
 	oacfg *oauth2.Config
 }
 
-func New(cfg Config) *Provider {
+func New(cfg Config) *Verifier {
 	cfg.Scopes = ensureContains(cfg.Scopes, "read:user", "user:email")
-	prov := &Provider{
+	prov := &Verifier{
 		oacfg: &oauth2.Config{
 			RedirectURL:  cfg.RedirectURL,
 			ClientID:     cfg.ClientID,
@@ -40,21 +40,21 @@ func New(cfg Config) *Provider {
 	return prov
 }
 
-func (prov *Provider) Info() identity.VerifierInfo {
+func (prov *Verifier) Info() identity.VerifierInfo {
 	return identity.VerifierInfo{
 		Name: "github",
 	}
 }
 
-func (prov *Provider) NormalizeIdentity(idn string) string {
+func (prov *Verifier) NormalizeIdentity(idn string) string {
 	return idn
 }
 
-func (prov *Provider) GetOAuth2URL(state string) string {
+func (prov *Verifier) GetOAuth2URL(state string) string {
 	return prov.oacfg.AuthCodeURL(state, oauth2.AccessTypeOffline)
 }
 
-func (prov *Provider) HandleOAuth2Callback(ctx context.Context, code string) (token *oauth2.Token, err error) {
+func (prov *Verifier) HandleOAuth2Callback(ctx context.Context, code string) (token *oauth2.Token, err error) {
 	token, err = prov.oacfg.Exchange(ctx, code)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (prov *Provider) HandleOAuth2Callback(ctx context.Context, code string) (to
 	return token, nil
 }
 
-func (prov *Provider) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, err error) {
+func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, err error) {
 	u, err := url.Parse("https://api.github.com/user")
 	if err != nil {
 		return nil, err

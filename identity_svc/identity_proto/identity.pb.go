@@ -3,14 +3,13 @@
 
 package identity_proto
 
+import proto "github.com/golang/protobuf/proto"
+import fmt "fmt"
+import math "math"
+
 import (
-	context "context"
-	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
+	context "golang.org/x/net/context"
 	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
-	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -22,7 +21,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type Dummy struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -34,17 +33,16 @@ func (m *Dummy) Reset()         { *m = Dummy{} }
 func (m *Dummy) String() string { return proto.CompactTextString(m) }
 func (*Dummy) ProtoMessage()    {}
 func (*Dummy) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{0}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{0}
 }
-
 func (m *Dummy) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Dummy.Unmarshal(m, b)
 }
 func (m *Dummy) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_Dummy.Marshal(b, m, deterministic)
 }
-func (m *Dummy) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Dummy.Merge(m, src)
+func (dst *Dummy) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Dummy.Merge(dst, src)
 }
 func (m *Dummy) XXX_Size() int {
 	return xxx_messageInfo_Dummy.Size(m)
@@ -55,7 +53,7 @@ func (m *Dummy) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Dummy proto.InternalMessageInfo
 
-//// ListMessages
+// // ListMessages
 type VerifiersDetailsRequest struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -66,17 +64,16 @@ func (m *VerifiersDetailsRequest) Reset()         { *m = VerifiersDetailsRequest
 func (m *VerifiersDetailsRequest) String() string { return proto.CompactTextString(m) }
 func (*VerifiersDetailsRequest) ProtoMessage()    {}
 func (*VerifiersDetailsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{1}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{1}
 }
-
 func (m *VerifiersDetailsRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_VerifiersDetailsRequest.Unmarshal(m, b)
 }
 func (m *VerifiersDetailsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_VerifiersDetailsRequest.Marshal(b, m, deterministic)
 }
-func (m *VerifiersDetailsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_VerifiersDetailsRequest.Merge(m, src)
+func (dst *VerifiersDetailsRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VerifiersDetailsRequest.Merge(dst, src)
 }
 func (m *VerifiersDetailsRequest) XXX_Size() int {
 	return xxx_messageInfo_VerifiersDetailsRequest.Size(m)
@@ -99,17 +96,16 @@ func (m *VerifierDetailsResponse) Reset()         { *m = VerifierDetailsResponse
 func (m *VerifierDetailsResponse) String() string { return proto.CompactTextString(m) }
 func (*VerifierDetailsResponse) ProtoMessage()    {}
 func (*VerifierDetailsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{2}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{2}
 }
-
 func (m *VerifierDetailsResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_VerifierDetailsResponse.Unmarshal(m, b)
 }
 func (m *VerifierDetailsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_VerifierDetailsResponse.Marshal(b, m, deterministic)
 }
-func (m *VerifierDetailsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_VerifierDetailsResponse.Merge(m, src)
+func (dst *VerifierDetailsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VerifierDetailsResponse.Merge(dst, src)
 }
 func (m *VerifierDetailsResponse) XXX_Size() int {
 	return xxx_messageInfo_VerifierDetailsResponse.Size(m)
@@ -146,17 +142,16 @@ func (m *MyVerifiersDetailRequest) Reset()         { *m = MyVerifiersDetailReque
 func (m *MyVerifiersDetailRequest) String() string { return proto.CompactTextString(m) }
 func (*MyVerifiersDetailRequest) ProtoMessage()    {}
 func (*MyVerifiersDetailRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{3}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{3}
 }
-
 func (m *MyVerifiersDetailRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MyVerifiersDetailRequest.Unmarshal(m, b)
 }
 func (m *MyVerifiersDetailRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_MyVerifiersDetailRequest.Marshal(b, m, deterministic)
 }
-func (m *MyVerifiersDetailRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MyVerifiersDetailRequest.Merge(m, src)
+func (dst *MyVerifiersDetailRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MyVerifiersDetailRequest.Merge(dst, src)
 }
 func (m *MyVerifiersDetailRequest) XXX_Size() int {
 	return xxx_messageInfo_MyVerifiersDetailRequest.Size(m)
@@ -194,17 +189,16 @@ func (m *StartVerificationReq) Reset()         { *m = StartVerificationReq{} }
 func (m *StartVerificationReq) String() string { return proto.CompactTextString(m) }
 func (*StartVerificationReq) ProtoMessage()    {}
 func (*StartVerificationReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{4}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{4}
 }
-
 func (m *StartVerificationReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StartVerificationReq.Unmarshal(m, b)
 }
 func (m *StartVerificationReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_StartVerificationReq.Marshal(b, m, deterministic)
 }
-func (m *StartVerificationReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_StartVerificationReq.Merge(m, src)
+func (dst *StartVerificationReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StartVerificationReq.Merge(dst, src)
 }
 func (m *StartVerificationReq) XXX_Size() int {
 	return xxx_messageInfo_StartVerificationReq.Size(m)
@@ -250,17 +244,16 @@ func (m *StartVerificationResp) Reset()         { *m = StartVerificationResp{} }
 func (m *StartVerificationResp) String() string { return proto.CompactTextString(m) }
 func (*StartVerificationResp) ProtoMessage()    {}
 func (*StartVerificationResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{5}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{5}
 }
-
 func (m *StartVerificationResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StartVerificationResp.Unmarshal(m, b)
 }
 func (m *StartVerificationResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_StartVerificationResp.Marshal(b, m, deterministic)
 }
-func (m *StartVerificationResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_StartVerificationResp.Merge(m, src)
+func (dst *StartVerificationResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StartVerificationResp.Merge(dst, src)
 }
 func (m *StartVerificationResp) XXX_Size() int {
 	return xxx_messageInfo_StartVerificationResp.Size(m)
@@ -309,17 +302,16 @@ func (m *StatusReq) Reset()         { *m = StatusReq{} }
 func (m *StatusReq) String() string { return proto.CompactTextString(m) }
 func (*StatusReq) ProtoMessage()    {}
 func (*StatusReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{6}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{6}
 }
-
 func (m *StatusReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StatusReq.Unmarshal(m, b)
 }
 func (m *StatusReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_StatusReq.Marshal(b, m, deterministic)
 }
-func (m *StatusReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_StatusReq.Merge(m, src)
+func (dst *StatusReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StatusReq.Merge(dst, src)
 }
 func (m *StatusReq) XXX_Size() int {
 	return xxx_messageInfo_StatusReq.Size(m)
@@ -344,17 +336,16 @@ func (m *Status) Reset()         { *m = Status{} }
 func (m *Status) String() string { return proto.CompactTextString(m) }
 func (*Status) ProtoMessage()    {}
 func (*Status) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{7}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{7}
 }
-
 func (m *Status) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Status.Unmarshal(m, b)
 }
 func (m *Status) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_Status.Marshal(b, m, deterministic)
 }
-func (m *Status) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Status.Merge(m, src)
+func (dst *Status) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Status.Merge(dst, src)
 }
 func (m *Status) XXX_Size() int {
 	return xxx_messageInfo_Status.Size(m)
@@ -403,17 +394,16 @@ func (m *UserMergeReq) Reset()         { *m = UserMergeReq{} }
 func (m *UserMergeReq) String() string { return proto.CompactTextString(m) }
 func (*UserMergeReq) ProtoMessage()    {}
 func (*UserMergeReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{8}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{8}
 }
-
 func (m *UserMergeReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserMergeReq.Unmarshal(m, b)
 }
 func (m *UserMergeReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_UserMergeReq.Marshal(b, m, deterministic)
 }
-func (m *UserMergeReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UserMergeReq.Merge(m, src)
+func (dst *UserMergeReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UserMergeReq.Merge(dst, src)
 }
 func (m *UserMergeReq) XXX_Size() int {
 	return xxx_messageInfo_UserMergeReq.Size(m)
@@ -434,17 +424,16 @@ func (m *UserMergeResp) Reset()         { *m = UserMergeResp{} }
 func (m *UserMergeResp) String() string { return proto.CompactTextString(m) }
 func (*UserMergeResp) ProtoMessage()    {}
 func (*UserMergeResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{9}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{9}
 }
-
 func (m *UserMergeResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserMergeResp.Unmarshal(m, b)
 }
 func (m *UserMergeResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_UserMergeResp.Marshal(b, m, deterministic)
 }
-func (m *UserMergeResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UserMergeResp.Merge(m, src)
+func (dst *UserMergeResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UserMergeResp.Merge(dst, src)
 }
 func (m *UserMergeResp) XXX_Size() int {
 	return xxx_messageInfo_UserMergeResp.Size(m)
@@ -465,17 +454,16 @@ func (m *CancelAuthenticationReq) Reset()         { *m = CancelAuthenticationReq
 func (m *CancelAuthenticationReq) String() string { return proto.CompactTextString(m) }
 func (*CancelAuthenticationReq) ProtoMessage()    {}
 func (*CancelAuthenticationReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{10}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{10}
 }
-
 func (m *CancelAuthenticationReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CancelAuthenticationReq.Unmarshal(m, b)
 }
 func (m *CancelAuthenticationReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_CancelAuthenticationReq.Marshal(b, m, deterministic)
 }
-func (m *CancelAuthenticationReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_CancelAuthenticationReq.Merge(m, src)
+func (dst *CancelAuthenticationReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CancelAuthenticationReq.Merge(dst, src)
 }
 func (m *CancelAuthenticationReq) XXX_Size() int {
 	return xxx_messageInfo_CancelAuthenticationReq.Size(m)
@@ -497,17 +485,16 @@ func (m *LogoutReq) Reset()         { *m = LogoutReq{} }
 func (m *LogoutReq) String() string { return proto.CompactTextString(m) }
 func (*LogoutReq) ProtoMessage()    {}
 func (*LogoutReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{11}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{11}
 }
-
 func (m *LogoutReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_LogoutReq.Unmarshal(m, b)
 }
 func (m *LogoutReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_LogoutReq.Marshal(b, m, deterministic)
 }
-func (m *LogoutReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_LogoutReq.Merge(m, src)
+func (dst *LogoutReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LogoutReq.Merge(dst, src)
 }
 func (m *LogoutReq) XXX_Size() int {
 	return xxx_messageInfo_LogoutReq.Size(m)
@@ -537,17 +524,16 @@ func (m *InitializeStaticVerifierReq) Reset()         { *m = InitializeStaticVer
 func (m *InitializeStaticVerifierReq) String() string { return proto.CompactTextString(m) }
 func (*InitializeStaticVerifierReq) ProtoMessage()    {}
 func (*InitializeStaticVerifierReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{12}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{12}
 }
-
 func (m *InitializeStaticVerifierReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_InitializeStaticVerifierReq.Unmarshal(m, b)
 }
 func (m *InitializeStaticVerifierReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_InitializeStaticVerifierReq.Marshal(b, m, deterministic)
 }
-func (m *InitializeStaticVerifierReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_InitializeStaticVerifierReq.Merge(m, src)
+func (dst *InitializeStaticVerifierReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_InitializeStaticVerifierReq.Merge(dst, src)
 }
 func (m *InitializeStaticVerifierReq) XXX_Size() int {
 	return xxx_messageInfo_InitializeStaticVerifierReq.Size(m)
@@ -583,17 +569,16 @@ func (m *InitializeStaticVerifierResp) Reset()         { *m = InitializeStaticVe
 func (m *InitializeStaticVerifierResp) String() string { return proto.CompactTextString(m) }
 func (*InitializeStaticVerifierResp) ProtoMessage()    {}
 func (*InitializeStaticVerifierResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{13}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{13}
 }
-
 func (m *InitializeStaticVerifierResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_InitializeStaticVerifierResp.Unmarshal(m, b)
 }
 func (m *InitializeStaticVerifierResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_InitializeStaticVerifierResp.Marshal(b, m, deterministic)
 }
-func (m *InitializeStaticVerifierResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_InitializeStaticVerifierResp.Merge(m, src)
+func (dst *InitializeStaticVerifierResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_InitializeStaticVerifierResp.Merge(dst, src)
 }
 func (m *InitializeStaticVerifierResp) XXX_Size() int {
 	return xxx_messageInfo_InitializeStaticVerifierResp.Size(m)
@@ -611,7 +596,7 @@ func (m *InitializeStaticVerifierResp) GetInitializationResult() []byte {
 	return nil
 }
 
-//// Authentication messages
+// // Authentication messages
 type StartAuthenticationReq struct {
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
@@ -622,17 +607,16 @@ func (m *StartAuthenticationReq) Reset()         { *m = StartAuthenticationReq{}
 func (m *StartAuthenticationReq) String() string { return proto.CompactTextString(m) }
 func (*StartAuthenticationReq) ProtoMessage()    {}
 func (*StartAuthenticationReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{14}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{14}
 }
-
 func (m *StartAuthenticationReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StartAuthenticationReq.Unmarshal(m, b)
 }
 func (m *StartAuthenticationReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_StartAuthenticationReq.Marshal(b, m, deterministic)
 }
-func (m *StartAuthenticationReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_StartAuthenticationReq.Merge(m, src)
+func (dst *StartAuthenticationReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StartAuthenticationReq.Merge(dst, src)
 }
 func (m *StartAuthenticationReq) XXX_Size() int {
 	return xxx_messageInfo_StartAuthenticationReq.Size(m)
@@ -657,17 +641,16 @@ func (m *VerifyReq) Reset()         { *m = VerifyReq{} }
 func (m *VerifyReq) String() string { return proto.CompactTextString(m) }
 func (*VerifyReq) ProtoMessage()    {}
 func (*VerifyReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{15}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{15}
 }
-
 func (m *VerifyReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_VerifyReq.Unmarshal(m, b)
 }
 func (m *VerifyReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_VerifyReq.Marshal(b, m, deterministic)
 }
-func (m *VerifyReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_VerifyReq.Merge(m, src)
+func (dst *VerifyReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VerifyReq.Merge(dst, src)
 }
 func (m *VerifyReq) XXX_Size() int {
 	return xxx_messageInfo_VerifyReq.Size(m)
@@ -706,29 +689,28 @@ func (m *VerifyReq) GetIdentityName() string {
 	return ""
 }
 
-/// TODO create structure of responses
+// / TODO create structure of responses
 type StartAuthenticationResp struct {
-	VerificationDirections map[string]string `protobuf:"bytes,1,rep,name=VerificationDirections,proto3" json:"VerificationDirections,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	XXX_NoUnkeyedLiteral   struct{}          `json:"-"`
-	XXX_unrecognized       []byte            `json:"-"`
-	XXX_sizecache          int32             `json:"-"`
+	AuthenticationSessionExist bool     `protobuf:"varint,1,opt,name=AuthenticationSessionExist,proto3" json:"AuthenticationSessionExist,omitempty"`
+	XXX_NoUnkeyedLiteral       struct{} `json:"-"`
+	XXX_unrecognized           []byte   `json:"-"`
+	XXX_sizecache              int32    `json:"-"`
 }
 
 func (m *StartAuthenticationResp) Reset()         { *m = StartAuthenticationResp{} }
 func (m *StartAuthenticationResp) String() string { return proto.CompactTextString(m) }
 func (*StartAuthenticationResp) ProtoMessage()    {}
 func (*StartAuthenticationResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{16}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{16}
 }
-
 func (m *StartAuthenticationResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StartAuthenticationResp.Unmarshal(m, b)
 }
 func (m *StartAuthenticationResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_StartAuthenticationResp.Marshal(b, m, deterministic)
 }
-func (m *StartAuthenticationResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_StartAuthenticationResp.Merge(m, src)
+func (dst *StartAuthenticationResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StartAuthenticationResp.Merge(dst, src)
 }
 func (m *StartAuthenticationResp) XXX_Size() int {
 	return xxx_messageInfo_StartAuthenticationResp.Size(m)
@@ -739,11 +721,11 @@ func (m *StartAuthenticationResp) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_StartAuthenticationResp proto.InternalMessageInfo
 
-func (m *StartAuthenticationResp) GetVerificationDirections() map[string]string {
+func (m *StartAuthenticationResp) GetAuthenticationSessionExist() bool {
 	if m != nil {
-		return m.VerificationDirections
+		return m.AuthenticationSessionExist
 	}
-	return nil
+	return false
 }
 
 type VerifyResp struct {
@@ -757,17 +739,16 @@ func (m *VerifyResp) Reset()         { *m = VerifyResp{} }
 func (m *VerifyResp) String() string { return proto.CompactTextString(m) }
 func (*VerifyResp) ProtoMessage()    {}
 func (*VerifyResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{17}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{17}
 }
-
 func (m *VerifyResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_VerifyResp.Unmarshal(m, b)
 }
 func (m *VerifyResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_VerifyResp.Marshal(b, m, deterministic)
 }
-func (m *VerifyResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_VerifyResp.Merge(m, src)
+func (dst *VerifyResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VerifyResp.Merge(dst, src)
 }
 func (m *VerifyResp) XXX_Size() int {
 	return xxx_messageInfo_VerifyResp.Size(m)
@@ -785,7 +766,7 @@ func (m *VerifyResp) GetVerifyStatus() bool {
 	return false
 }
 
-///// Support types
+// /// Support types
 type VerifierDetails struct {
 	Name                 string   `protobuf:"bytes,1,opt,name=Name,proto3" json:"Name,omitempty"`
 	IdentityName         string   `protobuf:"bytes,2,opt,name=IdentityName,proto3" json:"IdentityName,omitempty"`
@@ -802,17 +783,16 @@ func (m *VerifierDetails) Reset()         { *m = VerifierDetails{} }
 func (m *VerifierDetails) String() string { return proto.CompactTextString(m) }
 func (*VerifierDetails) ProtoMessage()    {}
 func (*VerifierDetails) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{18}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{18}
 }
-
 func (m *VerifierDetails) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_VerifierDetails.Unmarshal(m, b)
 }
 func (m *VerifierDetails) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_VerifierDetails.Marshal(b, m, deterministic)
 }
-func (m *VerifierDetails) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_VerifierDetails.Merge(m, src)
+func (dst *VerifierDetails) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_VerifierDetails.Merge(dst, src)
 }
 func (m *VerifierDetails) XXX_Size() int {
 	return xxx_messageInfo_VerifierDetails.Size(m)
@@ -877,17 +857,16 @@ func (m *IdentityData) Reset()         { *m = IdentityData{} }
 func (m *IdentityData) String() string { return proto.CompactTextString(m) }
 func (*IdentityData) ProtoMessage()    {}
 func (*IdentityData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{19}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{19}
 }
-
 func (m *IdentityData) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_IdentityData.Unmarshal(m, b)
 }
 func (m *IdentityData) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_IdentityData.Marshal(b, m, deterministic)
 }
-func (m *IdentityData) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_IdentityData.Merge(m, src)
+func (dst *IdentityData) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_IdentityData.Merge(dst, src)
 }
 func (m *IdentityData) XXX_Size() int {
 	return xxx_messageInfo_IdentityData.Size(m)
@@ -924,17 +903,16 @@ func (m *UserDetails) Reset()         { *m = UserDetails{} }
 func (m *UserDetails) String() string { return proto.CompactTextString(m) }
 func (*UserDetails) ProtoMessage()    {}
 func (*UserDetails) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{20}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{20}
 }
-
 func (m *UserDetails) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserDetails.Unmarshal(m, b)
 }
 func (m *UserDetails) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_UserDetails.Marshal(b, m, deterministic)
 }
-func (m *UserDetails) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_UserDetails.Merge(m, src)
+func (dst *UserDetails) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UserDetails.Merge(dst, src)
 }
 func (m *UserDetails) XXX_Size() int {
 	return xxx_messageInfo_UserDetails.Size(m)
@@ -970,17 +948,16 @@ func (m *LoginAsReq) Reset()         { *m = LoginAsReq{} }
 func (m *LoginAsReq) String() string { return proto.CompactTextString(m) }
 func (*LoginAsReq) ProtoMessage()    {}
 func (*LoginAsReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{21}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{21}
 }
-
 func (m *LoginAsReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_LoginAsReq.Unmarshal(m, b)
 }
 func (m *LoginAsReq) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_LoginAsReq.Marshal(b, m, deterministic)
 }
-func (m *LoginAsReq) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_LoginAsReq.Merge(m, src)
+func (dst *LoginAsReq) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LoginAsReq.Merge(dst, src)
 }
 func (m *LoginAsReq) XXX_Size() int {
 	return xxx_messageInfo_LoginAsReq.Size(m)
@@ -1011,17 +988,16 @@ func (m *LoginAsResp) Reset()         { *m = LoginAsResp{} }
 func (m *LoginAsResp) String() string { return proto.CompactTextString(m) }
 func (*LoginAsResp) ProtoMessage()    {}
 func (*LoginAsResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_61c7956abb761639, []int{22}
+	return fileDescriptor_identity_132ffd0aa167054a, []int{22}
 }
-
 func (m *LoginAsResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_LoginAsResp.Unmarshal(m, b)
 }
 func (m *LoginAsResp) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	return xxx_messageInfo_LoginAsResp.Marshal(b, m, deterministic)
 }
-func (m *LoginAsResp) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_LoginAsResp.Merge(m, src)
+func (dst *LoginAsResp) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_LoginAsResp.Merge(dst, src)
 }
 func (m *LoginAsResp) XXX_Size() int {
 	return xxx_messageInfo_LoginAsResp.Size(m)
@@ -1073,83 +1049,12 @@ func init() {
 	proto.RegisterType((*StartAuthenticationReq)(nil), "api.themakers.identity.StartAuthenticationReq")
 	proto.RegisterType((*VerifyReq)(nil), "api.themakers.identity.VerifyReq")
 	proto.RegisterType((*StartAuthenticationResp)(nil), "api.themakers.identity.StartAuthenticationResp")
-	proto.RegisterMapType((map[string]string)(nil), "api.themakers.identity.StartAuthenticationResp.VerificationDirectionsEntry")
 	proto.RegisterType((*VerifyResp)(nil), "api.themakers.identity.VerifyResp")
 	proto.RegisterType((*VerifierDetails)(nil), "api.themakers.identity.VerifierDetails")
 	proto.RegisterType((*IdentityData)(nil), "api.themakers.identity.IdentityData")
 	proto.RegisterType((*UserDetails)(nil), "api.themakers.identity.UserDetails")
 	proto.RegisterType((*LoginAsReq)(nil), "api.themakers.identity.LoginAsReq")
 	proto.RegisterType((*LoginAsResp)(nil), "api.themakers.identity.LoginAsResp")
-}
-
-func init() { proto.RegisterFile("identity.proto", fileDescriptor_61c7956abb761639) }
-
-var fileDescriptor_61c7956abb761639 = []byte{
-	// 1020 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x57, 0x5f, 0x6f, 0xe3, 0x44,
-	0x10, 0x97, 0x9d, 0x6b, 0x9a, 0x4c, 0x7a, 0x6d, 0x6f, 0xe9, 0xf5, 0x8c, 0xaf, 0x42, 0x61, 0x39,
-	0xa0, 0x42, 0x9c, 0xef, 0x94, 0xe3, 0x01, 0xf1, 0x80, 0xd4, 0x6b, 0x8a, 0x14, 0xae, 0xe5, 0x0e,
-	0x57, 0x20, 0x74, 0x2f, 0xc8, 0xa4, 0x4b, 0xba, 0x6a, 0x62, 0xbb, 0xbb, 0xeb, 0x0a, 0xf3, 0x80,
-	0x54, 0x21, 0x24, 0x24, 0x3e, 0x02, 0x2f, 0xbc, 0xf1, 0x01, 0xf8, 0x4c, 0xbc, 0xf0, 0x29, 0xd0,
-	0x7a, 0xd7, 0x8e, 0xff, 0xe6, 0x0f, 0x0f, 0x3c, 0xc5, 0x3b, 0x3b, 0x3b, 0xf3, 0xdb, 0x99, 0xd9,
-	0xdf, 0x4c, 0x60, 0x9b, 0x5e, 0x10, 0x5f, 0x50, 0x11, 0x3b, 0x21, 0x0b, 0x44, 0x80, 0xf6, 0xbd,
-	0x90, 0x3a, 0xe2, 0x92, 0xcc, 0xbc, 0x2b, 0xc2, 0xb8, 0x93, 0xee, 0xe2, 0x4d, 0xd8, 0x18, 0x46,
-	0xb3, 0x59, 0x8c, 0xdf, 0x84, 0x07, 0x5f, 0x13, 0x46, 0xbf, 0xa7, 0x84, 0xf1, 0x21, 0x11, 0x1e,
-	0x9d, 0x72, 0x97, 0x5c, 0x47, 0x84, 0x0b, 0xfc, 0xab, 0x31, 0xdf, 0xcb, 0xb6, 0x78, 0x18, 0xf8,
-	0x9c, 0xa0, 0xf7, 0x60, 0x7b, 0xa4, 0x6c, 0xd1, 0xf8, 0x0b, 0x6f, 0x46, 0xb8, 0x65, 0xf4, 0x5b,
-	0x87, 0x5d, 0xb7, 0x24, 0x45, 0x27, 0xd0, 0xcd, 0xcc, 0x5b, 0x66, 0xbf, 0x75, 0xd8, 0x1b, 0xbc,
-	0xef, 0xd4, 0x63, 0x72, 0xca, 0xbe, 0xe6, 0x27, 0xf1, 0x6b, 0xb0, 0xce, 0xe2, 0x12, 0x4e, 0x0d,
-	0x13, 0xd9, 0xd0, 0xd1, 0x4e, 0x63, 0xcb, 0xe8, 0x1b, 0x87, 0x5d, 0x37, 0x5b, 0x23, 0x0c, 0x5b,
-	0xe9, 0x29, 0x89, 0xc7, 0x32, 0x93, 0xfd, 0x82, 0x0c, 0xff, 0x66, 0xc2, 0xde, 0xb9, 0xf0, 0x98,
-	0x50, 0xd2, 0xb1, 0x27, 0x68, 0xe0, 0xbb, 0xe4, 0xba, 0x72, 0xd8, 0xa8, 0x1e, 0x2e, 0x38, 0x37,
-	0x4b, 0xce, 0x7d, 0xd8, 0xcd, 0x9b, 0x1c, 0x7a, 0xc2, 0xb3, 0x5a, 0x49, 0x08, 0x9e, 0x37, 0x85,
-	0xa0, 0x0e, 0x87, 0x53, 0x36, 0x72, 0xe2, 0x0b, 0x16, 0xbb, 0x15, 0xdb, 0xf6, 0x31, 0xdc, 0xaf,
-	0x55, 0x45, 0xbb, 0xd0, 0xba, 0x22, 0x69, 0x70, 0xe4, 0x27, 0xda, 0x83, 0x8d, 0x1b, 0x6f, 0x1a,
-	0xa9, 0x80, 0x6c, 0xb9, 0x6a, 0xf1, 0x89, 0xf9, 0xb1, 0x81, 0xff, 0x34, 0xe0, 0x7e, 0x0d, 0x0a,
-	0x1e, 0xae, 0x14, 0x8e, 0x0f, 0x8a, 0x57, 0x3e, 0x0e, 0x2e, 0xd2, 0x98, 0x57, 0xe4, 0x85, 0xd0,
-	0xb5, 0xaa, 0x79, 0x4b, 0xbf, 0x13, 0x5f, 0x77, 0x94, 0xaf, 0xbc, 0x0c, 0xf7, 0xa0, 0x7b, 0x2e,
-	0x3c, 0x11, 0xc9, 0x7a, 0xc5, 0x7f, 0x18, 0xd0, 0x56, 0x2b, 0xf4, 0x08, 0xee, 0x1e, 0x45, 0xe2,
-	0x52, 0x6a, 0x8e, 0x3d, 0x41, 0x2e, 0x12, 0xa0, 0x1d, 0xb7, 0x28, 0x94, 0x05, 0x9c, 0x13, 0x50,
-	0x7f, 0x92, 0xe0, 0xec, 0xb8, 0x25, 0xa9, 0xbc, 0x91, 0x4b, 0x66, 0x1e, 0xf5, 0xa9, 0x3f, 0xf9,
-	0xcc, 0x1b, 0x8b, 0x80, 0xf1, 0x04, 0x6d, 0xcb, 0xad, 0xc8, 0xd1, 0x01, 0x74, 0xcf, 0x09, 0xe7,
-	0x34, 0xf0, 0x47, 0x43, 0x0d, 0x79, 0x2e, 0xc0, 0xdb, 0xb0, 0xf5, 0x15, 0x27, 0xec, 0x8c, 0xb0,
-	0x09, 0x91, 0x90, 0x77, 0xe0, 0x6e, 0x6e, 0xcd, 0x43, 0xf9, 0x14, 0x8f, 0x3d, 0x7f, 0x4c, 0xa6,
-	0x79, 0x08, 0x49, 0x09, 0xe0, 0xc7, 0xd0, 0x3d, 0x0d, 0x26, 0x41, 0x24, 0x64, 0x5d, 0xf6, 0xa1,
-	0x77, 0x34, 0x9d, 0x6a, 0xc3, 0x5c, 0x5f, 0x2f, 0x2f, 0xc2, 0xb7, 0x26, 0x3c, 0x1c, 0xf9, 0x54,
-	0x50, 0x6f, 0x4a, 0x7f, 0x24, 0x32, 0x2e, 0x74, 0x9c, 0xe6, 0x69, 0xd5, 0xca, 0xfe, 0x01, 0xee,
-	0x49, 0x13, 0xd2, 0xc2, 0xbc, 0x7c, 0xd5, 0x0b, 0xfe, 0xbc, 0xa9, 0x7c, 0x17, 0xf8, 0x74, 0x2a,
-	0xc6, 0x54, 0x19, 0x57, 0x9d, 0xd8, 0x43, 0xd8, 0xaf, 0x57, 0x5e, 0xab, 0x90, 0x5d, 0x38, 0x68,
-	0x86, 0xc3, 0x43, 0x34, 0x80, 0xbd, 0x6c, 0x3f, 0x2d, 0xf2, 0x68, 0x2a, 0x12, 0xe3, 0x5b, 0x6e,
-	0xed, 0x1e, 0xb6, 0x60, 0x3f, 0x79, 0x1b, 0xd5, 0x04, 0xfd, 0x6e, 0x68, 0xa2, 0x8b, 0x57, 0x8d,
-	0xef, 0xff, 0xf9, 0x54, 0xfe, 0x31, 0xe0, 0x41, 0x2d, 0x70, 0x1e, 0xa2, 0x9f, 0x0d, 0xd8, 0x2f,
-	0xd0, 0x06, 0x65, 0x64, 0x2c, 0x74, 0x65, 0xc9, 0x6c, 0xbf, 0x58, 0x48, 0x56, 0x55, 0x8b, 0x4e,
-	0xbd, 0x35, 0x95, 0xee, 0x06, 0x57, 0xf6, 0x08, 0x1e, 0x2e, 0x38, 0xb6, 0x2c, 0xf1, 0xdd, 0x7c,
-	0xe2, 0x9f, 0x02, 0xa4, 0x99, 0xc8, 0xb1, 0x56, 0xac, 0xd8, 0x41, 0xbf, 0x96, 0x82, 0x0c, 0xff,
-	0x6d, 0xc0, 0x4e, 0xa9, 0xf9, 0x20, 0x04, 0x77, 0x72, 0xa9, 0x4b, 0xbe, 0x2b, 0xa1, 0x36, 0xab,
-	0xa1, 0x96, 0xbc, 0x72, 0x1e, 0x85, 0x61, 0xc0, 0x84, 0x4b, 0x26, 0xd1, 0xd4, 0x63, 0x49, 0xc2,
-	0x3a, 0x6e, 0x49, 0x5a, 0xd0, 0xbb, 0x21, 0x8c, 0xab, 0xc4, 0xe5, 0xf5, 0x12, 0xa9, 0x64, 0x33,
-	0x2d, 0x79, 0x29, 0x43, 0x3d, 0xb0, 0x36, 0x14, 0x9b, 0x15, 0x84, 0x39, 0x2d, 0x55, 0xe9, 0x56,
-	0xbb, 0xa0, 0xa5, 0x84, 0xf8, 0xd3, 0x39, 0x7e, 0xf9, 0xa6, 0xe4, 0x1d, 0xfd, 0xdc, 0x1d, 0x7d,
-	0xdd, 0xd0, 0x68, 0xa9, 0xa1, 0x65, 0x43, 0xc3, 0x18, 0x7a, 0x92, 0xb1, 0xd2, 0x10, 0x6d, 0x83,
-	0x39, 0x1a, 0xea, 0xc3, 0xe6, 0x68, 0x88, 0x86, 0x00, 0x5a, 0x95, 0x92, 0xb4, 0xd9, 0x3f, 0x6a,
-	0xa4, 0x8a, 0x1c, 0x10, 0x37, 0x77, 0x0e, 0xf7, 0x01, 0x4e, 0x83, 0x09, 0xf5, 0x8f, 0x24, 0xaf,
-	0x4b, 0x88, 0xd2, 0x65, 0x0a, 0x51, 0x7e, 0xe3, 0x2f, 0xa1, 0x97, 0x69, 0xf0, 0x10, 0x59, 0xb0,
-	0xa9, 0x89, 0x4f, 0x6b, 0xa5, 0xcb, 0xec, 0xb0, 0x39, 0x3f, 0x2c, 0xeb, 0xe6, 0x84, 0xb1, 0x80,
-	0xe9, 0x77, 0xa4, 0x16, 0x83, 0xbf, 0x3a, 0xf3, 0x17, 0x86, 0x7e, 0x02, 0xfb, 0x94, 0x72, 0x31,
-	0xca, 0x30, 0x1d, 0xf9, 0x17, 0xd9, 0xec, 0x81, 0x9e, 0x2c, 0x1b, 0x5f, 0x4a, 0x63, 0x94, 0xfd,
-	0x64, 0xd5, 0x79, 0x27, 0x9d, 0xad, 0x6e, 0x0d, 0x38, 0x90, 0x00, 0xce, 0xe2, 0x06, 0x08, 0x4f,
-	0x9b, 0x2c, 0x36, 0xcd, 0x48, 0xeb, 0x63, 0x78, 0x05, 0xbd, 0xe3, 0x4b, 0x32, 0xbe, 0xd2, 0x3d,
-	0xf5, 0xed, 0x05, 0x1c, 0xa0, 0x3a, 0xb0, 0xfd, 0xd6, 0x62, 0x15, 0x34, 0x81, 0xbd, 0xba, 0xee,
-	0xd6, 0x1c, 0xcf, 0x86, 0x5e, 0xb8, 0xd4, 0xd1, 0x2f, 0x06, 0x58, 0x4d, 0xcc, 0x8f, 0x9e, 0xfd,
-	0x87, 0xd6, 0x65, 0x7f, 0xb4, 0xfe, 0x21, 0x1e, 0xa2, 0x1b, 0x78, 0xa3, 0x86, 0x21, 0x91, 0xb3,
-	0x16, 0x9d, 0x5e, 0x37, 0xa7, 0xae, 0x89, 0xd0, 0x43, 0xb8, 0x57, 0x19, 0xe0, 0xd0, 0x87, 0xeb,
-	0x4c, 0x9c, 0xf6, 0xe3, 0x35, 0xb4, 0x79, 0x88, 0x5e, 0x42, 0x5b, 0xf1, 0x69, 0x73, 0x9d, 0x64,
-	0xbd, 0xd1, 0xc6, 0xcb, 0x54, 0x78, 0x88, 0x5e, 0x40, 0x5b, 0x8d, 0x3b, 0xcd, 0x06, 0xb3, 0x71,
-	0x68, 0x69, 0x3d, 0x7c, 0x03, 0xdd, 0x6c, 0xce, 0x42, 0x8d, 0x7c, 0x94, 0x1f, 0xcd, 0xec, 0x77,
-	0x57, 0xd0, 0xe2, 0xe1, 0x80, 0xc0, 0x4e, 0x4a, 0x1a, 0xaf, 0x18, 0xbd, 0xf1, 0x04, 0x41, 0x2e,
-	0x6c, 0x6a, 0x6e, 0x42, 0x78, 0x01, 0x74, 0x4d, 0x6f, 0xf6, 0x3b, 0x4b, 0x75, 0x78, 0xf8, 0x7c,
-	0xf7, 0x75, 0xf6, 0xaf, 0xee, 0xdb, 0xe4, 0x5f, 0xdd, 0x77, 0xed, 0xe4, 0xe7, 0xd9, 0xbf, 0x01,
-	0x00, 0x00, 0xff, 0xff, 0x85, 0xee, 0xf7, 0xba, 0xee, 0x0d, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1164,9 +1069,9 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type IdentityClient interface {
-	//method for give identities and verifiers for server
+	// method for give identities and verifiers for server
 	ListIdentitiesAndVerifiers(ctx context.Context, in *VerifiersDetailsRequest, opts ...grpc.CallOption) (*VerifierDetailsResponse, error)
-	//method for give identities and verifiers for user
+	// method for give identities and verifiers for user
 	ListMyIdentitiesAndVerifiers(ctx context.Context, in *MyVerifiersDetailRequest, opts ...grpc.CallOption) (*VerifierDetailsResponse, error)
 	CheckStatus(ctx context.Context, in *StatusReq, opts ...grpc.CallOption) (*Status, error)
 	CancelAuthentication(ctx context.Context, in *CancelAuthenticationReq, opts ...grpc.CallOption) (*Status, error)
@@ -1278,9 +1183,9 @@ func (c *identityClient) UserMerge(ctx context.Context, in *UserMergeReq, opts .
 
 // IdentityServer is the server API for Identity service.
 type IdentityServer interface {
-	//method for give identities and verifiers for server
+	// method for give identities and verifiers for server
 	ListIdentitiesAndVerifiers(context.Context, *VerifiersDetailsRequest) (*VerifierDetailsResponse, error)
-	//method for give identities and verifiers for user
+	// method for give identities and verifiers for user
 	ListMyIdentitiesAndVerifiers(context.Context, *MyVerifiersDetailRequest) (*VerifierDetailsResponse, error)
 	CheckStatus(context.Context, *StatusReq) (*Status, error)
 	CancelAuthentication(context.Context, *CancelAuthenticationReq) (*Status, error)
@@ -1290,41 +1195,6 @@ type IdentityServer interface {
 	Verify(context.Context, *VerifyReq) (*VerifyResp, error)
 	Logout(context.Context, *LogoutReq) (*Status, error)
 	UserMerge(context.Context, *UserMergeReq) (*UserMergeResp, error)
-}
-
-// UnimplementedIdentityServer can be embedded to have forward compatible implementations.
-type UnimplementedIdentityServer struct {
-}
-
-func (*UnimplementedIdentityServer) ListIdentitiesAndVerifiers(ctx context.Context, req *VerifiersDetailsRequest) (*VerifierDetailsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListIdentitiesAndVerifiers not implemented")
-}
-func (*UnimplementedIdentityServer) ListMyIdentitiesAndVerifiers(ctx context.Context, req *MyVerifiersDetailRequest) (*VerifierDetailsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListMyIdentitiesAndVerifiers not implemented")
-}
-func (*UnimplementedIdentityServer) CheckStatus(ctx context.Context, req *StatusReq) (*Status, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CheckStatus not implemented")
-}
-func (*UnimplementedIdentityServer) CancelAuthentication(ctx context.Context, req *CancelAuthenticationReq) (*Status, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CancelAuthentication not implemented")
-}
-func (*UnimplementedIdentityServer) InitializeStaticVerifier(ctx context.Context, req *InitializeStaticVerifierReq) (*InitializeStaticVerifierResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method InitializeStaticVerifier not implemented")
-}
-func (*UnimplementedIdentityServer) StartAuthentication(ctx context.Context, req *StartAuthenticationReq) (*StartAuthenticationResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StartAuthentication not implemented")
-}
-func (*UnimplementedIdentityServer) StartVerification(ctx context.Context, req *StartVerificationReq) (*StartVerificationResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StartVerification not implemented")
-}
-func (*UnimplementedIdentityServer) Verify(ctx context.Context, req *VerifyReq) (*VerifyResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Verify not implemented")
-}
-func (*UnimplementedIdentityServer) Logout(ctx context.Context, req *LogoutReq) (*Status, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
-}
-func (*UnimplementedIdentityServer) UserMerge(ctx context.Context, req *UserMergeReq) (*UserMergeResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UserMerge not implemented")
 }
 
 func RegisterIdentityServer(s *grpc.Server, srv IdentityServer) {
@@ -1589,14 +1459,6 @@ type IdentityPrivateServer interface {
 	LoginAs(context.Context, *LoginAsReq) (*LoginAsResp, error)
 }
 
-// UnimplementedIdentityPrivateServer can be embedded to have forward compatible implementations.
-type UnimplementedIdentityPrivateServer struct {
-}
-
-func (*UnimplementedIdentityPrivateServer) LoginAs(ctx context.Context, req *LoginAsReq) (*LoginAsResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method LoginAs not implemented")
-}
-
 func RegisterIdentityPrivateServer(s *grpc.Server, srv IdentityPrivateServer) {
 	s.RegisterService(&_IdentityPrivate_serviceDesc, srv)
 }
@@ -1630,4 +1492,73 @@ var _IdentityPrivate_serviceDesc = grpc.ServiceDesc{
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "identity.proto",
+}
+
+func init() { proto.RegisterFile("identity.proto", fileDescriptor_identity_132ffd0aa167054a) }
+
+var fileDescriptor_identity_132ffd0aa167054a = []byte{
+	// 993 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0xbc, 0x57, 0xdd, 0x8e, 0xdb, 0x44,
+	0x14, 0x96, 0x9d, 0x6e, 0x76, 0x73, 0xb2, 0xdd, 0xdd, 0x0e, 0xdb, 0xad, 0x31, 0x2b, 0xb4, 0x0c,
+	0xe5, 0x47, 0x88, 0x7a, 0xab, 0x94, 0x0b, 0xc4, 0x45, 0xa5, 0xed, 0x26, 0x48, 0x81, 0x2e, 0x2d,
+	0xae, 0x40, 0xd0, 0x1b, 0x64, 0x92, 0x21, 0x1d, 0xad, 0x63, 0x1b, 0x7b, 0x1c, 0xd5, 0x5c, 0x20,
+	0xf5, 0x02, 0x09, 0x89, 0x47, 0xe0, 0x86, 0x3b, 0x1e, 0x80, 0x67, 0xe2, 0x3d, 0x98, 0xf1, 0x8c,
+	0x1d, 0xff, 0xe6, 0x87, 0x8b, 0x5e, 0xc5, 0x73, 0xe6, 0xcc, 0x39, 0xdf, 0x9c, 0xf9, 0xce, 0x4f,
+	0xe0, 0x80, 0x4e, 0x89, 0xc7, 0x28, 0x4b, 0xac, 0x20, 0xf4, 0x99, 0x8f, 0x4e, 0x9c, 0x80, 0x5a,
+	0xec, 0x05, 0x99, 0x3b, 0xd7, 0x24, 0x8c, 0xac, 0x6c, 0x17, 0xef, 0xc2, 0xce, 0x30, 0x9e, 0xcf,
+	0x13, 0xfc, 0x26, 0xdc, 0xf9, 0x96, 0x84, 0xf4, 0x27, 0xca, 0xb7, 0x87, 0x84, 0x39, 0xd4, 0x8d,
+	0x6c, 0xf2, 0x73, 0x4c, 0x22, 0x86, 0x7f, 0xd7, 0x96, 0x7b, 0xf9, 0x56, 0x14, 0xf8, 0x5e, 0x44,
+	0xd0, 0xfb, 0x70, 0x30, 0x96, 0xb6, 0x68, 0xf2, 0x95, 0x33, 0x27, 0x91, 0xa1, 0x9d, 0x75, 0x3e,
+	0xec, 0xd9, 0x15, 0x29, 0x1a, 0x41, 0x2f, 0x37, 0x6f, 0xe8, 0x5c, 0xa5, 0x3f, 0xf8, 0xc0, 0x6a,
+	0xc6, 0x64, 0x55, 0x7d, 0x2d, 0x4f, 0xe2, 0xe7, 0x60, 0x5c, 0x25, 0x15, 0x9c, 0x0a, 0x26, 0x32,
+	0x61, 0x4f, 0x39, 0x4d, 0x38, 0x08, 0x8d, 0x83, 0xc8, 0xd7, 0x08, 0xc3, 0x7e, 0x76, 0x4a, 0xe0,
+	0xe1, 0x08, 0xc4, 0x7e, 0x49, 0x86, 0xff, 0xd0, 0xe1, 0xf8, 0x19, 0x73, 0x42, 0x26, 0xa5, 0x13,
+	0x87, 0x51, 0xdf, 0xe3, 0xc6, 0x6b, 0x87, 0xb5, 0xfa, 0xe1, 0x92, 0x73, 0xbd, 0xe2, 0xdc, 0x83,
+	0xa3, 0xa2, 0xc9, 0xa1, 0xc3, 0x1c, 0xa3, 0x93, 0x86, 0xe0, 0x51, 0x5b, 0x08, 0x9a, 0x70, 0x58,
+	0x55, 0x23, 0x23, 0x8f, 0x85, 0x89, 0x5d, 0xb3, 0x6d, 0x5e, 0xc2, 0xed, 0x46, 0x55, 0x74, 0x04,
+	0x9d, 0x6b, 0x92, 0x05, 0x47, 0x7c, 0xa2, 0x63, 0xd8, 0x59, 0x38, 0x6e, 0x2c, 0x03, 0xb2, 0x6f,
+	0xcb, 0xc5, 0x67, 0xfa, 0xa7, 0x1a, 0xfe, 0x5b, 0x83, 0xdb, 0x0d, 0x28, 0xa2, 0x60, 0xa3, 0x70,
+	0x7c, 0x54, 0xbe, 0xf2, 0xa5, 0x3f, 0xcd, 0x62, 0x5e, 0x93, 0x97, 0x42, 0xd7, 0xa9, 0xbf, 0x5b,
+	0xf6, 0x9d, 0xfa, 0xba, 0x21, 0x7d, 0x15, 0x65, 0xb8, 0x0f, 0x3d, 0x0e, 0x94, 0xc5, 0x82, 0xaf,
+	0xf8, 0x2f, 0x0d, 0xba, 0x72, 0x85, 0xee, 0xc2, 0xcd, 0x8b, 0x98, 0xc7, 0x96, 0x6b, 0x72, 0x6f,
+	0x64, 0x9a, 0x02, 0xdd, 0xb3, 0xcb, 0x42, 0x41, 0xe0, 0x82, 0x80, 0x7a, 0xb3, 0x14, 0xe7, 0x9e,
+	0x5d, 0x91, 0x8a, 0x1b, 0xd9, 0xfc, 0x99, 0xa8, 0xc7, 0x17, 0x9f, 0x3b, 0x13, 0xe6, 0x73, 0x1e,
+	0x0b, 0xb4, 0x1d, 0xbb, 0x26, 0x47, 0xa7, 0x1c, 0x11, 0x89, 0x22, 0x7e, 0xc1, 0xf1, 0x50, 0x41,
+	0x5e, 0x0a, 0xf0, 0x01, 0xec, 0x7f, 0x13, 0x91, 0xf0, 0x8a, 0x84, 0x33, 0x22, 0x20, 0x1f, 0xc2,
+	0xcd, 0xc2, 0x3a, 0x0a, 0x44, 0x2a, 0x5e, 0x3a, 0xde, 0x84, 0xb8, 0x45, 0x08, 0x29, 0x05, 0xf0,
+	0x3d, 0xe8, 0x3d, 0xf6, 0x67, 0x7e, 0xcc, 0x04, 0x2f, 0xcf, 0xa0, 0x7f, 0xe1, 0xba, 0xca, 0x70,
+	0xa4, 0xae, 0x57, 0x14, 0xe1, 0x57, 0x3a, 0xbc, 0x35, 0xf6, 0x78, 0x16, 0x3a, 0x2e, 0xfd, 0x85,
+	0x88, 0xb8, 0xd0, 0x49, 0xf6, 0x4e, 0x9b, 0x32, 0xfb, 0x25, 0xdc, 0x12, 0x26, 0x84, 0x85, 0x25,
+	0x7d, 0x65, 0x06, 0x7f, 0xd1, 0x46, 0xdf, 0x15, 0x3e, 0xad, 0x9a, 0x31, 0x49, 0xe3, 0xba, 0x13,
+	0x73, 0x08, 0x27, 0xcd, 0xca, 0x5b, 0x11, 0xd9, 0x86, 0xd3, 0x76, 0x38, 0x9c, 0xce, 0x03, 0x38,
+	0xce, 0xf7, 0x33, 0x92, 0xc7, 0x2e, 0x4b, 0x8d, 0xef, 0xdb, 0x8d, 0x7b, 0xd8, 0x80, 0x93, 0x34,
+	0x37, 0xea, 0x0f, 0xf4, 0xa7, 0xa6, 0x0a, 0x5d, 0xb2, 0x69, 0x7c, 0x5f, 0x67, 0xaa, 0x7c, 0x0f,
+	0x77, 0x1a, 0x71, 0xf3, 0x30, 0x3c, 0x04, 0xb3, 0x2c, 0x55, 0x24, 0x1a, 0xbd, 0xa4, 0x11, 0x53,
+	0xdc, 0x5a, 0xa1, 0x81, 0xef, 0x03, 0x64, 0xf7, 0x2e, 0xd4, 0x88, 0x44, 0xe6, 0xa2, 0x3a, 0x5f,
+	0x92, 0xe1, 0x7f, 0x35, 0x38, 0xac, 0x94, 0x7a, 0x84, 0xe0, 0x46, 0x21, 0x50, 0xe9, 0x77, 0xed,
+	0x62, 0x7a, 0xfd, 0x62, 0x22, 0x8b, 0x9f, 0xc5, 0x41, 0xe0, 0x87, 0x3c, 0x31, 0x66, 0xb1, 0xeb,
+	0x84, 0x69, 0x78, 0x78, 0x16, 0x97, 0xa5, 0x25, 0xbd, 0x05, 0xa7, 0xac, 0x0c, 0x53, 0x51, 0x2f,
+	0x95, 0x8a, 0xda, 0xa1, 0x24, 0x4f, 0xc4, 0x9d, 0x07, 0xc6, 0x8e, 0xac, 0x1d, 0x25, 0x61, 0x41,
+	0x4b, 0xf2, 0xca, 0xe8, 0x96, 0xb4, 0xa4, 0x10, 0x3f, 0x5c, 0xe2, 0x17, 0x0c, 0x16, 0x77, 0xf4,
+	0x0a, 0x77, 0xf4, 0x54, 0xfb, 0xa0, 0x95, 0xf6, 0x91, 0xb7, 0xe8, 0x09, 0xf4, 0x45, 0x7d, 0xc8,
+	0x42, 0x74, 0x00, 0x3a, 0xaf, 0x2a, 0xf2, 0x30, 0xff, 0x42, 0x43, 0x00, 0xa5, 0x4a, 0x49, 0xd6,
+	0x5a, 0xef, 0xb6, 0x26, 0x66, 0x01, 0x88, 0x5d, 0x38, 0x87, 0xcf, 0x00, 0x78, 0x61, 0xa1, 0xde,
+	0x85, 0xa8, 0xa2, 0x02, 0xa2, 0x70, 0x99, 0x41, 0x14, 0xdf, 0xf8, 0x6b, 0xe8, 0xe7, 0x1a, 0xfc,
+	0x85, 0x0d, 0xd8, 0x55, 0xef, 0xaf, 0xb4, 0xb2, 0x65, 0x7e, 0x58, 0x5f, 0x1e, 0x16, 0xe9, 0x39,
+	0x0a, 0x43, 0x3f, 0x54, 0xac, 0x95, 0x8b, 0xc1, 0x3f, 0x7b, 0x4b, 0x3e, 0xa3, 0x5f, 0xc1, 0x7c,
+	0xcc, 0x89, 0x34, 0xce, 0x31, 0x5d, 0x78, 0xd3, 0xbc, 0xd3, 0xa3, 0xf3, 0x75, 0xc3, 0x42, 0x65,
+	0x68, 0x31, 0xcf, 0x37, 0x9d, 0x2e, 0xb2, 0x49, 0xe6, 0x95, 0x06, 0xa7, 0x02, 0xc0, 0x55, 0xd2,
+	0x02, 0xe1, 0x7e, 0x9b, 0xc5, 0xb6, 0x89, 0x64, 0x7b, 0x0c, 0x4f, 0xa1, 0x7f, 0xf9, 0x82, 0x4c,
+	0xae, 0x55, 0x07, 0x7b, 0x67, 0xc5, 0x78, 0x20, 0xfb, 0x9d, 0xf9, 0xf6, 0x6a, 0x15, 0x34, 0x83,
+	0xe3, 0xa6, 0x5e, 0xd2, 0x1e, 0xcf, 0x96, 0xce, 0xb3, 0xd6, 0xd1, 0x6f, 0x1a, 0x18, 0x6d, 0x75,
+	0x16, 0x3d, 0xf8, 0x1f, 0x8d, 0xc2, 0xfc, 0x64, 0xfb, 0x43, 0x9c, 0x97, 0x0b, 0x78, 0xa3, 0xa1,
+	0xc4, 0x21, 0x6b, 0xe5, 0xa4, 0x55, 0xbf, 0xee, 0xf9, 0x56, 0xfa, 0xdc, 0x6f, 0x00, 0xb7, 0x6a,
+	0xe3, 0x12, 0xfa, 0x78, 0x9b, 0xf9, 0xce, 0xbc, 0xb7, 0x85, 0x36, 0xf7, 0xf8, 0x04, 0xba, 0xb2,
+	0x9e, 0xb6, 0xf3, 0x24, 0xef, 0x44, 0x26, 0x5e, 0xa7, 0xc2, 0x0d, 0x7e, 0x09, 0x5d, 0x39, 0x5c,
+	0xb4, 0x1b, 0xcc, 0x87, 0x8f, 0xb5, 0x7c, 0xf8, 0x0e, 0x7a, 0xf9, 0x54, 0x83, 0x5a, 0xeb, 0x51,
+	0x71, 0x10, 0x32, 0xdf, 0xdb, 0x40, 0x2b, 0x0a, 0x06, 0x04, 0x0e, 0xb3, 0xa2, 0xf1, 0x34, 0xa4,
+	0x0b, 0x3e, 0xc5, 0x21, 0x1b, 0x76, 0x55, 0x6d, 0x42, 0x78, 0x05, 0x74, 0x55, 0xde, 0xcc, 0x77,
+	0xd7, 0xea, 0x44, 0xc1, 0xa3, 0xa3, 0xe7, 0xf9, 0x7f, 0xa8, 0x1f, 0xd2, 0xff, 0x50, 0x3f, 0x76,
+	0xd3, 0x9f, 0x07, 0xff, 0x05, 0x00, 0x00, 0xff, 0xff, 0x97, 0xec, 0xc6, 0xb6, 0x5c, 0x0d, 0x00,
+	0x00,
 }

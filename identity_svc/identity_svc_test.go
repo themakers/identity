@@ -20,14 +20,6 @@ import (
 
 type request struct{}
 
-/*
-func TestPublicIdentityService_ListIdentitiesAndVerifiers(t *testing.T) {
-	testidn := identity.IdentityData{Name:"email", Identity:"test@test.test"}
-	convey.Convey("Simple testing", func() {
-		convey.So(testidn, convey.ShouldEqual, testidn)
-	})
-}
-*/
 func serve(ctx context.Context, verifiers ...identity.Verifier) (port int) {
 	server := grpc.NewServer()
 
@@ -35,7 +27,7 @@ func serve(ctx context.Context, verifiers ...identity.Verifier) (port int) {
 	if err != nil {
 		panic(err)
 	}
-	backend, err := backend_mongo.New("identity", "idn", "127.0.0.1", 27017)
+	backend, err := backend_mongo.New("identity_test", "idn", "127.0.0.1", 27017)
 
 	stPoll := session_redis.NewStoragePool("127.0.0.1:6379", "redis")
 
@@ -92,6 +84,61 @@ func TestIntt(t *testing.T) {
 
 	})
 
+	Convey("Test user start authentication", t, func() {
+		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{})
+		if err != nil {
+			panic(err)
+		}
+		resAuth, err := client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{})
+		if err != nil {
+			panic(err)
+		}
+		So(resAuth.AuthenticationSessionExist, ShouldEqual, true)
+	})
+
+	Convey("Test user verification", t, func() {
+		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{})
+		if err != nil {
+			panic(err)
+		}
+		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{})
+		if err != nil {
+			panic(err)
+		}
+		vd := make(map[string][]byte)
+		vd["mock_identity"] = []byte{}
+		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
+
+		So(svResp.Identity, ShouldEqual, "79991112233")
+		So(svResp.IdentityName, ShouldEqual, "mock_identity")
+		So(svResp.VerifierName, ShouldEqual, "mock_regular")
+		So(svResp.VerificationCode, ShouldNotEqual, "")
+
+	})
+
+	Convey("Test user verify", t, func() {
+		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{})
+		if err != nil {
+			panic(err)
+		}
+		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{})
+		if err != nil {
+			panic(err)
+		}
+		vd := make(map[string][]byte)
+		vd["mock_identity"] = []byte{}
+		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
+
+		vResp, err := client.Verify(ctx, &identity_proto.VerifyReq{Identity: regularVerificationData.Identity, VerificationCode: regularVerificationData.Code, VerifierName: svResp.VerifierName, IdentityName: svResp.IdentityName})
+
+		if err != nil {
+			panic(err)
+		}
+		So(regularVerificationData.Code, ShouldEqual, svResp.VerificationCode)
+		So(vResp.VerifyStatus, ShouldEqual, true)
+
+	})
+
 	Convey("Test user start verification", t, func() {
 
 		// пользователь получает список доступных identity and verifiers
@@ -103,6 +150,7 @@ func TestIntt(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
+		//So(sres, ShouldEqual, true)
 		vd := make(map[string][]byte)
 		vd["mock_identity"] = []byte{}
 		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})

@@ -15,7 +15,7 @@ func (sess *Session) StartRegularVerification(ctx context.Context, ver, idn stri
 
 	idn, err = sess.manager.idn[p.Info().IdentityName].NormalizeAndValidateData(idn)
 
-	// TODO Obtain verifier data frombackend
+	// TODO Obtain verifier data from backend
 	// TODO realise search by two parameters
 	// TODO modificate starting function
 	/*

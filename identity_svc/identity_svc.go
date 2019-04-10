@@ -79,9 +79,11 @@ func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *id
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	vd := []identity.VerifierData{}
+	// TODO use session function to start verification
+
 	code, idnn := pis.is.mgr.StartVerification(req.Identity, req.VerifierName, ctx, vd)
 
-	return &identity_proto.StartVerificationResp{IdentityName: idnn, VerifierName: req.VerifierName, VerificationCode: code}, nil
+	return &identity_proto.StartVerificationResp{IdentityName: idnn, VerifierName: req.VerifierName, VerificationCode: code, Identity: req.Identity}, nil
 }
 
 func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, req *identity_proto.CancelAuthenticationReq) (resp *identity_proto.Status, err error) {
@@ -91,14 +93,17 @@ func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, req 
 func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *identity_proto.StartAuthenticationReq) (resp *identity_proto.StartAuthenticationResp, err error) {
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
+	_ = sess.HandleIncomingIdentity(ctx, &identity.IdentityData{})
 
-	authres := pis.is.mgr.StartAuthentication(ctx)
+	authres, err := pis.is.mgr.StartAuthentication(ctx)
+	if err != nil {
+		panic(err)
+	}
 	if authres {
 
-		verdir := make(map[string]string)
-		return &identity_proto.StartAuthenticationResp{VerificationDirections: verdir}, nil
+		return &identity_proto.StartAuthenticationResp{AuthenticationSessionExist: true}, nil
 	}
-	return &identity_proto.StartAuthenticationResp{}, nil
+	return &identity_proto.StartAuthenticationResp{AuthenticationSessionExist: false}, nil
 
 }
 
@@ -157,6 +162,7 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_prot
 	defer sess.Dispose()
 	resp = &identity_proto.VerifyResp{}
 	code := pis.is.mgr.GetVerificationCode(ctx, req.VerifierName)
+	code = "2326" // todo delete after using mongo backend
 	if code == req.VerificationCode {
 		resp.VerifyStatus = true
 	} else {
@@ -172,9 +178,6 @@ func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_p
 	defer sess.Dispose()
 	resp := &identity_proto.Status{}
 
-	/*if sessionToken == "" {
-		panic("No session")
-	}*/
 	authentication, err := pis.is.mgr.GetStatus(ctx)
 	if err != nil {
 		panic(err)

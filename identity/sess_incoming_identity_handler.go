@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func (sess *Session) handleIncomingIdentity(ctx context.Context, identity *IdentityData) (err error) {
+func (sess *Session) HandleIncomingIdentity(ctx context.Context, identity *IdentityData) (err error) {
 	userID, err := sess.sess.GetUser()
 	if err != nil {
 		return err

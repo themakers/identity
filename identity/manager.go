@@ -193,13 +193,14 @@ func (mgr *Manager) StartVerification(idn, vn string, ctx context.Context, vd []
 	return securitycode, vi.IdentityName
 }
 
-func (mgr *Manager) StartAuthentication(ctx context.Context) bool {
+func (mgr *Manager) StartAuthentication(ctx context.Context) (res bool, err error) {
 	sesstoken := getIncomingSessionToken(ctx)
-	_, err := mgr.backend.CreateAuthentication(sesstoken)
+
+	_, err = mgr.backend.CreateAuthentication(sesstoken)
 	if err != nil {
-		return false
+		return false, err
 	}
-	return true
+	return true, nil
 
 }
 

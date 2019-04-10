@@ -13,8 +13,9 @@ import (
 var _ identity.Backend = new(Backend)
 
 const (
-	collVerifications = "verifications"
-	collUsers         = "users"
+	collVerifications   = "verifications"
+	collUsers           = "users"
+	collAuthentications = "authentications"
 )
 
 type Backend struct {
@@ -185,10 +186,10 @@ func (b *Backend) CreateUser(iden *identity.IdentityData) (*identity.User, error
 
 func (b *Backend) CreateAuthentication(SessionToken string) (*identity.Authentication, error) {
 	fs := make(map[string]bool)
-	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 99, UserID: "", FactorsStatus: fs}, nil
+	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 99, UserID: "123", FactorsStatus: fs}, nil
 }
 
 func (b *Backend) GetAuthenticationBySessionToken(SessionToken string) (*identity.Authentication, error) {
 	fs := make(map[string]bool)
-	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 1, UserID: "", FactorsStatus: fs}, nil
+	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 1, UserID: "123", FactorsStatus: fs}, nil
 }

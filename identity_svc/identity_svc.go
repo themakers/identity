@@ -81,8 +81,6 @@ func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *id
 	vd := []identity.VerifierData{}
 	code, idnn := pis.is.mgr.StartVerification(req.Identity, req.VerifierName, ctx, vd)
 
-	//resp := &identity_proto.StartVerificationResp{}
-
 	return &identity_proto.StartVerificationResp{IdentityName: idnn, VerifierName: req.VerifierName, VerificationCode: code}, nil
 }
 
@@ -94,11 +92,7 @@ func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 
-	sessToken := pis.is.mgr.GetSessionToken(ctx)
-	/*if sessToken == "" {
-		panic("No session")
-	}*/
-	authres := pis.is.mgr.StartAuthentication(sessToken)
+	authres := pis.is.mgr.StartAuthentication(ctx)
 	if authres {
 
 		verdir := make(map[string]string)
@@ -132,6 +126,12 @@ func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 
+	/*sess.
+
+	sessToken := pis.is.mgr.GetSessionToken(ctx)
+	if sessToken == "" {
+		panic("Empty session")
+	}*/
 	resp := &identity_proto.VerifierDetailsResponse{}
 	idns, vers := pis.is.mgr.ListAllIndentitiesAndVerifiers()
 
@@ -156,7 +156,7 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_prot
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	resp = &identity_proto.VerifyResp{}
-	code := pis.is.mgr.GetVerificationCode(pis.is.mgr.GetSessionToken(ctx), req.VerifierName)
+	code := pis.is.mgr.GetVerificationCode(ctx, req.VerifierName)
 	if code == req.VerificationCode {
 		resp.VerifyStatus = true
 	} else {
@@ -172,11 +172,10 @@ func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_p
 	defer sess.Dispose()
 	resp := &identity_proto.Status{}
 
-	sessionToken := pis.is.mgr.GetSessionToken(ctx)
 	/*if sessionToken == "" {
 		panic("No session")
 	}*/
-	authentication, err := pis.is.mgr.GetStatus(sessionToken)
+	authentication, err := pis.is.mgr.GetStatus(ctx)
 	if err != nil {
 		panic(err)
 	}

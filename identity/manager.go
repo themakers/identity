@@ -118,7 +118,7 @@ func (mgr *Manager) ListAllIndentitiesAndVerifiers() (idn []IdentityData, ver []
 
 const SessionTokenName = "session_token"
 
-func (mgr *Manager) GetSessionToken(ctx context.Context) (token string) {
+func getIncomingSessionToken(ctx context.Context) (token string) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return ""
@@ -136,7 +136,7 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 		manager: mgr,
 	}
 
-	if s, err := mgr.sessMgr.Session(mgr.GetSessionToken(ctx)); err != nil {
+	if s, err := mgr.sessMgr.Session(getIncomingSessionToken(ctx)); err != nil {
 		panic(err)
 	} else {
 		// FIXME Make configurable
@@ -149,6 +149,7 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 
 	md := make(metadata.MD)
 	token, _ := sess.sess.GetID()
+
 	md.Set(SessionTokenName, token)
 	if err := grpc.SetTrailer(ctx, md); err != nil {
 		panic(err)
@@ -157,14 +158,15 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 	return sess
 }
 
-func (mgr *Manager) GetStatus(SessionToken string) (*Authentication, error) {
-	auth, err := mgr.backend.GetAuthenticationBySessionToken(SessionToken)
+func (mgr *Manager) GetStatus(ctx context.Context) (*Authentication, error) {
+	token := getIncomingSessionToken(ctx)
+	auth, err := mgr.backend.GetAuthenticationBySessionToken(token)
 	if err != nil {
 		return &Authentication{}, err
 	}
 
 	if auth == nil {
-		auth, err = mgr.backend.CreateAuthentication(SessionToken)
+		auth, err = mgr.backend.CreateAuthentication(token)
 		if err != nil {
 			panic(err)
 		}
@@ -191,7 +193,8 @@ func (mgr *Manager) StartVerification(idn, vn string, ctx context.Context, vd []
 	return securitycode, vi.IdentityName
 }
 
-func (mgr *Manager) StartAuthentication(sesstoken string) bool {
+func (mgr *Manager) StartAuthentication(ctx context.Context) bool {
+	sesstoken := getIncomingSessionToken(ctx)
 	_, err := mgr.backend.CreateAuthentication(sesstoken)
 	if err != nil {
 		return false
@@ -200,8 +203,9 @@ func (mgr *Manager) StartAuthentication(sesstoken string) bool {
 
 }
 
-func (mgr *Manager) GetVerificationCode(sessiontoken, vname string) string {
-	auth, err := mgr.backend.GetAuthenticationBySessionToken(sessiontoken)
+func (mgr *Manager) GetVerificationCode(ctx context.Context, vname string) string {
+	token := getIncomingSessionToken(ctx)
+	auth, err := mgr.backend.GetAuthenticationBySessionToken(token)
 	if err != nil {
 		panic(err)
 	}

@@ -116,12 +116,20 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 	}
 
 	var user UserInfo
-
-	if err := json.Unmarshal(data, user); err != nil {
+	var response response
+	//todo: validate service answer
+	if err := json.Unmarshal(data, response); err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal([]byte(response.Response), user); err != nil {
 		return nil, err
 	}
 
 	return &identity.IdentityData{}, nil
+}
+
+type response struct {
+	Response string `json:"response"`
 }
 
 type UserInfo struct {

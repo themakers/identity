@@ -1,4 +1,4 @@
-package verifier_github
+package verifier_odnoklassniki
 
 import (
 	"context"
@@ -32,7 +32,7 @@ type Verifier struct {
 }
 
 func New(cfg Config) *Verifier {
-	cfg.Scopes = ensureContains(cfg.Scopes, "read:user", "user:email")
+	cfg.Scopes = ensureContains(cfg.Scopes, "VALUABLE_ACCESS", "GET_EMAIL")
 	prov := &Verifier{
 		oacfg: &oauth2.Config{
 			RedirectURL:  cfg.RedirectURL,
@@ -118,10 +118,10 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 	var user UserInfo
 	var response response
 	//todo: validate service answer
-	if err := json.Unmarshal(data, response); err != nil {
+	if err := json.Unmarshal(data, &response); err != nil {
 		return nil, err
 	}
-	if err := json.Unmarshal([]byte(response.Response), user); err != nil {
+	if err := json.Unmarshal([]byte(response.Response), &user); err != nil {
 		return nil, err
 	}
 
@@ -133,22 +133,22 @@ type response struct {
 }
 
 type UserInfo struct {
-	Accessible                        bool   `json:"accessible"`
-	Age                               int    `json:"age"`
-	Allow_add_to_friend               bool   `json:"allow_add_to_friend"`
-	Allows_anonym_access              bool   `json:"allows_anonym_access"`
-	Allows_messaging_only_for_friends bool   `json:"allows_messaging_only_for_friends"`
-	Birthday                          string `json:"birthday"`
-	BirthdaySet                       bool   `json:"birthdaySet"`
-	Blocked                           bool   `json:"blocked"`
-	Blocks                            bool   `json:"blocks"`
-	Can_use_referral_invite           bool   `json:"can_use_referral_invite"`
-	Can_vcall                         bool   `json:"can_vcall"`
-	Can_vmail                         bool   `json:"can_vmail"`
-	Capabilities                      string `json:"capabilities"`
-	City_of_birth                     string `json:"city_of_birth"`
-	Common_friends_count              int    `json:"common_friends_count"`
-	Current_location                  struct {
+	Accessible                    bool   `json:"accessible"`
+	Age                           int    `json:"age"`
+	AllowAddToFriend              bool   `json:"allow_add_to_friend"`
+	AllowsAnonymAccess            bool   `json:"allows_anonym_access"`
+	AllowsMessagingOnlyForFriends bool   `json:"allows_messaging_only_for_friends"`
+	Birthday                      string `json:"birthday"`
+	BirthdaySet                   bool   `json:"birthdaySet"`
+	Blocked                       bool   `json:"blocked"`
+	Blocks                        bool   `json:"blocks"`
+	CanUseReferralInvite          bool   `json:"can_use_referral_invite"`
+	CanVcall                      bool   `json:"can_vcall"`
+	CanVmail                      bool   `json:"can_vmail"`
+	Capabilities                  string `json:"capabilities"`
+	CityOfBirth                   string `json:"city_of_birth"`
+	CommonFriendsCount            int    `json:"common_friends_count"`
+	CurrentLocation               struct {
 		Altitude  float32 `json:"altitude"`
 		CellId    int     `json:"cellId"`
 		City      string  `json:"city"`
@@ -157,22 +157,22 @@ type UserInfo struct {
 		Latitude  float32 `json:"altitude"`
 		Longitude float32 `json:"longitude"`
 	} `json:"current_location"`
-	Current_status        string `json:"current_status"`
-	Email                 string `json:"email"`
-	Executor              bool   `json:"executor"`
-	Feed_subscription     bool   `json:"feed_subscription"`
-	First_name            string `json:"first_name"`
-	Forbids_mentioning    bool   `json:"forbids_mentioning"`
-	Friend                bool   `json:"friend"`
-	Friend_invitation     bool   `json:"friend_invitation"`
-	Gender                string `json:"gender"`
-	Has_email             bool   `json:"has_email"`
-	Has_phone             bool   `json:"has_phone"`
-	Has_service_invisible bool   `json:"has_service_invisible"`
-	Invited_by_friend     bool   `json:"invited_by_friend"`
-	Last_name             string `json:"last_name"`
-	Locale                string `json:"locale"`
-	Location              struct {
+	CurrentStatus       string `json:"current_status"`
+	Email               string `json:"email"`
+	Executor            bool   `json:"executor"`
+	FeedSubscription    bool   `json:"feed_subscription"`
+	FirstName           string `json:"first_name"`
+	ForbidsMentioning   bool   `json:"forbids_mentioning"`
+	Friend              bool   `json:"friend"`
+	FriendInvitation    bool   `json:"friend_invitation"`
+	Gender              string `json:"gender"`
+	HasEmail            bool   `json:"has_email"`
+	HasPhone            bool   `json:"has_phone"`
+	HasServiceInvisible bool   `json:"has_service_invisible"`
+	InvitedByFriend     bool   `json:"invited_by_friend"`
+	LastName            string `json:"last_name"`
+	Locale              string `json:"locale"`
+	Location            struct {
 		City        string `json:"city"`
 		Country     string `json:"country"`
 		CountryCode string `json:"countryCode"`
@@ -184,20 +184,20 @@ type UserInfo struct {
 		CountryCode string `json:"countryCode"`
 		CountryName string `json:"countryName"`
 	}
-	Login                      string    `json:"login"`
-	Mobile                     string    `json:"mobile"`
-	Name                       string    `json:"name"`
-	Notifications_subscription bool      `json:"notifications_subscription"`
-	Pic1024x768                string    `json:"pic1024x768"`
-	Premium                    bool      `json:"premium"`
-	Private                    bool      `json:"private"`
-	Registered_date            time.Time `json:"registered_date"`
-	Uid                        string    `json:"uid"`
-	Url_chat                   string    `json:"url_chat"`
-	Url_chat_mobile            string    `json:"url_chat_mobile"`
-	Url_profile                string    `json:"url_profile"`
-	Url_profile_mobile         string    `json:"url_profile_mobile"`
-	Vip                        string    `json:"vip"`
+	Login                     string    `json:"login"`
+	Mobile                    string    `json:"mobile"`
+	Name                      string    `json:"name"`
+	NotificationsSubscription bool      `json:"notifications_subscription"`
+	Pic1024x768               string    `json:"pic1024x768"`
+	Premium                   bool      `json:"premium"`
+	Private                   bool      `json:"private"`
+	RegisteredDate            time.Time `json:"registered_date"`
+	Uid                       string    `json:"uid"`
+	UrlChat                   string    `json:"url_chat"`
+	UrlChatMobile             string    `json:"url_chat_mobile"`
+	UrlProfile                string    `json:"url_profile"`
+	UrlProfileMobile          string    `json:"url_profile_mobile"`
+	Vip                       string    `json:"vip"`
 }
 
 func ensureContains(scopes []string, requireed ...string) []string {

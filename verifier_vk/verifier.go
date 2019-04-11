@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/github"
+	"golang.org/x/oauth2/vk"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -20,6 +20,8 @@ type Config struct {
 
 var _ identity.OAuth2Verification = new(Verifier)
 
+const fields = "verified, sex, bdate, city, country, home_town, has_photo, photo_max_orig, domain, has_mobile, contacts, site, education, universities, schools, status, followers_count, common_count, occupation, nickname, relatives, relation, personal, connections, exports, activities, interests, music, movies, tv, books, games, about, quotes, can_post, can_see_all_posts, can_see_audio, can_write_private_message, can_send_friend_request, is_favorite, is_hidden_from_feed, timezone, screen_name, is_friend, friend_status, career, military, blacklisted, blacklisted_by_me"
+
 type Verifier struct {
 	oacfg *oauth2.Config
 }
@@ -32,7 +34,7 @@ func New(cfg Config) *Verifier {
 			ClientID:     cfg.ClientID,
 			ClientSecret: cfg.ClientSecret,
 			Scopes:       cfg.Scopes,
-			Endpoint:     github.Endpoint,
+			Endpoint:     vk.Endpoint,
 		},
 	}
 
@@ -63,64 +65,27 @@ func (prov *Verifier) HandleOAuth2Callback(ctx context.Context, code string) (to
 }
 
 func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, err error) {
-	//get access token
-	u, err := url.Parse("https://oauth.vk.com/access_token")
+
+	u, err := url.Parse("https://api.vk.com/method/users.get")
 	if err != nil {
 		return nil, err
 	}
 	query := url.Values{
-		"client_id":     {},
-		"client_secret": {},
-		"code":          {accessToken},
-		"redirect_uri":  {},
+		"fields":       {fields},
+		"access_token": {accessToken},
+		"v":            {"5.92"},
 	}
 	u.RawQuery = query.Encode()
-
 	client := &http.Client{}
-
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		return nil, err
 	}
-
 	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
 		return nil, err
 	}
-
-	defer resp.Body.Close()
-
 	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
-
-	var access_token AccessToken
-
-	if err := json.Unmarshal(data, access_token); err != nil {
-		return nil, err
-	}
-
-	u, err = url.Parse("https://api.vk.com/method/users.get")
-	if err != nil {
-		return nil, err
-	}
-	var fields = "verified, sex, bdate, city, country, home_town, has_photo, photo_max_orig, domain, has_mobile, contacts, site, education, universities, schools, status, followers_count, common_count, occupation, nickname, relatives, relation, personal, connections, exports, activities, interests, music, movies, tv, books, games, about, quotes, can_post, can_see_all_posts, can_see_audio, can_write_private_message, can_send_friend_request, is_favorite, is_hidden_from_feed, timezone, screen_name, is_friend, friend_status, career, military, blacklisted, blacklisted_by_me"
-	query = url.Values{
-		"fields":       {fields},
-		"access_token": {access_token.Access_token},
-		"v":            {"5.92"},
-	}
-	u.RawQuery = query.Encode()
-	req, err = http.NewRequest("GET", u.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	resp, err = client.Do(req.WithContext(ctx))
-	if err != nil {
-		return nil, err
-	}
-	data, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -132,12 +97,6 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 	}
 
 	return &identity.IdentityData{}, nil
-}
-
-type AccessToken struct {
-	Access_token string `json:"access_token"`
-	Expires_in   int    `json:"expires_in"`
-	User_id      string `json:"user_id"`
 }
 
 type UserInfo struct {

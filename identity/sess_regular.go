@@ -5,12 +5,11 @@ import (
 	"log"
 )
 
-func (sess *Session) StartRegularVerification(ctx context.Context, ver, idn string) (verificationID string, err error) {
-	p := sess.manager.ver[ver].internal.regularRef
+func (sess *Session) StartRegularVerification(ctx context.Context, vername, idn string, vd []VerifierData) (verificationID string, err error) {
+	p := sess.manager.ver[vername].internal.regularRef
 
-	log.Println("VERIFIER", sess.manager.ver[ver], p, p.Info().Name)
+	log.Println("VERIFIER", sess.manager.ver[vername], p, p.Info().Name)
 
-	// TODO Make Normalization and validation in mongo_backend when add new identity
 	// TODO Make check of absolutely new user
 
 	idn, err = sess.manager.idn[p.Info().IdentityName].NormalizeAndValidateData(idn)
@@ -18,6 +17,8 @@ func (sess *Session) StartRegularVerification(ctx context.Context, ver, idn stri
 	// TODO Obtain verifier data from backend
 	// TODO realise search by two parameters
 	// TODO modificate starting function
+
+	securitycode, err := p.StartRegularVerification(ctx, idn, vd)
 	/*
 		securityCode, eruser, err := sess.manager.backend.GetUserByIdentity(idn)
 		verifierData := user.Verifiers

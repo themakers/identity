@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	ErrSecurityCodeMismatch = errors.New("security code mismatch")
+	ErrSecurityCodeMismatch                 = errors.New("security code mismatch")
+	ErrAuthenticationForSessionAlreadyExist = errors.New("Authentication for session already exist")
 )
 
 type Options struct {
@@ -165,13 +166,13 @@ func (mgr *Manager) GetStatus(ctx context.Context) (*Authentication, error) {
 		return &Authentication{}, err
 	}
 
-	if auth == nil {
-		auth, err = mgr.backend.CreateAuthentication(token)
+	/*if auth == nil {
+		auth, err = mgr.backend.ValidateAuthenticationBySessionToken(token)
 		if err != nil {
 			panic(err)
 		}
 		return auth, nil
-	}
+	}*/
 	return auth, nil
 }
 
@@ -194,11 +195,17 @@ func (mgr *Manager) StartVerification(idn, vn string, ctx context.Context, vd []
 }
 
 func (mgr *Manager) StartAuthentication(ctx context.Context) (res bool, err error) {
-	sesstoken := getIncomingSessionToken(ctx)
+	token := getIncomingSessionToken(ctx)
+	/*if token == "" {
+		panic("Empty session token")
+	}*/
 
-	_, err = mgr.backend.CreateAuthentication(sesstoken)
-	if err != nil {
+	_, err = mgr.backend.CreateAuthentication(token)
+	if err != nil && err != ErrAuthenticationForSessionAlreadyExist {
 		return false, err
+	}
+	if err == ErrAuthenticationForSessionAlreadyExist {
+		return true, nil
 	}
 	return true, nil
 
@@ -225,6 +232,13 @@ func (mgr *Manager) GetVerificationCode(ctx context.Context, vname string) strin
 	}
 	return code
 
+}
+
+func (mgr *Manager) GetVerifierType(vname string) string {
+	if mgr.ver[vname].SupportRegular {
+		return "regular"
+	}
+	return ""
 }
 
 ////////////////////////////////////////////////////////////////

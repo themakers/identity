@@ -185,11 +185,45 @@ func (b *Backend) CreateUser(iden *identity.IdentityData) (*identity.User, error
 }
 
 func (b *Backend) CreateAuthentication(SessionToken string) (*identity.Authentication, error) {
-	fs := make(map[string]bool)
-	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 99, UserID: "123", FactorsStatus: fs}, nil
+	coll, close, err := b.session(collAuthentications)
+	if err != nil {
+		panic(err)
+	}
+	defer close()
+	auth := identity.Authentication{}
+	if err := coll.Find(bson.M{"_id": SessionToken}).One(&auth); err == nil {
+		return &auth, identity.ErrAuthenticationForSessionAlreadyExist
+	} else {
+		fs := make(map[string]bool)
+		auth = identity.Authentication{
+			SessionToken:  SessionToken,
+			FactorsCount:  99,
+			FactorsStatus: fs,
+			UserID:        "",
+		}
+		if err := coll.Insert(auth); err != nil {
+			return nil, err
+		}
+	}
+	return &auth, nil
 }
 
 func (b *Backend) GetAuthenticationBySessionToken(SessionToken string) (*identity.Authentication, error) {
 	fs := make(map[string]bool)
+	coll, close, err := b.session(collAuthentications)
+	if err != nil {
+		panic(err)
+	}
+	defer close()
+	auth := identity.Authentication{}
+	if err := coll.Find(bson.M{"_id": SessionToken}).One(&auth); err != nil {
+		return &identity.Authentication{}, err
+	} else {
+		return &auth, nil
+	}
 	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 1, UserID: "123", FactorsStatus: fs}, nil
+}
+
+func (b *Backend) UpdateAuthentication(token string, updatedata map[string]string) (bool, error) {
+	return false, nil
 }

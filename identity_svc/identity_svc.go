@@ -75,19 +75,24 @@ func (pis *PublicIdentityService) UserMerge(ctx context.Context, req *identity_p
 }
 
 func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *identity_proto.StartVerificationReq) (resp *identity_proto.StartVerificationResp, err error) {
-	//resp := &identity_proto.StartVerificationResp{}
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	vd := []identity.VerifierData{}
 	// TODO use session function to start verification
 	verType := pis.is.mgr.GetVerifierType(req.VerifierName)
+
 	// todo use switch to choose verification method
 	if verType == "regular" {
-		sess.StartRegularVerification(ctx, req.VerifierName, req.Identity, vd)
-	}
-	code, idnn := pis.is.mgr.StartVerification(req.Identity, req.VerifierName, ctx, vd)
+		aid, err := sess.StartRegularVerification(ctx, req.VerifierName, req.Identity, vd)
+		if err != nil {
+			panic(err)
+		}
+		return &identity_proto.StartVerificationResp{AuthenticationID: aid}, nil
 
-	return &identity_proto.StartVerificationResp{IdentityName: idnn, VerifierName: req.VerifierName, VerificationCode: code, Identity: req.Identity}, nil
+	}
+	//code, idnn := pis.is.mgr.StartVerification(req.Identity, req.VerifierName, ctx, vd)
+
+	return &identity_proto.StartVerificationResp{}, nil
 }
 
 func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, req *identity_proto.CancelAuthenticationReq) (resp *identity_proto.Status, err error) {

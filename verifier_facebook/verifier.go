@@ -1,4 +1,4 @@
-package verifier_github
+package verifier_facebook
 
 import (
 	"context"
@@ -27,7 +27,7 @@ type Verifier struct {
 }
 
 func New(cfg Config) *Verifier {
-	cfg.Scopes = ensureContains(cfg.Scopes, "read:user", "user:email")
+	cfg.Scopes = ensureContains(cfg.Scopes, "default", "email", "user_age_range", "user_birthday", "user_gender", "user_hometown", "user_link", "user_link")
 	prov := &Verifier{
 		oacfg: &oauth2.Config{
 			RedirectURL:  cfg.RedirectURL,
@@ -97,7 +97,7 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 	var user UserInfo
 
 	//todo: validate service answer
-	if err := json.Unmarshal(data, user); err != nil {
+	if err := json.Unmarshal(data, &user); err != nil {
 		return nil, err
 	}
 
@@ -108,14 +108,14 @@ type UserInfo struct {
 	Id      int `json:"id"`
 	Address struct {
 		City         string  `json:"city"`
-		City_id      uint32  `json:"city_id"`
+		CityId      uint32  `json:"city_id"`
 		Country      string  `json:"country"`
-		Country_code string  `json:"country_code"`
+		CountryCode string  `json:"country_code"`
 		Latitude     float32 `json:"latitude"`
-		Located_in   int     `json:"located_in"`
+		LocatedIn   int     `json:"located_in"`
 		Name         string  `json:"name"`
 		Region       string  `json:"region"`
-		Region_id    uint32  `json:"region_id"`
+		RegionId    uint32  `json:"region_id"`
 		State        string  `json:"state"`
 		Street       string  `json:"street"`
 		Zip          string  `json:"zip"`
@@ -129,44 +129,44 @@ type UserInfo struct {
 		Context string `json:"context"`
 	} `json:"context"`
 	Email             string `json:"email"`
-	Employee_number   string `json:"employee_number"`
-	Favorite_athletes []struct {
+	EmployeeNumber   string `json:"employee_number"`
+	FavoriteAthletes []struct {
 		Id          string `json:"id"`
 		Description string `json:"description"`
 		Name        string `json:"name"`
 	} `json:"favorite_athletes"`
-	Favorite_teams []struct {
+	FavoriteTeams []struct {
 		Id          string `json:"id"`
 		Description string `json:"description"`
 		Name        string `json:"name"`
 	} `json:"favorite_teams"`
-	First_name string `json:"first_name"`
+	FirstName string `json:"first_name"`
 	Gender     string `json:"gender"`
 	Hometown   []struct {
 		Id    string `json:"id"`
 		About string `json:"about"`
 		Name  string `json:"name"`
 	} `json:"hometown"`
-	Inspirational_people []struct {
+	InspirationalPeople []struct {
 		Id          string `json:"id"`
 		Description string `json:"description"`
 		Name        string `json:"name"`
 	} `json:"inspirational_people"`
 	Installed       bool     `json:"installed"`
-	Interested_in   []string `json:"interested_in"`
-	Is_shared_login bool     `json:"is_shared_login"`
-	Last_name       string   `json:"last_name"`
+	InterestedIn   []string `json:"interested_in"`
+	IsSharedLogin bool     `json:"is_shared_login"`
+	LastName       string   `json:"last_name"`
 	Location        struct {
 		Id    string `json:"id"`
 		About string `json:"about"`
 		Name  string `json:"name"`
 	} `json:"location"`
-	Meeting_for []string `json:"meeting_for"`
-	Middle_name string   `json:"middle_name"`
+	MeetingFor []string `json:"meeting_for"`
+	MiddleName string   `json:"middle_name"`
 	Name        string   `json:"name"`
-	Name_format string   `json:"name_format"`
-	Profile_pic string   `json:"profile_pic"`
-	Public_key  string   `json:"public_key"`
+	NameFormat string   `json:"name_format"`
+	ProfilePic string   `json:"profile_pic"`
+	PublicKey  string   `json:"public_key"`
 	Quotes      string   `json:"quotes"`
 	Sports      []struct {
 		Id          string `json:"id"`

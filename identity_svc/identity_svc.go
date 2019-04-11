@@ -90,8 +90,6 @@ func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *id
 		return &identity_proto.StartVerificationResp{AuthenticationID: aid}, nil
 
 	}
-	//code, idnn := pis.is.mgr.StartVerification(req.Identity, req.VerifierName, ctx, vd)
-
 	return &identity_proto.StartVerificationResp{}, nil
 }
 
@@ -171,13 +169,18 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_prot
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	resp = &identity_proto.VerifyResp{}
+	if err := sess.RegularVerify(ctx, req.AuthenticationID, req.VerificationCode); err != nil {
+		resp.VerifyStatus = false
+	} else {
+		resp.VerifyStatus = true
+	}
 
-	code := pis.is.mgr.GetVerificationCode(ctx, req.VerifierName)
+	/*code := pis.is.mgr.GetVerificationCode(ctx, req.VerifierName)
 	if code == req.VerificationCode {
 		resp.VerifyStatus = true
 	} else {
 		resp.VerifyStatus = false
-	}
+	}*/
 
 	return resp, nil
 }

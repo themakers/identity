@@ -24,6 +24,7 @@ func (sess *Session) StartRegularVerification(ctx context.Context, vername, idn 
 		panic(err)
 	}
 	log.Println(securitycode)
+	log.Println(idn)
 
 	user, err := sess.manager.backend.GetUserByIdentity(idn)
 	if err != nil {

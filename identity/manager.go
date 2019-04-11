@@ -6,7 +6,6 @@ import (
 	"github.com/themakers/session"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"log"
 	"time"
 )
 
@@ -170,28 +169,8 @@ func (mgr *Manager) GetStatus(ctx context.Context) (*Authentication, error) {
 	return auth, nil
 }
 
-func (mgr *Manager) StartVerification(idn, vn string, ctx context.Context, vd []VerifierData) (Code, IdnetityName string) {
-
-	var CurVerifier Verifier
-	for _, ver := range mgr.verifiers {
-		if ver.Info().Name == vn {
-			CurVerifier = ver
-		}
-
-	}
-	if CurVerifier == nil {
-		panic("Not such verifier")
-	}
-	vi := mgr.ver[CurVerifier.Info().Name]
-	securitycode, _ := vi.internal.regularRef.StartRegularVerification(ctx, idn, vd)
-
-	return securitycode, vi.IdentityName
-}
-
 func (mgr *Manager) StartAuthentication(ctx context.Context) (res bool, err error) {
 	token := getIncomingSessionToken(ctx)
-	log.Println("usage of create auth with token", token)
-
 	_, err = mgr.backend.CreateAuthentication(token)
 	if err != nil && err != ErrAuthenticationForSessionAlreadyExist {
 		return false, err
@@ -200,7 +179,6 @@ func (mgr *Manager) StartAuthentication(ctx context.Context) (res bool, err erro
 		return true, nil
 	}
 	return true, nil
-
 }
 
 func (mgr *Manager) GetVerificationCode(ctx context.Context, vname string) string {

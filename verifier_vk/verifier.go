@@ -1,4 +1,4 @@
-package verifier_github
+package verifier_vk
 
 import (
 	"context"
@@ -27,7 +27,7 @@ type Verifier struct {
 }
 
 func New(cfg Config) *Verifier {
-	cfg.Scopes = ensureContains(cfg.Scopes, "read:user", "user:email")
+	cfg.Scopes = ensureContains(cfg.Scopes, "email")
 	prov := &Verifier{
 		oacfg: &oauth2.Config{
 			RedirectURL:  cfg.RedirectURL,
@@ -92,7 +92,7 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 
 	var user UserInfo
 
-	if err := json.Unmarshal(data, user); err != nil {
+	if err := json.Unmarshal(data, &user); err != nil {
 		return nil, err
 	}
 
@@ -100,97 +100,97 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 }
 
 type UserInfo struct {
-	ID                        int    `json:"id"`
-	First_name                string `json:"first_name"`
-	Last_name                 string `json:"last_name"`
-	Deactivated               string `json:"deactivated"`
-	Is_closed                 bool   `json:"is_closed"`
-	Can_access_closed         bool   `json:"can_access_closed"`
-	About                     string `json:"about"`
-	Activities                string `json:"activities"`
-	Bdate                     string `json:"bdate"`
-	Blacklisted               int    `json:"blacklisted"`
-	Blacklisted_by_me         int    `json:"blacklisted_by_me"`
-	Books                     string `json:"books"`
-	Can_post                  int    `json:"can_post"`
-	Can_see_all_posts         int    `json:"can_see_all_posts"`
-	Can_see_audio             int    `json:"can_see_audio"`
-	Can_send_friend_request   int    `json:"can_send_friend_request"`
-	Can_write_private_message int    `json:"can_write_private_message"`
-	Career                    []struct {
-		Group_id   int    `json:"group_id"`
-		Company    string `json:"company"`
-		Country_id int    `json:"country_id"`
-		City_id    int    `json:"city_id"`
-		City_name  string `json:"city_name"`
-		From       int    `json:"from"`
-		Until      int    `json:"until"`
-		Position   int    `json:"position"`
+	ID                     int    `json:"id"`
+	FirstName              string `json:"first_name"`
+	LastName               string `json:"last_name"`
+	Deactivated            string `json:"deactivated"`
+	IsClosed               bool   `json:"is_closed"`
+	CanAccessClosed        bool   `json:"can_access_closed"`
+	About                  string `json:"about"`
+	Activities             string `json:"activities"`
+	Bdate                  string `json:"bdate"`
+	Blacklisted            int    `json:"blacklisted"`
+	BlacklistedByMe        int    `json:"blacklisted_by_me"`
+	Books                  string `json:"books"`
+	CanPost                int    `json:"can_post"`
+	CanSeeAllPosts         int    `json:"can_see_all_posts"`
+	CanSeeAudio            int    `json:"can_see_audio"`
+	CanSendFriendRequest   int    `json:"can_send_friend_request"`
+	CanWritePrivateMessage int    `json:"can_write_private_message"`
+	Career                 []struct {
+		GroupId   int    `json:"group_id"`
+		Company   string `json:"company"`
+		CountryId int    `json:"country_id"`
+		CityId    int    `json:"city_id"`
+		CityName  string `json:"city_name"`
+		From      int    `json:"from"`
+		Until     int    `json:"until"`
+		Position  int    `json:"position"`
 	} `json:"career"`
 	City struct {
 		Id    int    `json:"id"`
 		Title string `json:"title"`
 	} `json:"city"`
-	Common_count int    `json:"common_count"`
-	Skype        string `json:"skype"`
-	Facebook     string `json:"facebook"`
-	Twitter      string `json:"twitter"`
-	Livejournal  string `json:"livejournal"`
-	Instagram    string `json:"instagram"`
-	Mobile_phone string `json:"mobile_phone"`
-	Home_phone   string `json:"home_phone"`
-	Counters     struct {
-		Albums         int `json:"albums"`
-		Videos         int `json:"videos"`
-		Audios         int `json:"audios"`
-		Photos         int `json:"photos"`
-		Notes          int `json:"notes"`
-		Friends        int `json:"friends"`
-		Groups         int `json:"groups"`
-		Online_friends int `json:"online_friends"`
-		Mutual_friends int `json:"mutual_friends"`
-		User_videos    int `json:"user_videos"`
-		Followers      int `json:"followers"`
-		Pages          int `json:"pages"`
+	CommonCount int    `json:"common_count"`
+	Skype       string `json:"skype"`
+	Facebook    string `json:"facebook"`
+	Twitter     string `json:"twitter"`
+	Livejournal string `json:"livejournal"`
+	Instagram   string `json:"instagram"`
+	MobilePhone string `json:"mobile_phone"`
+	HomePhone   string `json:"home_phone"`
+	Counters    struct {
+		Albums        int `json:"albums"`
+		Videos        int `json:"videos"`
+		Audios        int `json:"audios"`
+		Photos        int `json:"photos"`
+		Notes         int `json:"notes"`
+		Friends       int `json:"friends"`
+		Groups        int `json:"groups"`
+		OnlineFriends int `json:"online_friends"`
+		MutualFriends int `json:"mutual_friends"`
+		UserVideos    int `json:"user_videos"`
+		Followers     int `json:"followers"`
+		Pages         int `json:"pages"`
 	} `json:"counters"`
 	Country struct {
 		Id    int `json:"id"`
 		Title int `json:"title"`
 	} `json:"country"`
-	Domain              string `json:"domain"`
-	University          int    `json:"university"`
-	University_name     string `json:"university_name"`
-	Faculty             int    `json:"faculty"`
-	Faculty_name        string `json:"faculty_name"`
-	Graduation          int    `json:"graduation"`
-	First_name_nom      string `json:"first_name_nom"`
-	First_name_gen      string `json:"first_name_gen"`
-	First_name_dat      string `json:"first_name_dat"`
-	First_name_acc      string `json:"first_name_acc"`
-	First_name_ins      string `json:"first_name_ins"`
-	First_name_abl      string `json:"first_name_abl "`
-	Followers_count     int    `json:"followers_count"`
-	Friend_status       int    `json:"friend_status"`
-	Games               string `json:"games"`
-	Has_mobile          int    `json:"has_mobile"`
-	Has_photo           int    `json:"has_photo"`
-	Home_town           string `json:"home_town"`
-	Interests           string `json:"interests"`
-	Is_favorite         int    `json:"is_favorite"`
-	Is_friend           int    `json:"is_friend"`
-	Is_hidden_from_feed int    `json:"is_hidden_from_feed"`
-	Last_name_nom       string `json:"last_name_nom"`
-	Last_name_gen       string `json:"last_name_gen"`
-	Last_name_dat       string `json:"last_name_dat"`
-	Last_name_acc       string `json:"last_name_acc"`
-	Last_name_ins       string `json:"last_name_ins"`
-	Last_name_abl       string `json:"last_name_abl"`
-	Military            struct {
-		Unit       string `json:"unit"`
-		Unit_id    int    `json:"unit_id"`
-		Country_id int    `json:"country_id"`
-		From       int    `json:"from"`
-		Until      int    `json:"until"`
+	Domain           string `json:"domain"`
+	University       int    `json:"university"`
+	UniversityName   string `json:"university_name"`
+	Faculty          int    `json:"faculty"`
+	FacultyName      string `json:"faculty_name"`
+	Graduation       int    `json:"graduation"`
+	FirstNameNom     string `json:"first_name_nom"`
+	FirstNameNen     string `json:"first_name_gen"`
+	FirstNameDat     string `json:"first_name_dat"`
+	FirstNameAcc     string `json:"first_name_acc"`
+	FirstNameIns     string `json:"first_name_ins"`
+	FirstNameAbl     string `json:"first_name_abl "`
+	FollowersCount   int    `json:"followers_count"`
+	FriendStatus     int    `json:"friend_status"`
+	Games            string `json:"games"`
+	HasMobile        int    `json:"has_mobile"`
+	HasPhoto         int    `json:"has_photo"`
+	HomeTown         string `json:"home_town"`
+	Interests        string `json:"interests"`
+	IsFavorite       int    `json:"is_favorite"`
+	IsFriend         int    `json:"is_friend"`
+	IsHiddenFromFeed int    `json:"is_hidden_from_feed"`
+	LastNameNom      string `json:"last_name_nom"`
+	LastNameGen      string `json:"last_name_gen"`
+	LastNameDat      string `json:"last_name_dat"`
+	LastNameAcc      string `json:"last_name_acc"`
+	LastNameIns      string `json:"last_name_ins"`
+	LastNameAbl      string `json:"last_name_abl"`
+	Military         struct {
+		Unit      string `json:"unit"`
+		UnitId    int    `json:"unit_id"`
+		CountryId int    `json:"country_id"`
+		From      int    `json:"from"`
+		Until     int    `json:"until"`
 	} `json:"military"`
 	Movies     string `json:"movies "`
 	Nickname   string `json:"nickname "`
@@ -200,19 +200,19 @@ type UserInfo struct {
 		Name string `json:"name"`
 	} `json:"occupation "`
 	Personal struct {
-		Political   int      `json:"political"`
-		Langs       []string `json:"langs"`
-		Religion    string   `json:"religion"`
-		Inspired_by string   `json:"inspired_by"`
-		People_main int      `json:"people_main"`
-		Life_main   int      `json:"life_main"`
-		Smoking     int      `json:"smoking"`
-		Alcohol     int      `json:"alcohol"`
+		Political  int      `json:"political"`
+		Langs      []string `json:"langs"`
+		Religion   string   `json:"religion"`
+		InspiredBy string   `json:"inspired_by"`
+		PeopleMain int      `json:"people_main"`
+		LifeMain   int      `json:"life_main"`
+		Smoking    int      `json:"smoking"`
+		Alcohol    int      `json:"alcohol"`
 	} `json:"personal"`
-	Photo_max_orig   string `json:"photo_max_orig"`
-	Quotes           string `json:"quotes"`
-	Relation         int    `json:"relation"`
-	Relation_partner struct {
+	PhotoMaxOrig    string `json:"photo_max_orig"`
+	Quotes          string `json:"quotes"`
+	Relation        int    `json:"relation"`
+	RelationPartner struct {
 		Id   int    `json:"id"`
 		Name string `json:"name"`
 	} `json:"relation_partner"`
@@ -222,19 +222,19 @@ type UserInfo struct {
 		Type string `json:"type"`
 	} `json:"relatives"`
 	Schools []struct {
-		Id             int    `json:"id"`
-		Name           string `json:"name"`
-		Country        int    `json:"country"`
-		City           int    `json:"city"`
-		Year_from      int    `json:"year_from"`
-		Year_to        int    `json:"year_to"`
-		Year_graduated int    `json:"year_graduated"`
-		Class          string `json:"class"`
-		Speciality     string `json:"speciality"`
-		Type           int    `json:"type"`
-		Type_str       string `json:"type_str"`
+		Id            int    `json:"id"`
+		Name          string `json:"name"`
+		Country       int    `json:"country"`
+		City          int    `json:"city"`
+		YearFrom      int    `json:"year_from"`
+		YearTo        int    `json:"year_to"`
+		YearGraduated int    `json:"year_graduated"`
+		Class         string `json:"class"`
+		Speciality    string `json:"speciality"`
+		Type          int    `json:"type"`
+		TypeStr       string `json:"type_str"`
 	} `json:"schools"`
-	Screen_name  string `json:"screen_name"`
+	ScreenName   string `json:"screen_name"`
 	Sex          int    `json:"sex"`
 	Site         string `json:"site"`
 	Status       string `json:"status"`
@@ -242,20 +242,20 @@ type UserInfo struct {
 	Trending     int    `json:"trending"`
 	Tv           string `json:"tv"`
 	Universities struct {
-		Id               int    `json:"id"`
-		Country          int    `json:"country"`
-		City             int    `json:"city"`
-		Name             string `json:"name"`
-		Faculty          int    `json:"faculty"`
-		Faculty_name     string `json:"faculty_name"`
-		Chair            int    `json:"chair"`
-		Chair_name       string `json:"chair_name"`
-		Graduation       int    `json:"graduation"`
-		Education_form   string `json:"education_form"`
-		Education_status string `json:"education_status"`
+		Id              int    `json:"id"`
+		Country         int    `json:"country"`
+		City            int    `json:"city"`
+		Name            string `json:"name"`
+		Faculty         int    `json:"faculty"`
+		FacultyName     string `json:"faculty_name"`
+		Chair           int    `json:"chair"`
+		ChairName       string `json:"chair_name"`
+		Graduation      int    `json:"graduation"`
+		EducationForm   string `json:"education_form"`
+		EducationStatus string `json:"education_status"`
 	} `json:"universities"`
-	Verified     int    `json:"verified"`
-	Wall_default string `json:"wall_default"`
+	Verified    int    `json:"verified"`
+	WallDefault string `json:"wall_default"`
 }
 
 func ensureContains(scopes []string, requireed ...string) []string {

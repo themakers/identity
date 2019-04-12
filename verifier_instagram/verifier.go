@@ -1,4 +1,4 @@
-package verifier_github
+package verifier_instagram
 
 import (
 	"context"
@@ -25,7 +25,7 @@ type Verifier struct {
 }
 
 func New(cfg Config) *Verifier {
-	cfg.Scopes = ensureContains(cfg.Scopes, "read:user", "user:email")
+	cfg.Scopes = ensureContains(cfg.Scopes, "basic")
 	prov := &Verifier{
 		oacfg: &oauth2.Config{
 			RedirectURL:  cfg.RedirectURL,
@@ -93,10 +93,10 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 
 	var user UserInfo
 	var data_wrapper data_wrapper
-	if err := json.Unmarshal(data, data_wrapper); err != nil {
+	if err := json.Unmarshal(data, &data_wrapper); err != nil {
 		return nil, err
 	}
-	if err := json.Unmarshal([]byte(data_wrapper.Data), user); err != nil {
+	if err := json.Unmarshal([]byte(data_wrapper.Data), &user); err != nil {
 		return nil, err
 	}
 
@@ -108,17 +108,17 @@ type data_wrapper struct {
 }
 
 type UserInfo struct {
-	ID              int    `json:"id"`
-	Username        string `json:"username"`
-	Full_name       string `json:"full_name"`
-	Profile_picture string `json:"profile_picture"`
-	Bio             string `json:"bio"`
-	Website         string `json:"website"`
-	Is_business     bool   `json:"is_business"`
-	Counts          struct {
-		Media       int `json:"media"`
-		Follows     int `json:"follows"`
-		Followed_by int `json:"followed_by"`
+	ID             int    `json:"id"`
+	Username       string `json:"username"`
+	FullName       string `json:"full_name"`
+	ProfilePicture string `json:"profile_picture"`
+	Bio            string `json:"bio"`
+	Website        string `json:"website"`
+	IsBusiness     bool   `json:"is_business"`
+	Counts         struct {
+		Media      int `json:"media"`
+		Follows    int `json:"follows"`
+		FollowedBy int `json:"followed_by"`
 	} `json:"counts"`
 }
 

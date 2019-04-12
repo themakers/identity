@@ -128,9 +128,7 @@ func (b *Backend) GetUserByIdentity(idn string) (*identity.User, error) {
 
 	user := identity.User{}
 
-	if err := coll.Find(bson.M{
-		fmt.Sprintf("Identities.%s.%s", idn, idn): bson.M{"$exists": true},
-	}).One(&user); err != nil && err == mgo.ErrNotFound {
+	if err := coll.Find(bson.M{"Identities": bson.M{"$elemMatch": bson.M{"Identity": idn}}}).One(&user); err != nil && user.ID == "" {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

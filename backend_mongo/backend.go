@@ -222,12 +222,6 @@ func (b *Backend) GetAuthenticationBySessionToken(SessionToken string) (*identit
 	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 1, UserID: "123", FactorsStatus: fs}, nil
 }
 
-// todo realise a multiple add to Authentication
-
-func (b *Backend) UpdateAuthentication(token string, updatedata map[string]string) (bool, error) {
-	return false, nil
-}
-
 func (b *Backend) AddUserAuthenticationData(uid string, data *identity.VerifierData) (*identity.User, error) {
 	coll, close, err := b.session(collUsers)
 	if err != nil {
@@ -239,7 +233,7 @@ func (b *Backend) AddUserAuthenticationData(uid string, data *identity.VerifierD
 
 	if _, err := coll.Find(bson.M{"_id": uid}).Apply(Change{
 		Update: bson.M{
-			"$push": bson.M{"Verifiers": data},
+			"$addToSet": bson.M{"Verifiers": data},
 		}, ReturnNew: true,
 	}, &user); err != nil {
 		return nil, nil

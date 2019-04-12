@@ -73,50 +73,49 @@ func TestIntt(t *testing.T) {
 	client := identity_proto.NewIdentityClient(cc)
 
 	// стартуем тестирование
-	/*
-		Convey("Test list of identities", t, func() {
-			var trailer metadata.MD
-			idn, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
-			if err != nil {
-				panic(err)
-			}
-			So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity"})
-			So(idn.Verifiers[0].Name, ShouldEqual, "mock_regular")
 
-		})
+	Convey("Test list of identities", t, func() {
+		var trailer metadata.MD
+		idn, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}
+		So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity"})
+		So(idn.Verifiers[0].Name, ShouldEqual, "mock_regular")
 
-		Convey("Test user start authentication", t, func() {
-			var trailer metadata.MD
-			_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
-			// fixme as trouble - manual adding context to context
-			ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
-			if err != nil {
-				panic(err)
-			}
-			resAuth, err := client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{}, grpc.Trailer(&trailer))
-			if err != nil {
-				panic(err)
-			}
-			So(resAuth.AuthenticationSessionExist, ShouldEqual, true)
-		})
+	})
 
-		Convey("Test user verification", t, func() {
-			var trailer metadata.MD
-			_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
-			if err != nil {
-				panic(err)
-			}
-			ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
-			_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{}, grpc.Trailer(&trailer))
-			if err != nil {
-				panic(err)
-			}
-			vd := make(map[string][]byte)
-			vd["mock_identity"] = []byte{}
-			svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
-			So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
+	Convey("Test user start authentication", t, func() {
+		var trailer metadata.MD
+		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
+		ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
+		if err != nil {
+			panic(err)
+		}
+		resAuth, err := client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}
+		So(resAuth.AuthenticationSessionExist, ShouldEqual, true)
+	})
 
-		})*/
+	Convey("Test user verification", t, func() {
+		var trailer metadata.MD
+		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}
+		ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
+		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}
+		vd := make(map[string][]byte)
+		vd["mock_identity"] = []byte{}
+		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
+		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
+
+	})
 
 	Convey("Test user verify", t, func() {
 		var trailer metadata.MD

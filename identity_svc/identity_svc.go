@@ -108,7 +108,6 @@ func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *
 		return &identity_proto.StartAuthenticationResp{AuthenticationSessionExist: true}, nil
 	}
 	return &identity_proto.StartAuthenticationResp{AuthenticationSessionExist: false}, nil
-
 }
 
 func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Context, u *identity_proto.MyVerifiersDetailRequest) (response *identity_proto.VerifierDetailsResponse, err error) {
@@ -126,9 +125,7 @@ func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Conte
 	for _, idn := range idns {
 		resp.IdentitiyNames = append(resp.IdentitiyNames, idn.Name)
 	}
-
 	return
-
 }
 
 func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context, q *identity_proto.VerifiersDetailsRequest) (response *identity_proto.VerifierDetailsResponse, err error) {
@@ -163,14 +160,6 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_prot
 	} else {
 		resp.VerifyStatus = true
 	}
-
-	/*code := pis.is.mgr.GetVerificationCode(ctx, req.VerifierName)
-	if code == req.VerificationCode {
-		resp.VerifyStatus = true
-	} else {
-		resp.VerifyStatus = false
-	}*/
-
 	return resp, nil
 }
 
@@ -179,12 +168,10 @@ func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_p
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	resp := &identity_proto.Status{}
-
 	authentication, err := pis.is.mgr.GetStatus(ctx)
 	if err != nil {
 		panic(err)
 	}
-
 	updateFactorsCount := 0
 	for _, value := range authentication.FactorsStatus {
 		if !value {
@@ -192,7 +179,6 @@ func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_p
 		}
 	}
 	authentication.FactorsCount = updateFactorsCount
-
 	if authentication.FactorsCount != 0 {
 		resp.Authenticated = true
 		resp.Authenticating = false
@@ -200,7 +186,6 @@ func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_p
 		resp.Authenticating = true
 		resp.Authenticated = false
 	}
-
 	return resp, nil
 
 }

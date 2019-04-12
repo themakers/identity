@@ -14,7 +14,6 @@ type Backend interface {
 	//DropIdentity(identity *IdentityData) error
 }
 
-// TODO add a multifactor criterea
 type User struct {
 	ID                string         `bson:"_id" json:"ID"`
 	Identities        []IdentityData `bson:"Identities" json:"Identities"` // /name/identity/**

@@ -73,33 +73,52 @@ func TestIntt(t *testing.T) {
 	client := identity_proto.NewIdentityClient(cc)
 
 	// стартуем тестирование
-	Convey("Test list of identities", t, func() {
-		var trailer metadata.MD
-		idn, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
-		if err != nil {
-			panic(err)
-		}
-		So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity"})
-		So(idn.Verifiers[0].Name, ShouldEqual, "mock_regular")
+	/*
+		Convey("Test list of identities", t, func() {
+			var trailer metadata.MD
+			idn, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
+			if err != nil {
+				panic(err)
+			}
+			So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity"})
+			So(idn.Verifiers[0].Name, ShouldEqual, "mock_regular")
 
-	})
+		})
 
-	Convey("Test user start authentication", t, func() {
-		var trailer metadata.MD
-		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
-		// fixme as trouble - manual adding context to context
-		ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
-		if err != nil {
-			panic(err)
-		}
-		resAuth, err := client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{}, grpc.Trailer(&trailer))
-		if err != nil {
-			panic(err)
-		}
-		So(resAuth.AuthenticationSessionExist, ShouldEqual, true)
-	})
+		Convey("Test user start authentication", t, func() {
+			var trailer metadata.MD
+			_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
+			// fixme as trouble - manual adding context to context
+			ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
+			if err != nil {
+				panic(err)
+			}
+			resAuth, err := client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{}, grpc.Trailer(&trailer))
+			if err != nil {
+				panic(err)
+			}
+			So(resAuth.AuthenticationSessionExist, ShouldEqual, true)
+		})
 
-	Convey("Test user verification", t, func() {
+		Convey("Test user verification", t, func() {
+			var trailer metadata.MD
+			_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
+			if err != nil {
+				panic(err)
+			}
+			ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
+			_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{}, grpc.Trailer(&trailer))
+			if err != nil {
+				panic(err)
+			}
+			vd := make(map[string][]byte)
+			vd["mock_identity"] = []byte{}
+			svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
+			So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
+
+		})*/
+
+	Convey("Test user verify", t, func() {
 		var trailer metadata.MD
 		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
 		if err != nil {
@@ -112,68 +131,53 @@ func TestIntt(t *testing.T) {
 		}
 		vd := make(map[string][]byte)
 		vd["mock_identity"] = []byte{}
-		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
+		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd}, grpc.Trailer(&trailer))
 		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
 
+		vRespTrue, err := client.Verify(ctx, &identity_proto.VerifyReq{Identity: regularVerificationData.Identity, VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID})
+		vRespFalse, err := client.Verify(ctx, &identity_proto.VerifyReq{Identity: regularVerificationData.Identity, VerificationCode: "1111", AuthenticationID: svResp.AuthenticationID})
+
+		if err != nil {
+			panic(err)
+		}
+		So(vRespTrue.VerifyStatus, ShouldEqual, true)
+		So(vRespFalse.VerifyStatus, ShouldEqual, false)
+
 	})
+
 	/*
-	   	Convey("Test user verify", t, func() {
-	   		var trailer metadata.MD
-	   		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
-	   		if err != nil {
-	   			panic(err)
-	   		}
-	   		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{})
-	   		if err != nil {
-	   			panic(err)
-	   		}
-	   		vd := make(map[string][]byte)
-	   		vd["mock_identity"] = []byte{}
-	   		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
+		Convey("Test user start verification", t, func() {
 
-	   		vResp, err := client.Verify(ctx, &identity_proto.VerifyReq{Identity: regularVerificationData.Identity, VerificationCode: regularVerificationData.Code, VerifierName: svResp.VerifierName, IdentityName: svResp.IdentityName})
+			// пользователь получает список доступных identity and verifiers
+			_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{})
+			if err != nil {
+				panic(err)
+			}
+			_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{})
+			if err != nil {
+				panic(err)
+			}
+			//So(sres, ShouldEqual, true)
+			vd := make(map[string][]byte)
+			vd["mock_identity"] = []byte{}
+			svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
+			if err != nil {
+				panic(err)
+			}
 
-	   		if err != nil {
-	   			panic(err)
-	   		}
-	   		So(regularVerificationData.Code, ShouldEqual, svResp.VerificationCode)
-	   		So(vResp.VerifyStatus, ShouldEqual, true)
+			_, err = client.Verify(ctx, &identity_proto.VerifyReq{Identity: regularVerificationData.Identity, VerificationCode: regularVerificationData.Code, VerifierName: svResp.VerifierName, IdentityName: svResp.IdentityName})
 
-	   	})
+			if err != nil {
+				panic(err)
+			}
 
-	   /*
-	   	Convey("Test user start verification", t, func() {
-
-	   		// пользователь получает список доступных identity and verifiers
-	   		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{})
-	   		if err != nil {
-	   			panic(err)
-	   		}
-	   		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{})
-	   		if err != nil {
-	   			panic(err)
-	   		}
-	   		//So(sres, ShouldEqual, true)
-	   		vd := make(map[string][]byte)
-	   		vd["mock_identity"] = []byte{}
-	   		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
-	   		if err != nil {
-	   			panic(err)
-	   		}
-
-	   		_, err = client.Verify(ctx, &identity_proto.VerifyReq{Identity: regularVerificationData.Identity, VerificationCode: regularVerificationData.Code, VerifierName: svResp.VerifierName, IdentityName: svResp.IdentityName})
-
-	   		if err != nil {
-	   			panic(err)
-	   		}
-
-	   		auth, err := client.CheckStatus(ctx, &identity_proto.StatusReq{})
-	   		if err != nil {
-	   			panic(err)
-	   		}
-	   		fmt.Print(auth.Authenticated)
-	   		So(auth.Authenticated, ShouldNotEqual, false)
-	   	})*/
+			auth, err := client.CheckStatus(ctx, &identity_proto.StatusReq{})
+			if err != nil {
+				panic(err)
+			}
+			fmt.Print(auth.Authenticated)
+			So(auth.Authenticated, ShouldNotEqual, false)
+		})*/
 }
 
 // after get resp_1 user can switch a verification method

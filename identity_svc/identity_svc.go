@@ -155,11 +155,10 @@ func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context
 }
 
 func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_proto.VerifyReq) (resp *identity_proto.VerifyResp, err error) {
-	//TODO get session and user
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	resp = &identity_proto.VerifyResp{}
-	if err := sess.RegularVerify(ctx, req.AuthenticationID, req.VerificationCode); err != nil {
+	if err := sess.RegularVerify(ctx, req.AuthenticationID, req.VerificationCode, req.Identity); err != nil {
 		resp.VerifyStatus = false
 	} else {
 		resp.VerifyStatus = true

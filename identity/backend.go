@@ -10,6 +10,7 @@ type Backend interface {
 	AddUserIdentity(uid string, identity *IdentityData) (*User, error)
 	CreateUser(identity *IdentityData) (*User, error)
 	AddUserAuthenticationData(uid string, data *VerifierData) (*User, error)
+	AddUserToAuthentication(aid, uid string) (*Authentication, error)
 	//DropIdentity(identity *IdentityData) error
 }
 

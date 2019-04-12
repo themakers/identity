@@ -2,7 +2,7 @@ package backend_mongo
 
 import (
 	"fmt"
-	"github.com/globalsign/mgo"
+	. "github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/rs/xid"
 	"github.com/themakers/identity/identity"
@@ -24,7 +24,7 @@ type Backend struct {
 		collPrefix string
 		addr       string
 		port       int
-		sess       *mgo.Session
+		sess       *Session
 		lock       sync.Mutex
 	}
 }
@@ -40,12 +40,12 @@ func New(db, collPrefix, addr string, port int) (*Backend, error) {
 	return b, nil
 }
 
-func (b *Backend) session(coll string) (*mgo.Collection, func(), error) {
+func (b *Backend) session(coll string) (*Collection, func(), error) {
 	b.mgo.lock.Lock()
 	defer b.mgo.lock.Unlock()
 
 	if b.mgo.sess == nil {
-		if sess, err := mgo.Dial(fmt.Sprintf("%s:%d", b.mgo.addr, b.mgo.port)); err != nil {
+		if sess, err := Dial(fmt.Sprintf("%s:%d", b.mgo.addr, b.mgo.port)); err != nil {
 			return nil, func() {}, err
 		} else {
 			b.mgo.sess = sess
@@ -66,7 +66,7 @@ func (b *Backend) CreateVerification(iden *identity.IdentityData, securityCode s
 	}
 	defer close()
 
-	if err := coll.EnsureIndex(mgo.Index{
+	if err := coll.EnsureIndex(Index{
 		Name:        "VerificationTTL",
 		Key:         []string{"CreatedTime"},
 		Unique:      false,
@@ -110,7 +110,7 @@ func (b *Backend) GetUserByID(id string) (*identity.User, error) {
 
 	user := identity.User{}
 
-	if err := coll.Find(bson.M{"_id": id}).One(&user); err != nil && err == mgo.ErrNotFound {
+	if err := coll.Find(bson.M{"_id": id}).One(&user); err != nil && err == ErrNotFound {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -147,14 +147,14 @@ func (b *Backend) AddUserIdentity(id string, iden *identity.IdentityData) (*iden
 	user := identity.User{}
 	//
 
-	if _, err := coll.Find(bson.M{"_id": id}).Apply(mgo.Change{
+	if _, err := coll.Find(bson.M{"_id": id}).Apply(Change{
 		Update: bson.M{
 			"$set": bson.M{
 				fmt.Sprintf("Identities.%s.%s", iden.Name, iden.Identity): iden,
 			},
 		},
 		ReturnNew: true,
-	}, &user); err != nil && err == mgo.ErrNotFound {
+	}, &user); err != nil && err == ErrNotFound {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -229,13 +229,21 @@ func (b *Backend) UpdateAuthentication(token string, updatedata map[string]strin
 }
 
 func (b *Backend) AddUserAuthenticationData(uid string, data *identity.VerifierData) (*identity.User, error) {
-	//coll, close, err := b.session(collUsers)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//defer close()
+	coll, close, err := b.session(collUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer close()
 
 	user := identity.User{}
+
+	if _, err := coll.Find(bson.M{"_id": uid}).Apply(Change{
+		Update: bson.M{
+			"$push": bson.M{"Verifiers": data},
+		}, ReturnNew: true,
+	}, &user); err != nil {
+		return nil, nil
+	}
 	/*
 
 		if _, err := coll.Find(bson.M{"_id": uid}).Apply()
@@ -256,4 +264,25 @@ func (b *Backend) AddUserAuthenticationData(uid string, data *identity.VerifierD
 
 	return &user, nil
 
+}
+
+func (b *Backend) AddUserToAuthentication(aid, uid string) (*identity.Authentication, error) {
+	coll, close, err := b.session(collAuthentications)
+	if err != nil {
+		return nil, err
+	}
+	defer close()
+
+	auth := identity.Authentication{}
+
+	if _, err := coll.Find(bson.M{"_id": aid}).Apply(Change{
+		Update: bson.M{
+			"$set": bson.M{
+				"UserID": uid,
+			},
+		}, ReturnNew: true,
+	}, &auth); err != nil {
+		return nil, nil
+	}
+	return &auth, nil
 }

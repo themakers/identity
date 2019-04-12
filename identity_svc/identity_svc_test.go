@@ -114,10 +114,6 @@ func TestIntt(t *testing.T) {
 		vd["mock_identity"] = []byte{}
 		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
 		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
-		/*So(svResp.Identity, ShouldEqual, "79991112233")
-		So(svResp.IdentityName, ShouldEqual, "mock_identity")
-		So(svResp.VerifierName, ShouldEqual, "mock_regular")
-		So(svResp.VerificationCode, ShouldNotEqual, "")*/
 
 	})
 	/*

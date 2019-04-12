@@ -78,9 +78,7 @@ func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *id
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	vd := []identity.VerifierData{}
-	// TODO use session function to start verification
 	verType := pis.is.mgr.GetVerifierType(req.VerifierName)
-
 	// todo use switch to choose verification method
 	if verType == "regular" {
 		aid, err := sess.StartRegularVerification(ctx, req.VerifierName, req.Identity, vd)
@@ -100,8 +98,6 @@ func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, req 
 func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *identity_proto.StartAuthenticationReq) (resp *identity_proto.StartAuthenticationResp, err error) {
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
-
-	//_ = sess.HandleIncomingIdentity(ctx, &identity.IdentityData{Identity:"mock_identity", Name:"mock_identity"})
 
 	authres, err := pis.is.mgr.StartAuthentication(ctx)
 	if err != nil {
@@ -139,12 +135,6 @@ func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 
-	/*sess.
-
-	sessToken := pis.is.mgr.GetSessionToken(ctx)
-	if sessToken == "" {
-		panic("Empty session")
-	}*/
 	resp := &identity_proto.VerifierDetailsResponse{}
 	idns, vers := pis.is.mgr.ListAllIndentitiesAndVerifiers()
 

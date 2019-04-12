@@ -222,6 +222,38 @@ func (b *Backend) GetAuthenticationBySessionToken(SessionToken string) (*identit
 	return &identity.Authentication{SessionToken: SessionToken, FactorsCount: 1, UserID: "123", FactorsStatus: fs}, nil
 }
 
+// todo realise a multiple add to Authentication
+
 func (b *Backend) UpdateAuthentication(token string, updatedata map[string]string) (bool, error) {
 	return false, nil
+}
+
+func (b *Backend) AddUserAuthenticationData(uid string, data *identity.VerifierData) (*identity.User, error) {
+	//coll, close, err := b.session(collUsers)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//defer close()
+
+	user := identity.User{}
+	/*
+
+		if _, err := coll.Find(bson.M{"_id": uid}).Apply()
+
+
+		if _, err := coll.Find(bson.M{"_id": id}).Apply(mgo.Change{
+			Update: bson.M{
+				"$set": bson.M{
+					fmt.Sprintf("Identities.%s.%s", iden.Name, iden.Identity): iden,
+				},
+			},
+			ReturnNew: true,
+		}, &user); err != nil && err == mgo.ErrNotFound {
+			return nil, nil
+		} else if err != nil {
+			return nil, err
+		}*/
+
+	return &user, nil
+
 }

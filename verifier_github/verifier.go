@@ -94,7 +94,7 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 
 	var user UserInfo
 	//todo: validate service answer
-	if err := json.Unmarshal(data, user); err != nil {
+	if err := json.Unmarshal(data, &user); err != nil {
 		return nil, err
 	}
 

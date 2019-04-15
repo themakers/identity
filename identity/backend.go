@@ -11,6 +11,7 @@ type Backend interface {
 	CreateUser(identity *IdentityData) (*User, error)
 	AddUserAuthenticationData(uid string, data *VerifierData) (*User, error)
 	AddUserToAuthentication(aid, uid string) (*Authentication, error)
+	AddTempAuthDataToAuth(aid string, data map[string]string) (*Authentication, error)
 	//DropIdentity(identity *IdentityData) error
 }
 
@@ -28,13 +29,15 @@ type IdentityData struct {
 
 //--------------------------------------------------------------------------------------------------------
 type VerifierData struct {
-	AuthenticationData map[string]string `bson:"AuthenticationData" json:"AuthenticationData"` // /identity/value
+	VerifierName       string            `bson:"VerifierName" json:"VerifierName"`
+	AuthenticationData map[string]string `bson:"AuthenticationData" json:"AuthenticationData"` // /verifiername/value
 	AdditionalData     map[string]string `bson:"AdditionalData" json:"AdditionalData"`
 }
 
 type Authentication struct {
-	SessionToken  string          `bson:"_id" json:"SessionToken"`
-	UserID        string          `bson:"UserID" json:"UserID"`
-	FactorsCount  int             `bson:"FactorsCount" json:"FactorsCount"`
-	FactorsStatus map[string]bool `bson:"FactorsStatus" json:"FactorsStatus"` // /name/status
+	SessionToken           string            `bson:"_id" json:"SessionToken"`
+	UserID                 string            `bson:"UserID" json:"UserID"`
+	FactorsCount           int               `bson:"FactorsCount" json:"FactorsCount"`
+	TempAuthenticationData map[string]string `bson:"TempAuthenticationData" json:"TempAuthenticationData"` // /verifiername/value
+	FactorsStatus          map[string]bool   `bson:"FactorsStatus" json:"FactorsStatus"`                   // /name/status
 }

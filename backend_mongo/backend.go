@@ -125,15 +125,12 @@ func (b *Backend) GetUserByIdentity(idn string) (*identity.User, error) {
 		return nil, err
 	}
 	defer close()
-
 	user := identity.User{}
-
 	if err := coll.Find(bson.M{"Identities": bson.M{"$elemMatch": bson.M{"Identity": idn}}}).One(&user); err != nil && user.ID == "" {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	}
-
 	return &user, nil
 }
 
@@ -143,10 +140,7 @@ func (b *Backend) AddUserIdentity(id string, iden *identity.IdentityData) (*iden
 		return nil, err
 	}
 	defer close()
-
 	user := identity.User{}
-	//
-
 	if _, err := coll.Find(bson.M{"_id": id}).Apply(Change{
 		Update: bson.M{
 			"$set": bson.M{
@@ -159,7 +153,6 @@ func (b *Backend) AddUserIdentity(id string, iden *identity.IdentityData) (*iden
 	} else if err != nil {
 		return nil, err
 	}
-
 	return &user, nil
 }
 
@@ -228,9 +221,7 @@ func (b *Backend) AddUserAuthenticationData(uid string, data *identity.VerifierD
 		return nil, err
 	}
 	defer close()
-
 	user := identity.User{}
-
 	if _, err := coll.Find(bson.M{"_id": uid}).Apply(Change{
 		Update: bson.M{
 			"$addToSet": bson.M{"Verifiers": data},
@@ -238,26 +229,8 @@ func (b *Backend) AddUserAuthenticationData(uid string, data *identity.VerifierD
 	}, &user); err != nil {
 		return nil, nil
 	}
-	/*
-
-		if _, err := coll.Find(bson.M{"_id": uid}).Apply()
-
-
-		if _, err := coll.Find(bson.M{"_id": id}).Apply(mgo.Change{
-			Update: bson.M{
-				"$set": bson.M{
-					fmt.Sprintf("Identities.%s.%s", iden.Name, iden.Identity): iden,
-				},
-			},
-			ReturnNew: true,
-		}, &user); err != nil && err == mgo.ErrNotFound {
-			return nil, nil
-		} else if err != nil {
-			return nil, err
-		}*/
 
 	return &user, nil
-
 }
 
 func (b *Backend) AddUserToAuthentication(aid, uid string) (*identity.Authentication, error) {
@@ -279,4 +252,26 @@ func (b *Backend) AddUserToAuthentication(aid, uid string) (*identity.Authentica
 		return nil, nil
 	}
 	return &auth, nil
+}
+
+func (b *Backend) AddTempAuthDataToAuth(aid string, data map[string]string) (*identity.Authentication, error) {
+	coll, close, err := b.session(collAuthentications)
+	if err != nil {
+		return nil, err
+	}
+	defer close()
+
+	auth := identity.Authentication{}
+
+	if _, err := coll.Find(bson.M{"_id": aid}).Apply(Change{
+		Update: bson.M{
+			"$set": bson.M{
+				"TempAuthenticationData": data,
+			},
+		}, ReturnNew: true,
+	}, &auth); err != nil {
+		return nil, nil
+	}
+	return &auth, nil
+
 }

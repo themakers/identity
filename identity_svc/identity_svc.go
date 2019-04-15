@@ -155,7 +155,7 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_prot
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	resp = &identity_proto.VerifyResp{}
-	if err := sess.RegularVerify(ctx, req.AuthenticationID, req.VerificationCode, req.Identity); err != nil {
+	if err := sess.RegularVerify(ctx, req.AuthenticationID, req.VerificationCode, req.VerifierName, req.Identity); err != nil {
 		resp.VerifyStatus = false
 	} else {
 		resp.VerifyStatus = true

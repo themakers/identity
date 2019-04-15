@@ -79,14 +79,13 @@ func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *id
 	defer sess.Dispose()
 	vd := []identity.VerifierData{}
 	verType := pis.is.mgr.GetVerifierType(req.VerifierName)
-	// todo use switch to choose verification method
-	if verType == "regular" {
+	switch verType {
+	case "regular":
 		aid, err := sess.StartRegularVerification(ctx, req.VerifierName, req.Identity, vd)
 		if err != nil {
 			panic(err)
 		}
 		return &identity_proto.StartVerificationResp{AuthenticationID: aid}, nil
-
 	}
 	return &identity_proto.StartVerificationResp{}, nil
 }

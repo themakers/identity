@@ -6,6 +6,7 @@ type Backend interface {
 	CreateAuthentication(SessionToken string) (*Authentication, error)
 	GetVerification(verificationID string) (*Authentication, error)
 	GetUserByID(id string) (*User, error)
+	GetUserByLogin(login string) (*User, error)
 	GetUserByIdentity(identity string) (*User, error)
 	AddUserIdentity(uid string, identity *IdentityData) (*User, error)
 	CreateUser(identity *IdentityData) (*User, error)
@@ -29,6 +30,8 @@ type IdentityData struct {
 
 //--------------------------------------------------------------------------------------------------------
 type VerifierData struct {
+	VerifierName string `bson:"VerifierName" json:"VerifierName"`
+	//todo: may be we should change string to []byte for hash
 	AuthenticationData map[string]string `bson:"AuthenticationData" json:"AuthenticationData"` // /identity/value
 	AdditionalData     map[string]string `bson:"AdditionalData" json:"AdditionalData"`
 }

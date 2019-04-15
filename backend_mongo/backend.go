@@ -119,6 +119,24 @@ func (b *Backend) GetUserByID(id string) (*identity.User, error) {
 	return &user, nil
 }
 
+func (b *Backend) GetUserByLogin(login string) (*identity.User, error) {
+	coll, close, err := b.session(collUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer close()
+
+	user := identity.User{}
+
+	if err := coll.Find(bson.M{"login": login}).One(&user); err != nil && err == ErrNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
 func (b *Backend) GetUserByIdentity(idn string) (*identity.User, error) {
 	coll, close, err := b.session(collUsers)
 	if err != nil {

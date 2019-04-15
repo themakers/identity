@@ -38,5 +38,5 @@ type OAuth2Verification interface {
 type StaticVerification interface {
 	Verifier
 
-	StartStaticVerification(ctx context.Context) (verificationId string)
+	StartStaticVerification(ctx context.Context, login string, password string) (iden *VerifierData, err error)
 }

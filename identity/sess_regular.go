@@ -46,6 +46,10 @@ func (sess *Session) RegularVerify(ctx context.Context, AuthenticationID, securi
 	}
 	for key, value := range auth.TempAuthenticationData {
 		if key == vername && value == securityCode {
+			data := VerifierData{VerifierName: vername, AuthenticationData: map[string]string{}, AdditionalData: map[string]string{}}
+			_, err = sess.manager.backend.AddUserAuthenticationData(auth.UserID, &data)
+			err = sess.manager.backend.UpdateFactorStatus(AuthenticationID, vername)
+			// todo : update verifier status in authentication
 			return nil
 		}
 	}

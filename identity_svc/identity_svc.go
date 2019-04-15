@@ -62,7 +62,12 @@ type PublicIdentityService struct {
 }
 
 func (pis *PublicIdentityService) InitializeStaticVerifier(ctx context.Context, req *identity_proto.InitializeStaticVerifierReq) (resp *identity_proto.InitializeStaticVerifierResp, err error) {
-	return
+	sess := pis.is.mgr.Session(ctx)
+	defer sess.Dispose()
+	resp = &identity_proto.InitializeStaticVerifierResp{}
+	vd := identity.VerifierData{VerifierName: req.VerifierName, AuthenticationData: req.InitializationData, AdditionalData: map[string]string{}}
+	_ = sess.InitializeStaticVerifier(ctx, &vd)
+	return resp, nil
 
 }
 
@@ -99,7 +104,7 @@ func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 
-	authres, err := pis.is.mgr.StartAuthentication(ctx)
+	authres, err := pis.is.mgr.StartAuthentication(ctx, req.VerifierName)
 	if err != nil {
 		panic(err)
 	}
@@ -164,30 +169,20 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_prot
 }
 
 func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_proto.StatusReq) (*identity_proto.Status, error) {
-	// todo finish get status
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	resp := &identity_proto.Status{}
-	authentication, err := pis.is.mgr.GetStatus(ctx)
+	authentication, err := sess.CheckStatus(ctx)
 	if err != nil {
 		panic(err)
 	}
-	updateFactorsCount := 0
-	for _, value := range authentication.FactorsStatus {
-		if !value {
-			updateFactorsCount++
-		}
-	}
-	authentication.FactorsCount = updateFactorsCount
-	if authentication.FactorsCount != 0 {
+	if authentication == 0 {
 		resp.Authenticated = true
-		resp.Authenticating = false
 	} else {
-		resp.Authenticating = true
 		resp.Authenticated = false
+		resp.RemainingFactors = int64(authentication)
 	}
 	return resp, nil
-
 }
 
 ////////////////////////////////////////////////////////////////

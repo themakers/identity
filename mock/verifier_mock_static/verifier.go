@@ -8,6 +8,13 @@ import (
 var _ identity.Verifier = new(Verifier)
 
 type Verifier struct {
+	cb Callback
+}
+
+type Callback func(login, pass string)
+
+func New(cb Callback) *Verifier {
+	return &Verifier{cb: cb}
 }
 
 func (ver *Verifier) Info() identity.VerifierInfo {
@@ -15,6 +22,6 @@ func (ver *Verifier) Info() identity.VerifierInfo {
 
 }
 
-func (ver *Verifier) StartStaticVerification(ctx context.Context) (verificationId string) {
-	return
+func (ver *Verifier) StartStaticVerification(ctx context.Context) bool {
+	return true
 }

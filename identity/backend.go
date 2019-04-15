@@ -3,7 +3,7 @@ package identity
 type Backend interface {
 	CreateVerification(iden *IdentityData, securityCode string) (*Authentication, error)
 	GetAuthenticationBySessionToken(SessionToken string) (*Authentication, error)
-	CreateAuthentication(SessionToken string) (*Authentication, error)
+	CreateAuthentication(SessionToken, VerifierName string) (*Authentication, error)
 	GetVerification(verificationID string) (*Authentication, error)
 	GetUserByID(id string) (*User, error)
 	GetUserByIdentity(identity string) (*User, error)
@@ -12,6 +12,7 @@ type Backend interface {
 	AddUserAuthenticationData(uid string, data *VerifierData) (*User, error)
 	AddUserToAuthentication(aid, uid string) (*Authentication, error)
 	AddTempAuthDataToAuth(aid string, data map[string]string) (*Authentication, error)
+	UpdateFactorStatus(aid, VerifierName string) error
 	//DropIdentity(identity *IdentityData) error
 }
 
@@ -30,7 +31,7 @@ type IdentityData struct {
 //--------------------------------------------------------------------------------------------------------
 type VerifierData struct {
 	VerifierName       string            `bson:"VerifierName" json:"VerifierName"`
-	AuthenticationData map[string]string `bson:"AuthenticationData" json:"AuthenticationData"` // /verifiername/value
+	AuthenticationData map[string]string `bson:"AuthenticationData" json:"AuthenticationData"` // /identity/value
 	AdditionalData     map[string]string `bson:"AdditionalData" json:"AdditionalData"`
 }
 

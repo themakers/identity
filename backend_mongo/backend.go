@@ -164,8 +164,9 @@ func (b *Backend) CreateUser(iden *identity.IdentityData) (*identity.User, error
 	defer close()
 
 	user := identity.User{
-		ID:         xid.New().String(),
-		Identities: []identity.IdentityData{identity.IdentityData{iden.Name, iden.Identity}},
+		ID:                xid.New().String(),
+		Identities:        []identity.IdentityData{identity.IdentityData{iden.Name, iden.Identity}},
+		AuthFactorsNumber: 1,
 	}
 
 	if err := coll.Insert(user); err != nil {
@@ -175,7 +176,7 @@ func (b *Backend) CreateUser(iden *identity.IdentityData) (*identity.User, error
 	return &user, nil
 }
 
-func (b *Backend) CreateAuthentication(SessionToken string) (*identity.Authentication, error) {
+func (b *Backend) CreateAuthentication(SessionToken, VerifierName string) (*identity.Authentication, error) {
 	coll, close, err := b.session(collAuthentications)
 	if err != nil {
 		panic(err)
@@ -185,7 +186,7 @@ func (b *Backend) CreateAuthentication(SessionToken string) (*identity.Authentic
 	if err := coll.Find(bson.M{"_id": SessionToken}).One(&auth); err == nil {
 		return &auth, identity.ErrAuthenticationForSessionAlreadyExist
 	} else {
-		fs := make(map[string]bool)
+		fs := map[string]bool{VerifierName: false}
 		auth = identity.Authentication{
 			SessionToken:  SessionToken,
 			FactorsCount:  99,
@@ -241,11 +242,13 @@ func (b *Backend) AddUserToAuthentication(aid, uid string) (*identity.Authentica
 	defer close()
 
 	auth := identity.Authentication{}
+	user, err := b.GetUserByID(uid)
 
 	if _, err := coll.Find(bson.M{"_id": aid}).Apply(Change{
 		Update: bson.M{
 			"$set": bson.M{
-				"UserID": uid,
+				"UserID":       uid,
+				"FactorsCount": user.AuthFactorsNumber,
 			},
 		}, ReturnNew: true,
 	}, &auth); err != nil {
@@ -274,4 +277,25 @@ func (b *Backend) AddTempAuthDataToAuth(aid string, data map[string]string) (*id
 	}
 	return &auth, nil
 
+}
+
+func (b *Backend) UpdateFactorStatus(aid, VerifierName string) error {
+	coll, close, err := b.session(collAuthentications)
+	if err != nil {
+		return err
+	}
+	defer close()
+
+	auth := identity.Authentication{}
+
+	if _, err := coll.Find(bson.M{"_id": aid}).Apply(Change{
+		Update: bson.M{
+			"$set": bson.M{
+				"FactorsStatus": map[string]bool{VerifierName: true},
+			},
+		}, ReturnNew: false,
+	}, &auth); err != nil {
+		return nil
+	}
+	return nil
 }

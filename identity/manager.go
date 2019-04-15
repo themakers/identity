@@ -155,7 +155,6 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 			panic(err)
 		}
 	}
-	// todo: create authentication when create a session
 	return sess
 }
 

@@ -88,7 +88,6 @@ func TestIntt(t *testing.T) {
 		Convey("Test user start authentication", t, func() {
 			var trailer metadata.MD
 			_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
-			// fixme as trouble - manual adding context to context
 			ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
 			if err != nil {
 				panic(err)
@@ -116,8 +115,8 @@ func TestIntt(t *testing.T) {
 			svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
 			So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
 
-		})*/
-
+		})
+	*/
 	Convey("Test user verify", t, func() {
 		var trailer metadata.MD
 		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
@@ -131,11 +130,11 @@ func TestIntt(t *testing.T) {
 		}
 		vd := make(map[string][]byte)
 		vd["mock_identity"] = []byte{}
-		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd}, grpc.Trailer(&trailer))
+		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79993332211", VerificationData: vd}, grpc.Trailer(&trailer))
 		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
 
-		vRespTrue, err := client.Verify(ctx, &identity_proto.VerifyReq{Identity: regularVerificationData.Identity, VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID})
-		vRespFalse, err := client.Verify(ctx, &identity_proto.VerifyReq{Identity: regularVerificationData.Identity, VerificationCode: "1111", AuthenticationID: svResp.AuthenticationID})
+		vRespTrue, err := client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "779993332211"})
+		vRespFalse, err := client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: "1111", AuthenticationID: svResp.AuthenticationID, Identity: "79993332211"})
 
 		if err != nil {
 			panic(err)

@@ -107,18 +107,18 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 type UserInfo struct {
 	Id      int `json:"id"`
 	Address struct {
-		City         string  `json:"city"`
+		City        string  `json:"city"`
 		CityId      uint32  `json:"city_id"`
-		Country      string  `json:"country"`
+		Country     string  `json:"country"`
 		CountryCode string  `json:"country_code"`
-		Latitude     float32 `json:"latitude"`
+		Latitude    float32 `json:"latitude"`
 		LocatedIn   int     `json:"located_in"`
-		Name         string  `json:"name"`
-		Region       string  `json:"region"`
+		Name        string  `json:"name"`
+		Region      string  `json:"region"`
 		RegionId    uint32  `json:"region_id"`
-		State        string  `json:"state"`
-		Street       string  `json:"street"`
-		Zip          string  `json:"zip"`
+		State       string  `json:"state"`
+		Street      string  `json:"street"`
+		Zip         string  `json:"zip"`
 	} `json:"address"`
 	Age_range struct {
 		Max uint32 `json:"max"`
@@ -128,7 +128,7 @@ type UserInfo struct {
 	Context  struct {
 		Context string `json:"context"`
 	} `json:"context"`
-	Email             string `json:"email"`
+	Email            string `json:"email"`
 	EmployeeNumber   string `json:"employee_number"`
 	FavoriteAthletes []struct {
 		Id          string `json:"id"`
@@ -141,8 +141,8 @@ type UserInfo struct {
 		Name        string `json:"name"`
 	} `json:"favorite_teams"`
 	FirstName string `json:"first_name"`
-	Gender     string `json:"gender"`
-	Hometown   []struct {
+	Gender    string `json:"gender"`
+	Hometown  []struct {
 		Id    string `json:"id"`
 		About string `json:"about"`
 		Name  string `json:"name"`
@@ -152,23 +152,23 @@ type UserInfo struct {
 		Description string `json:"description"`
 		Name        string `json:"name"`
 	} `json:"inspirational_people"`
-	Installed       bool     `json:"installed"`
-	InterestedIn   []string `json:"interested_in"`
+	Installed     bool     `json:"installed"`
+	InterestedIn  []string `json:"interested_in"`
 	IsSharedLogin bool     `json:"is_shared_login"`
-	LastName       string   `json:"last_name"`
-	Location        struct {
+	LastName      string   `json:"last_name"`
+	Location      struct {
 		Id    string `json:"id"`
 		About string `json:"about"`
 		Name  string `json:"name"`
 	} `json:"location"`
 	MeetingFor []string `json:"meeting_for"`
 	MiddleName string   `json:"middle_name"`
-	Name        string   `json:"name"`
+	Name       string   `json:"name"`
 	NameFormat string   `json:"name_format"`
 	ProfilePic string   `json:"profile_pic"`
 	PublicKey  string   `json:"public_key"`
-	Quotes      string   `json:"quotes"`
-	Sports      []struct {
+	Quotes     string   `json:"quotes"`
+	Sports     []struct {
 		Id          string `json:"id"`
 		Description string `json:"description"`
 		Name        string `json:"name"`

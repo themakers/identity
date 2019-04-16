@@ -45,7 +45,7 @@ func serve(ctx context.Context, verifiers ...identity.Verifier) (port int) {
 	return lis.Addr().(*net.TCPAddr).Port
 }
 
-func TestIntt(t *testing.T) {
+func Test1F(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 

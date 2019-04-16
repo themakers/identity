@@ -257,7 +257,7 @@ func (b *Backend) AddUserToAuthentication(aid, uid string) (*identity.Authentica
 	return &auth, nil
 }
 
-func (b *Backend) AddTempAuthDataToAuth(aid string, data map[string]string) (*identity.Authentication, error) {
+func (b *Backend) AddTempAuthDataToAuth(aid string, data map[string]map[string]string) (*identity.Authentication, error) {
 	coll, close, err := b.session(collAuthentications)
 	if err != nil {
 		return nil, err

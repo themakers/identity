@@ -26,7 +26,7 @@ func (sess *Session) StartRegularVerification(ctx context.Context, vername, idn 
 	if err != nil {
 		panic(err)
 	}
-	_, err = sess.manager.backend.AddTempAuthDataToAuth(AID, map[string]string{vername: securitycode})
+	_, err = sess.manager.backend.AddTempAuthDataToAuth(AID, map[string]map[string]string{vername: {idn: securitycode}})
 	if err != nil {
 		panic(err)
 	}
@@ -45,12 +45,17 @@ func (sess *Session) RegularVerify(ctx context.Context, AuthenticationID, securi
 		panic(err)
 	}
 	for key, value := range auth.TempAuthenticationData {
-		if key == vername && value == securityCode {
-			data := VerifierData{VerifierName: vername, AuthenticationData: map[string]string{}, AdditionalData: map[string]string{}}
-			_, err = sess.manager.backend.AddUserAuthenticationData(auth.UserID, &data)
-			err = sess.manager.backend.UpdateFactorStatus(AuthenticationID, vername)
-			// todo : update verifier status in authentication
-			return nil
+		if key == vername {
+			for inkey, invalue := range value {
+				if inkey == idn && invalue == securityCode {
+					data := VerifierData{VerifierName: vername, AuthenticationData: map[string]string{}, AdditionalData: map[string]string{}}
+					_, err = sess.manager.backend.AddUserAuthenticationData(auth.UserID, &data)
+					err = sess.manager.backend.UpdateFactorStatus(AuthenticationID, vername)
+					// todo : update verifier status in authentication
+					return nil
+				}
+			}
+
 		}
 	}
 	return ErrSecurityCodeMismatch

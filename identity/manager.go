@@ -155,7 +155,6 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 			panic(err)
 		}
 	}
-	// todo: create authentication when create a session
 	return sess
 }
 
@@ -169,9 +168,9 @@ func (mgr *Manager) GetStatus(ctx context.Context) (*Authentication, error) {
 	return auth, nil
 }
 
-func (mgr *Manager) StartAuthentication(ctx context.Context) (res bool, err error) {
+func (mgr *Manager) StartAuthentication(ctx context.Context, vname string) (res bool, err error) {
 	token := getIncomingSessionToken(ctx)
-	_, err = mgr.backend.CreateAuthentication(token)
+	_, err = mgr.backend.CreateAuthentication(token, vname)
 	if err != nil && err != ErrAuthenticationForSessionAlreadyExist {
 		return false, err
 	}

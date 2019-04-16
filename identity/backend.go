@@ -3,19 +3,20 @@ package identity
 type Backend interface {
 	CreateVerification(iden *IdentityData, securityCode string) (*Authentication, error)
 	GetAuthenticationBySessionToken(SessionToken string) (*Authentication, error)
-	CreateAuthentication(SessionToken string) (*Authentication, error)
+	CreateAuthentication(SessionToken, VerifierName string) (*Authentication, error)
 	GetVerification(verificationID string) (*Authentication, error)
 	GetUserByID(id string) (*User, error)
-	GetUserByLogin(login string) (*User, error)
+	GetUserByLogin(id string) (*User, error)
 	GetUserByIdentity(identity string) (*User, error)
 	AddUserIdentity(uid string, identity *IdentityData) (*User, error)
 	CreateUser(identity *IdentityData) (*User, error)
 	AddUserAuthenticationData(uid string, data *VerifierData) (*User, error)
 	AddUserToAuthentication(aid, uid string) (*Authentication, error)
+	AddTempAuthDataToAuth(aid string, data map[string]string) (*Authentication, error)
+	UpdateFactorStatus(aid, VerifierName string) error
 	//DropIdentity(identity *IdentityData) error
 }
 
-// TODO add a multifactor criterea
 type User struct {
 	ID                string         `bson:"_id" json:"ID"`
 	Identities        []IdentityData `bson:"Identities" json:"Identities"` // /name/identity/**
@@ -30,15 +31,15 @@ type IdentityData struct {
 
 //--------------------------------------------------------------------------------------------------------
 type VerifierData struct {
-	VerifierName string `bson:"VerifierName" json:"VerifierName"`
-	//todo: may be we should change string to []byte for hash
+	VerifierName       string            `bson:"VerifierName" json:"VerifierName"`
 	AuthenticationData map[string]string `bson:"AuthenticationData" json:"AuthenticationData"` // /identity/value
 	AdditionalData     map[string]string `bson:"AdditionalData" json:"AdditionalData"`
 }
 
 type Authentication struct {
-	SessionToken  string          `bson:"_id" json:"SessionToken"`
-	UserID        string          `bson:"UserID" json:"UserID"`
-	FactorsCount  int             `bson:"FactorsCount" json:"FactorsCount"`
-	FactorsStatus map[string]bool `bson:"FactorsStatus" json:"FactorsStatus"` // /name/status
+	SessionToken           string            `bson:"_id" json:"SessionToken"`
+	UserID                 string            `bson:"UserID" json:"UserID"`
+	FactorsCount           int               `bson:"FactorsCount" json:"FactorsCount"`
+	TempAuthenticationData map[string]string `bson:"TempAuthenticationData" json:"TempAuthenticationData"` // /verifiername/value
+	FactorsStatus          map[string]bool   `bson:"FactorsStatus" json:"FactorsStatus"`                   // /name/status
 }

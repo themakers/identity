@@ -62,7 +62,12 @@ type PublicIdentityService struct {
 }
 
 func (pis *PublicIdentityService) InitializeStaticVerifier(ctx context.Context, req *identity_proto.InitializeStaticVerifierReq) (resp *identity_proto.InitializeStaticVerifierResp, err error) {
-	return
+	sess := pis.is.mgr.Session(ctx)
+	defer sess.Dispose()
+	resp = &identity_proto.InitializeStaticVerifierResp{}
+	vd := identity.VerifierData{VerifierName: req.VerifierName, AuthenticationData: req.InitializationData, AdditionalData: map[string]string{}}
+	_ = sess.InitializeStaticVerifier(ctx, &vd)
+	return resp, nil
 
 }
 
@@ -75,20 +80,24 @@ func (pis *PublicIdentityService) UserMerge(ctx context.Context, req *identity_p
 }
 
 func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *identity_proto.StartVerificationReq) (resp *identity_proto.StartVerificationResp, err error) {
+	var  aid string
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
-	vd := []identity.VerifierData{}
+	//todo get  vd from user
+	vd := identity.VerifierData{VerifierName:req.VerifierName,AuthenticationData: }
 	verType := pis.is.mgr.GetVerifierType(req.VerifierName)
-	// todo use switch to choose verification method
-	if verType == "regular" {
-		aid, err := sess.StartRegularVerification(ctx, req.VerifierName, req.Identity, vd)
-		if err != nil {
-			panic(err)
-		}
-		return &identity_proto.StartVerificationResp{AuthenticationID: aid}, nil
-
+	switch verType {
+		case "regular":
+			aid, err = sess.StartRegularVerification(ctx, req.VerifierName, req.Identity, vd)
+		case "static":
+			aid, err = sess.StartStaticVerification(ctx, req.VerifierName, req.Identity, vd)
+		default:
+			return &identity_proto.StartVerificationResp{}, nil
 	}
-	return &identity_proto.StartVerificationResp{}, nil
+	if err != nil {
+		panic(err)
+	}
+	return &identity_proto.StartVerificationResp{AuthenticationID: aid}, nil
 }
 
 func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, req *identity_proto.CancelAuthenticationReq) (resp *identity_proto.Status, err error) {
@@ -99,7 +108,7 @@ func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 
-	authres, err := pis.is.mgr.StartAuthentication(ctx)
+	authres, err := pis.is.mgr.StartAuthentication(ctx, req.VerifierName)
 	if err != nil {
 		panic(err)
 	}
@@ -108,7 +117,6 @@ func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *
 		return &identity_proto.StartAuthenticationResp{AuthenticationSessionExist: true}, nil
 	}
 	return &identity_proto.StartAuthenticationResp{AuthenticationSessionExist: false}, nil
-
 }
 
 func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Context, u *identity_proto.MyVerifiersDetailRequest) (response *identity_proto.VerifierDetailsResponse, err error) {
@@ -126,9 +134,7 @@ func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Conte
 	for _, idn := range idns {
 		resp.IdentitiyNames = append(resp.IdentitiyNames, idn.Name)
 	}
-
 	return
-
 }
 
 func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context, q *identity_proto.VerifiersDetailsRequest) (response *identity_proto.VerifierDetailsResponse, err error) {
@@ -158,51 +164,29 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_prot
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	resp = &identity_proto.VerifyResp{}
-	if err := sess.RegularVerify(ctx, req.AuthenticationID, req.VerificationCode, req.Identity); err != nil {
+	if err := sess.RegularVerify(ctx, req.AuthenticationID, req.VerificationCode, req.VerifierName, req.Identity); err != nil {
 		resp.VerifyStatus = false
 	} else {
 		resp.VerifyStatus = true
 	}
-
-	/*code := pis.is.mgr.GetVerificationCode(ctx, req.VerifierName)
-	if code == req.VerificationCode {
-		resp.VerifyStatus = true
-	} else {
-		resp.VerifyStatus = false
-	}*/
-
 	return resp, nil
 }
 
 func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_proto.StatusReq) (*identity_proto.Status, error) {
-	// todo finish get status
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	resp := &identity_proto.Status{}
-
-	authentication, err := pis.is.mgr.GetStatus(ctx)
+	authentication, err := sess.CheckStatus(ctx)
 	if err != nil {
 		panic(err)
 	}
-
-	updateFactorsCount := 0
-	for _, value := range authentication.FactorsStatus {
-		if !value {
-			updateFactorsCount++
-		}
-	}
-	authentication.FactorsCount = updateFactorsCount
-
-	if authentication.FactorsCount != 0 {
+	if authentication == 0 {
 		resp.Authenticated = true
-		resp.Authenticating = false
 	} else {
-		resp.Authenticating = true
 		resp.Authenticated = false
+		resp.RemainingFactors = int64(authentication)
 	}
-
 	return resp, nil
-
 }
 
 ////////////////////////////////////////////////////////////////

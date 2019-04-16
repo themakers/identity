@@ -15,6 +15,8 @@ func (sess *Session) handleIncomingIdentity(ctx context.Context, identity *Ident
 	if err != nil {
 		return err
 	}
+	log.Println(identity.Identity)
+	log.Println(user)
 
 	switch {
 	case userID == "" && user == nil: // Empty session AND new identity => create user

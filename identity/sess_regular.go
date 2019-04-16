@@ -26,8 +26,7 @@ func (sess *Session) StartRegularVerification(ctx context.Context, vername, idn 
 	if err != nil {
 		panic(err)
 	}
-	data := VerifierData{AuthenticationData: map[string]string{idn: securitycode}, AdditionalData: map[string]string{}}
-	_, err = sess.manager.backend.AddUserAuthenticationData(user.ID, &data)
+	_, err = sess.manager.backend.AddTempAuthDataToAuth(AID, map[string]string{vername: securitycode})
 	if err != nil {
 		panic(err)
 	}
@@ -39,18 +38,20 @@ func (sess *Session) StartRegularVerification(ctx context.Context, vername, idn 
 	return AID, err
 }
 
-func (sess *Session) RegularVerify(ctx context.Context, AuthenticationID, securityCode, idn string) (err error) {
+func (sess *Session) RegularVerify(ctx context.Context, AuthenticationID, securityCode, vername, idn string) (err error) {
+	// todo make check aid from context and authenticationid as value
 	auth, err := sess.manager.backend.GetAuthenticationBySessionToken(AuthenticationID)
 	if err != nil {
 		panic(err)
 	}
-	user, err := sess.manager.backend.GetUserByID(auth.UserID)
-	//todo update choosing storedcode
-	dem := user.Verifiers[0].AuthenticationData[idn]
-	// todo update authentication in storage with success verification
-	if dem == securityCode {
-		return nil
-	} else {
-		return ErrSecurityCodeMismatch
+	for key, value := range auth.TempAuthenticationData {
+		if key == vername && value == securityCode {
+			data := VerifierData{VerifierName: vername, AuthenticationData: map[string]string{}, AdditionalData: map[string]string{}}
+			_, err = sess.manager.backend.AddUserAuthenticationData(auth.UserID, &data)
+			err = sess.manager.backend.UpdateFactorStatus(AuthenticationID, vername)
+			// todo : update verifier status in authentication
+			return nil
+		}
 	}
+	return ErrSecurityCodeMismatch
 }

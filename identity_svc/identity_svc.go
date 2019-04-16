@@ -2,6 +2,7 @@ package identity_svc
 
 import (
 	"context"
+	"fmt"
 	"github.com/themakers/identity/identity"
 	"github.com/themakers/identity/identity_svc/identity_proto"
 	"github.com/themakers/session"
@@ -82,11 +83,14 @@ func (pis *PublicIdentityService) UserMerge(ctx context.Context, req *identity_p
 func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *identity_proto.StartVerificationReq) (resp *identity_proto.StartVerificationResp, err error) {
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
-	vd := []identity.VerifierData{}
+	//fmt.Println(req.VerifierName)
+	addata := map[string]string{}
+	vd := identity.VerifierData{req.VerifierName, req.VerificationData, addata}
 	verType := pis.is.mgr.GetVerifierType(req.VerifierName)
+	fmt.Println(verType)
 	switch verType {
 	case "regular":
-		aid, err := sess.StartRegularVerification(ctx, req.VerifierName, req.Identity, vd)
+		aid, err := sess.StartRegularVerification(ctx, req.Identity, vd)
 		if err != nil {
 			panic(err)
 		}

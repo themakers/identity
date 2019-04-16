@@ -3,6 +3,7 @@ package identity
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/themakers/session"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -206,6 +207,7 @@ func (mgr *Manager) GetVerificationCode(ctx context.Context, vname string) strin
 //todo add functionality to getvt method
 
 func (mgr *Manager) GetVerifierType(vname string) string {
+	fmt.Println(mgr.ver[vname])
 	if mgr.ver[vname].SupportRegular {
 		return "regular"
 	}

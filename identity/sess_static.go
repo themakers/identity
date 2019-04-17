@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-func (sess *Session) InitializeStaticVerifier(ctx context.Context, data *VerifierData) error {
+func (sess *Session) InitializeStaticVerifier(ctx context.Context, initdata map[string]string) error {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return ErrAuthenticationForSessionAlreadyExist
@@ -15,12 +15,8 @@ func (sess *Session) InitializeStaticVerifier(ctx context.Context, data *Verifie
 	if err != nil {
 		panic(err)
 	}
-
-	_, err = sess.manager.backend.AddUserAuthenticationData(auth.UserID, data)
-	if err != nil {
-		return err
-	} else {
-		return nil
+	if auth.UserID == "" {
+		//todo: create new user with initialization data
 	}
 
 }

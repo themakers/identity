@@ -176,6 +176,7 @@ func (b *Backend) CreateUser(iden *identity.IdentityData) (*identity.User, error
 	return &user, nil
 }
 
+// todo: modificate methodCreateUser to use VerifierData
 func (b *Backend) CreateAuthentication(SessionToken, VerifierName string) (*identity.Authentication, error) {
 	coll, close, err := b.session(collAuthentications)
 	if err != nil {

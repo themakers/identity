@@ -211,6 +211,12 @@ func (mgr *Manager) GetVerifierType(vname string) string {
 	if mgr.ver[vname].SupportRegular {
 		return "regular"
 	}
+	if mgr.ver[vname].SupportOAuth2 {
+		return "oauth2"
+	}
+	if mgr.ver[vname].SupportStatic {
+		return "static"
+	}
 	return ""
 }
 

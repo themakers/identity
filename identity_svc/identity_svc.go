@@ -83,11 +83,9 @@ func (pis *PublicIdentityService) UserMerge(ctx context.Context, req *identity_p
 func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *identity_proto.StartVerificationReq) (resp *identity_proto.StartVerificationResp, err error) {
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
-	//fmt.Println(req.VerifierName)
 	addata := map[string]string{}
 	vd := identity.VerifierData{req.VerifierName, req.VerificationData, addata}
 	verType := pis.is.mgr.GetVerifierType(req.VerifierName)
-	fmt.Println(verType)
 	switch verType {
 	case "regular":
 		aid, err := sess.StartRegularVerification(ctx, req.Identity, vd)
@@ -163,11 +161,26 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_prot
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	resp = &identity_proto.VerifyResp{}
-	if err := sess.RegularVerify(ctx, req.AuthenticationID, req.VerificationCode, req.VerifierName, req.Identity); err != nil {
-		resp.VerifyStatus = false
-	} else {
-		resp.VerifyStatus = true
+	verType := pis.is.mgr.GetVerifierType(req.VerifierName)
+	switch verType {
+	case "regular":
+		if err := sess.RegularVerify(ctx, req.AuthenticationID, req.VerificationCode, req.VerifierName, req.Identity); err != nil {
+			resp.VerifyStatus = false
+		} else {
+			resp.VerifyStatus = true
+		}
+		return resp, nil
+	case "oauth2":
+		if err := sess.OAuth2Verify(ctx, req.VerifierName, req.VerificationCode); err != nil {
+			resp.VerifyStatus = false
+			fmt.Println(err)
+		} else {
+			resp.VerifyStatus = true
+		}
+		return resp, nil
 	}
+	// todo: create switch to change verifier type
+
 	return resp, nil
 }
 

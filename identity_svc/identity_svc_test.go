@@ -8,6 +8,7 @@ import (
 	"github.com/themakers/identity/identity"
 	"github.com/themakers/identity/identity_svc/identity_proto"
 	"github.com/themakers/identity/mock/identity_mock"
+	"github.com/themakers/identity/mock/verifier_mock_oauth2"
 	"github.com/themakers/identity/mock/verifier_mock_regular"
 	"github.com/themakers/identity/mock/verifier_mock_static"
 	"github.com/themakers/session"
@@ -45,7 +46,7 @@ func serve(ctx context.Context, verifiers ...identity.Verifier) (port int) {
 	return lis.Addr().(*net.TCPAddr).Port
 }
 
-func Test1F(t *testing.T) {
+func Test1FRegular(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -172,6 +173,88 @@ func Test1F(t *testing.T) {
 		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
 
 		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79991112233"})
+
+		if err != nil {
+			panic(err)
+		}
+
+		auth, err := client.CheckStatus(ctx, &identity_proto.StatusReq{})
+		if err != nil {
+			panic(err)
+		}
+		So(auth.Authenticated, ShouldEqual, true)
+	})
+}
+
+func Test1FOauth(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	select {
+	case <-ctx.Done():
+		return
+	default:
+	}
+
+	regularVerificationData := struct {
+		Code     string
+		Identity string
+	}{}
+
+	staticVerificationData := struct {
+		Login string
+		Pass  string
+	}{}
+	oauth2VerificationData := struct {
+		Identity string
+	}{}
+
+	// создаем новый сервер и сохранеяем порт, на котором он работает
+	port := serve(ctx, verifier_mock_regular.New(func(idn, code string) {
+		regularVerificationData.Code = code
+		regularVerificationData.Identity = idn
+	}), verifier_mock_static.New(func(login, pass string) {
+		staticVerificationData.Login = login
+		staticVerificationData.Pass = pass
+	}), verifier_mock_oauth2.New(func(idn string) {
+		oauth2VerificationData.Identity = idn
+	}))
+
+	//
+	cc, err := grpc.DialContext(ctx, fmt.Sprintf("127.0.0.1:%d", port), grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+	client := identity_proto.NewIdentityClient(cc)
+	Convey("Test list of identities", t, func() {
+		var trailer metadata.MD
+		idn, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}
+		So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity"})
+
+		So([]string{idn.Verifiers[0].Name, idn.Verifiers[1].Name, idn.Verifiers[2].Name}, ShouldResemble, []string{"mock_regular", "mock_static", "mock_oauth2"})
+
+	})
+
+	Convey("Test two factor auth - regular/oauth2", t, func() {
+		var trailer metadata.MD
+		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}
+		ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
+		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_oauth2"}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}
+		vd := make(map[string]string)
+		vd["mock_identity"] = ""
+		//svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_oauth2", VerificationData: vd, Identity:oauth2VerificationData.Identity}, grpc.Trailer(&trailer))
+		//So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
+
+		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_oauth2", VerificationCode: "asdas"})
 
 		if err != nil {
 			panic(err)

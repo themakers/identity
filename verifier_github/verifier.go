@@ -40,22 +40,22 @@ func New(cfg Config) *Verifier {
 	return prov
 }
 
-func (prov *Verifier) Info() identity.VerifierInfo {
+func (v *Verifier) Info() identity.VerifierInfo {
 	return identity.VerifierInfo{
 		Name: "github",
 	}
 }
 
-func (prov *Verifier) NormalizeIdentity(idn string) string {
+func (v *Verifier) NormalizeIdentity(idn string) string {
 	return idn
 }
 
-func (prov *Verifier) GetOAuth2URL(state string) string {
-	return prov.oacfg.AuthCodeURL(state, oauth2.AccessTypeOffline)
+func (v *Verifier) GetOAuth2URL(state string) string {
+	return v.oacfg.AuthCodeURL(state, oauth2.AccessTypeOffline)
 }
 
-func (prov *Verifier) HandleOAuth2Callback(ctx context.Context, code string) (token *oauth2.Token, err error) {
-	token, err = prov.oacfg.Exchange(ctx, code)
+func (v *Verifier) HandleOAuth2Callback(ctx context.Context, code string) (token *oauth2.Token, err error) {
+	token, err = v.oacfg.Exchange(ctx, code)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +63,7 @@ func (prov *Verifier) HandleOAuth2Callback(ctx context.Context, code string) (to
 	return token, nil
 }
 
-func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, err error) {
+func (v *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, err error) {
 	u, err := url.Parse("https://api.github.com/user")
 	if err != nil {
 		return nil, err

@@ -2,6 +2,7 @@ package identity
 
 import (
 	"context"
+	"google.golang.org/grpc/metadata"
 )
 
 func (sess *Session) OAuth2Verify(ctx context.Context, ver, code string) (err error) {
@@ -12,7 +13,7 @@ func (sess *Session) OAuth2Verify(ctx context.Context, ver, code string) (err er
 		return err
 	}
 
-	identity, err := p.GetOAuth2Identity(ctx, token.AccessToken)
+	identity, _, err := p.GetOAuth2Identity(ctx, token.AccessToken)
 	if err != nil {
 		return err
 	}
@@ -20,6 +21,23 @@ func (sess *Session) OAuth2Verify(ctx context.Context, ver, code string) (err er
 	if err := sess.handleIncomingIdentity(ctx, identity); err != nil {
 		return err
 	}
-
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		panic(ok)
+	}
+	AID := md[SessionTokenName][0]
+	user, err := sess.manager.backend.GetUserByIdentity(identity.Identity)
+	if err != nil {
+		panic(err)
+	}
+	_, err = sess.manager.backend.AddUserToAuthentication(AID, user.ID)
+	if err != nil {
+		panic(err)
+	}
+	err = sess.manager.backend.UpdateFactorStatus(AID, ver)
+	if err != nil {
+		panic(err)
+	}
+	// todo: realize saving additional data to user
 	return nil
 }

@@ -31,11 +31,11 @@ type OAuth2Verification interface {
 
 	GetOAuth2URL(code string) string
 	HandleOAuth2Callback(ctx context.Context, code string) (token *oauth2.Token, err error)
-	GetOAuth2Identity(ctx context.Context, accessToken string) (identity *IdentityData, err error)
+	GetOAuth2Identity(ctx context.Context, accessToken string) (identity *IdentityData, verifierData *VerifierData, err error)
 }
 
 type StaticVerification interface {
 	Verifier
 
-	StartStaticVerification(ctx context.Context, login string, password string) (iden *VerifierData, err error)
+	StartStaticVerification(ctx context.Context, password_hash string, password string, login string) (err error)
 }

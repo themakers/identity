@@ -2,7 +2,6 @@ package identity
 
 import (
 	"context"
-	"fmt"
 	"google.golang.org/grpc/metadata"
 	"log"
 )
@@ -13,7 +12,6 @@ func (sess *Session) StartRegularVerification(ctx context.Context, idn string, v
 		panic(ok)
 	}
 	AID := md[SessionTokenName][0]
-	fmt.Println(vd.VerifierName)
 	v := sess.manager.ver[vd.VerifierName].internal.regularRef
 	log.Println("Regular VERIFIER", sess.manager.ver[vd.VerifierName], v, v.Info().Name)
 

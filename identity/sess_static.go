@@ -16,17 +16,25 @@ func (sess *Session) StartStaticVerification(ctx context.Context, vd VerifierDat
 	p := sess.manager.ver[vername].internal.staticRef
 	log.Println("Static VERIFIER", sess.manager.ver[vername], p, p.Info().Name)
 	var user *User
-	for k, v := range vd.AuthenticationData {
-		user, err := sess.manager.backend.GetUserByLogin(k)
+	var login, password string
+	for login, password = range vd.AuthenticationData {
+		user, err = sess.manager.backend.GetUserByLogin(login)
+		if err != nil {
+			panic(err)
+		}
+		if user != nil {
+			break
+		}
 	}
-	if err != nil {
+	if user == nil {
 		panic(err)
 	}
-	securitycode, err := p.StartStaticVerification(ctx, idn, vd)
-	if err != nil {
-		panic(err)
+	for _, e := range user.Verifiers {
+		if e.VerifierName == vername {
+			err = p.StartStaticVerification(ctx, e.AuthenticationData[login], password, login)
+			break
+		}
 	}
-	_, err = sess.manager.backend.AddTempAuthDataToAuth(AID, map[string]string{vername: securitycode})
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +46,7 @@ func (sess *Session) StartStaticVerification(ctx context.Context, vd VerifierDat
 	return AID, err
 }
 
-func (sess *Session) InitializeStaticVerifier(ctx context.Context, data *VerifierData) error {
+func (sess *Session) InitializeStaticVerifier(ctx context.Context, initdata map[string]string) error {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return ErrAuthenticationForSessionAlreadyExist
@@ -48,12 +56,8 @@ func (sess *Session) InitializeStaticVerifier(ctx context.Context, data *Verifie
 	if err != nil {
 		panic(err)
 	}
-
-	_, err = sess.manager.backend.AddUserAuthenticationData(auth.UserID, data)
-	if err != nil {
-		return err
-	} else {
-		return nil
+	if auth.UserID == "" {
+		//todo: create new user with initialization data
 	}
 
 }

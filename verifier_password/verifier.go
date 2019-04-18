@@ -2,15 +2,9 @@ package verifier_password
 
 import (
 	"context"
-	"github.com/globalsign/mgo"
-	"github.com/globalsign/mgo/bson"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/crypto/bcrypt"
 )
-
-const mgo_url = ""
-const mgo_bd_name = ""
-const mgo_collection_name = ""
 
 var _ identity.Verifier = new(Verifier)
 
@@ -28,37 +22,6 @@ func New() *Verifier {
 	return ver
 }
 
-func (ver *Verifier) StartStaticVerification(ctx context.Context, login string, password string) (iden *identity.VerifierData, err error) {
-
-	session, err := mgo.Dial(mgo_url)
-	if err != nil {
-		return nil, err
-	}
-	defer session.Close()
-	c := session.DB(mgo_bd_name).C(mgo_collection_name)
-	var user UserInfo
-	err = c.Find(bson.M{
-		"login": login,
-	}).One(&user)
-	if err != nil {
-		return nil, err
-	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(user.PwdHash), []byte(password))
-	if err != nil {
-		return nil, err
-	} else {
-		AD := make(map[string]string)
-		AD[login] = password
-		return &identity.VerifierData{
-			VerifierName:       "Login",
-			AuthenticationData: AD,
-		}, nil
-	}
-}
-
-type UserInfo struct {
-	Id      bson.ObjectId `bson:"_id"`
-	Login   string        `bson:"login"`
-	PwdHash string        `bson:"pwd"`
+func (ver *Verifier) StartStaticVerification(ctx context.Context, password_hash, password, login string) (err error) {
+	return bcrypt.CompareHashAndPassword([]byte(password_hash), []byte(password))
 }

@@ -14,7 +14,7 @@ type Verifier struct {
 }
 
 func (vf *Verifier) Info() identity.VerifierInfo {
-	return identity.VerifierInfo{Name: "Login", IdentityName: "password"}
+	return identity.VerifierInfo{Name: "Login", IdentityName: ""}
 }
 
 func New() *Verifier {

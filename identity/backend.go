@@ -9,7 +9,7 @@ type Backend interface {
 	GetAuthenticationBySessionToken(SessionToken string) (*Authentication, error)
 	GetVerification(verificationID string) (*Authentication, error)
 	GetUserByID(id string) (*User, error)
-	GetUserByLogin(login string) (*User, error)
+	GetUserByLogin(login, vername string) (*User, error)
 	GetUserByIdentity(identity string) (*User, error)
 	//------------------Add section ------------------------------------------------
 	AddUserIdentity(uid string, identity *IdentityData) (*User, error)

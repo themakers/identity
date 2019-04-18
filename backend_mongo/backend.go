@@ -119,7 +119,7 @@ func (b *Backend) GetUserByID(id string) (*identity.User, error) {
 	return &user, nil
 }
 
-func (b *Backend) GetUserByLogin(login string) (*identity.User, error) {
+func (b *Backend) GetUserByLogin(login, vername string) (*identity.User, error) {
 	coll, close, err := b.session(collUsers)
 	if err != nil {
 		return nil, err
@@ -128,7 +128,7 @@ func (b *Backend) GetUserByLogin(login string) (*identity.User, error) {
 
 	user := identity.User{}
 
-	if err := coll.Find(bson.M{"login": login}).One(&user); err != nil && err == ErrNotFound {
+	if err := coll.Find(bson.M{"Verifiers": bson.M{"$elemMatch": bson.M{"VerifierName": vername, "AuthenticationData": bson.M{login: bson.M{"$exists": true}}}}}).One(&user); err != nil && err == ErrNotFound {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

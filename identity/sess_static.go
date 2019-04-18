@@ -18,7 +18,7 @@ func (sess *Session) StartStaticVerification(ctx context.Context, vd VerifierDat
 	var user *User
 	var login, password string
 	for login, password = range vd.AuthenticationData {
-		user, err = sess.manager.backend.GetUserByLogin(login)
+		user, err = sess.manager.backend.GetUserByLogin(login, vername)
 		if err != nil {
 			panic(err)
 		}
@@ -59,5 +59,5 @@ func (sess *Session) InitializeStaticVerifier(ctx context.Context, initdata map[
 	if auth.UserID == "" {
 		//todo: create new user with initialization data
 	}
-
+	return nil
 }

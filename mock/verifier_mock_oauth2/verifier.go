@@ -18,13 +18,14 @@ func (ver *Verifier) Info() identity.VerifierInfo {
 }
 
 func (ver *Verifier) GetOAuth2URL() string {
-	return ""
+	return "http://oauth2provider.com"
 }
 
 func (ver *Verifier) HandleOAuth2Callback() (token *oauth2.Token, err error) {
+
 	return
 }
 
-func (ver *Verifier) GetOAuth2Identity() (dentity *identity.IdentityData, err error) {
+func (ver *Verifier) GetOAuth2Identity() (identity *identity.IdentityData, err error) {
 	return
 }

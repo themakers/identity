@@ -45,7 +45,7 @@ func serve(ctx context.Context, verifiers ...identity.Verifier) (port int) {
 	return lis.Addr().(*net.TCPAddr).Port
 }
 
-func TestIntt(t *testing.T) {
+func Test1F(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -119,8 +119,8 @@ func TestIntt(t *testing.T) {
 			if err != nil {
 				panic(err)
 			}
-			vd := make(map[string][]byte)
-			vd["mock_identity"] = []byte{}
+			vd := make(map[string]string)
+			vd["mock_identity"] = ""
 			svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
 			So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
 
@@ -137,8 +137,8 @@ func TestIntt(t *testing.T) {
 			if err != nil {
 				panic(err)
 			}
-			vd := make(map[string][]byte)
-			vd["mock_identity"] = []byte{}
+			vd := make(map[string]string)
+			vd["mock_identity"] = ""
 			svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd}, grpc.Trailer(&trailer))
 			So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
 
@@ -152,7 +152,6 @@ func TestIntt(t *testing.T) {
 			So(vRespFalse.VerifyStatus, ShouldEqual, false)
 
 		})
-
 	*/
 	Convey("Test 1Factor of new user ", t, func() {
 
@@ -167,9 +166,10 @@ func TestIntt(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		vd := make(map[string][]byte)
-		vd["mock_identity"] = []byte{}
+		vd := make(map[string]string)
+		vd["mock_identity"] = ""
 		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd}, grpc.Trailer(&trailer))
+		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
 
 		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79991112233"})
 

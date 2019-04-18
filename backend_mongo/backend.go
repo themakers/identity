@@ -200,6 +200,15 @@ func (b *Backend) CreateAuthentication(SessionToken, VerifierName string) (*iden
 		panic(err)
 	}
 	defer close()
+	if err := coll.EnsureIndex(Index{
+		Name:        "AuthenticationTTL",
+		Key:         []string{"CreatedTime"},
+		Unique:      false,
+		Background:  true,
+		ExpireAfter: 1 * time.Minute,
+	}); err != nil {
+		return nil, err
+	}
 	auth := identity.Authentication{}
 	if err := coll.Find(bson.M{"_id": SessionToken}).One(&auth); err == nil {
 		return &auth, identity.ErrAuthenticationForSessionAlreadyExist
@@ -275,7 +284,7 @@ func (b *Backend) AddUserToAuthentication(aid, uid string) (*identity.Authentica
 	return &auth, nil
 }
 
-func (b *Backend) AddTempAuthDataToAuth(aid string, data map[string]string) (*identity.Authentication, error) {
+func (b *Backend) AddTempAuthDataToAuth(aid string, data map[string]map[string]string) (*identity.Authentication, error) {
 	coll, close, err := b.session(collAuthentications)
 	if err != nil {
 		return nil, err

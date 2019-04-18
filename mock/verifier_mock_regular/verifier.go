@@ -28,7 +28,7 @@ func (ver *Verifier) Info() identity.VerifierInfo {
 	}
 }
 
-func (ver *Verifier) StartRegularVerification(ctx context.Context, idn string, verifierData []identity.VerifierData) (securityCode string, err error) {
+func (ver *Verifier) StartRegularVerification(ctx context.Context, idn string, verifierData identity.VerifierData) (securityCode string, err error) {
 	code := strconv.Itoa(1000 + rand.Intn(8999))
 	ver.cb(idn, code)
 	return code, nil

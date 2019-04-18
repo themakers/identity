@@ -2,31 +2,36 @@ package identity
 
 import (
 	"context"
+	"fmt"
 	"google.golang.org/grpc/metadata"
 	"log"
 )
 
-func (sess *Session) StartRegularVerification(ctx context.Context, vername, idn string, vd []VerifierData) (AuthenticationID string, err error) {
+func (sess *Session) StartRegularVerification(ctx context.Context, idn string, vd VerifierData) (AuthenticationID string, err error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		panic(ok)
 	}
 	AID := md[SessionTokenName][0]
-	p := sess.manager.ver[vername].internal.regularRef
-	log.Println("Regular VERIFIER", sess.manager.ver[vername], p, p.Info().Name)
+	fmt.Println(vd.VerifierName)
+	v := sess.manager.ver[vd.VerifierName].internal.regularRef
+	log.Println("Regular VERIFIER", sess.manager.ver[vd.VerifierName], v, v.Info().Name)
 
-	idn, err = sess.manager.idn[p.Info().IdentityName].NormalizeAndValidateData(idn)
+	idn, err = sess.manager.idn[v.Info().IdentityName].NormalizeAndValidateData(idn)
 
-	_ = sess.handleIncomingIdentity(ctx, &IdentityData{Identity: idn, Name: p.Info().IdentityName})
+	err = sess.handleIncomingIdentity(ctx, &IdentityData{Identity: idn, Name: v.Info().IdentityName})
+	if err != nil {
+		panic(err)
+	}
 	user, err := sess.manager.backend.GetUserByIdentity(idn)
 	if err != nil {
 		panic(err)
 	}
-	securitycode, err := p.StartRegularVerification(ctx, idn, vd)
+	securitycode, err := v.StartRegularVerification(ctx, idn, vd)
 	if err != nil {
 		panic(err)
 	}
-	_, err = sess.manager.backend.AddTempAuthDataToAuth(AID, map[string]string{vername: securitycode})
+	_, err = sess.manager.backend.AddTempAuthDataToAuth(AID, map[string]map[string]string{vd.VerifierName: {idn: securitycode}})
 	if err != nil {
 		panic(err)
 	}
@@ -45,12 +50,17 @@ func (sess *Session) RegularVerify(ctx context.Context, AuthenticationID, securi
 		panic(err)
 	}
 	for key, value := range auth.TempAuthenticationData {
-		if key == vername && value == securityCode {
-			data := VerifierData{VerifierName: vername, AuthenticationData: map[string]string{}, AdditionalData: map[string]string{}}
-			_, err = sess.manager.backend.AddUserAuthenticationData(auth.UserID, &data)
-			err = sess.manager.backend.UpdateFactorStatus(AuthenticationID, vername)
-			// todo : update verifier status in authentication
-			return nil
+		if key == vername {
+			for inkey, invalue := range value {
+				if inkey == idn && invalue == securityCode {
+					data := VerifierData{VerifierName: vername, AuthenticationData: map[string]string{}, AdditionalData: map[string]string{}}
+					_, err = sess.manager.backend.AddUserAuthenticationData(auth.UserID, &data)
+					err = sess.manager.backend.UpdateFactorStatus(AuthenticationID, vername)
+					// todo : update verifier status in authentication
+					return nil
+				}
+			}
+
 		}
 	}
 	return ErrSecurityCodeMismatch

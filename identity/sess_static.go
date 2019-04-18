@@ -6,19 +6,19 @@ import (
 	"log"
 )
 
-func (sess *Session) StartStaticVerification(ctx context.Context, vername, idn string, vd []VerifierData) (AuthenticationID string, err error) {
+func (sess *Session) StartStaticVerification(ctx context.Context, vd VerifierData) (AuthenticationID string, err error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		panic(ok)
 	}
+	vername := vd.VerifierName
 	AID := md[SessionTokenName][0]
 	p := sess.manager.ver[vername].internal.staticRef
 	log.Println("Static VERIFIER", sess.manager.ver[vername], p, p.Info().Name)
-
-	idn, err = sess.manager.idn[p.Info().IdentityName].NormalizeAndValidateData(idn)
-
-	_ = sess.handleIncomingIdentity(ctx, &IdentityData{Identity: idn, Name: p.Info().IdentityName})
-	user, err := sess.manager.backend.GetUserByLogin(idn)
+	var user *User
+	for k, v := range vd.AuthenticationData {
+		user, err := sess.manager.backend.GetUserByLogin(k)
+	}
 	if err != nil {
 		panic(err)
 	}

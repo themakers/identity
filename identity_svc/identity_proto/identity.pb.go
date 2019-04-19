@@ -33,7 +33,7 @@ func (m *Dummy) Reset()         { *m = Dummy{} }
 func (m *Dummy) String() string { return proto.CompactTextString(m) }
 func (*Dummy) ProtoMessage()    {}
 func (*Dummy) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{0}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{0}
 }
 func (m *Dummy) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Dummy.Unmarshal(m, b)
@@ -64,7 +64,7 @@ func (m *VerifiersDetailsRequest) Reset()         { *m = VerifiersDetailsRequest
 func (m *VerifiersDetailsRequest) String() string { return proto.CompactTextString(m) }
 func (*VerifiersDetailsRequest) ProtoMessage()    {}
 func (*VerifiersDetailsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{1}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{1}
 }
 func (m *VerifiersDetailsRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_VerifiersDetailsRequest.Unmarshal(m, b)
@@ -96,7 +96,7 @@ func (m *VerifierDetailsResponse) Reset()         { *m = VerifierDetailsResponse
 func (m *VerifierDetailsResponse) String() string { return proto.CompactTextString(m) }
 func (*VerifierDetailsResponse) ProtoMessage()    {}
 func (*VerifierDetailsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{2}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{2}
 }
 func (m *VerifierDetailsResponse) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_VerifierDetailsResponse.Unmarshal(m, b)
@@ -140,7 +140,7 @@ func (m *MyVerifiersDetailRequest) Reset()         { *m = MyVerifiersDetailReque
 func (m *MyVerifiersDetailRequest) String() string { return proto.CompactTextString(m) }
 func (*MyVerifiersDetailRequest) ProtoMessage()    {}
 func (*MyVerifiersDetailRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{3}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{3}
 }
 func (m *MyVerifiersDetailRequest) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_MyVerifiersDetailRequest.Unmarshal(m, b)
@@ -173,7 +173,7 @@ func (m *StartVerificationReq) Reset()         { *m = StartVerificationReq{} }
 func (m *StartVerificationReq) String() string { return proto.CompactTextString(m) }
 func (*StartVerificationReq) ProtoMessage()    {}
 func (*StartVerificationReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{4}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{4}
 }
 func (m *StartVerificationReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StartVerificationReq.Unmarshal(m, b)
@@ -225,7 +225,7 @@ func (m *StartVerificationResp) Reset()         { *m = StartVerificationResp{} }
 func (m *StartVerificationResp) String() string { return proto.CompactTextString(m) }
 func (*StartVerificationResp) ProtoMessage()    {}
 func (*StartVerificationResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{5}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{5}
 }
 func (m *StartVerificationResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StartVerificationResp.Unmarshal(m, b)
@@ -262,7 +262,7 @@ func (m *StatusReq) Reset()         { *m = StatusReq{} }
 func (m *StatusReq) String() string { return proto.CompactTextString(m) }
 func (*StatusReq) ProtoMessage()    {}
 func (*StatusReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{6}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{6}
 }
 func (m *StatusReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StatusReq.Unmarshal(m, b)
@@ -296,7 +296,7 @@ func (m *Status) Reset()         { *m = Status{} }
 func (m *Status) String() string { return proto.CompactTextString(m) }
 func (*Status) ProtoMessage()    {}
 func (*Status) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{7}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{7}
 }
 func (m *Status) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_Status.Unmarshal(m, b)
@@ -354,7 +354,7 @@ func (m *UserMergeReq) Reset()         { *m = UserMergeReq{} }
 func (m *UserMergeReq) String() string { return proto.CompactTextString(m) }
 func (*UserMergeReq) ProtoMessage()    {}
 func (*UserMergeReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{8}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{8}
 }
 func (m *UserMergeReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserMergeReq.Unmarshal(m, b)
@@ -384,7 +384,7 @@ func (m *UserMergeResp) Reset()         { *m = UserMergeResp{} }
 func (m *UserMergeResp) String() string { return proto.CompactTextString(m) }
 func (*UserMergeResp) ProtoMessage()    {}
 func (*UserMergeResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{9}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{9}
 }
 func (m *UserMergeResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserMergeResp.Unmarshal(m, b)
@@ -414,7 +414,7 @@ func (m *CancelAuthenticationReq) Reset()         { *m = CancelAuthenticationReq
 func (m *CancelAuthenticationReq) String() string { return proto.CompactTextString(m) }
 func (*CancelAuthenticationReq) ProtoMessage()    {}
 func (*CancelAuthenticationReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{10}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{10}
 }
 func (m *CancelAuthenticationReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_CancelAuthenticationReq.Unmarshal(m, b)
@@ -445,7 +445,7 @@ func (m *LogoutReq) Reset()         { *m = LogoutReq{} }
 func (m *LogoutReq) String() string { return proto.CompactTextString(m) }
 func (*LogoutReq) ProtoMessage()    {}
 func (*LogoutReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{11}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{11}
 }
 func (m *LogoutReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_LogoutReq.Unmarshal(m, b)
@@ -484,7 +484,7 @@ func (m *InitializeStaticVerifierReq) Reset()         { *m = InitializeStaticVer
 func (m *InitializeStaticVerifierReq) String() string { return proto.CompactTextString(m) }
 func (*InitializeStaticVerifierReq) ProtoMessage()    {}
 func (*InitializeStaticVerifierReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{12}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{12}
 }
 func (m *InitializeStaticVerifierReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_InitializeStaticVerifierReq.Unmarshal(m, b)
@@ -529,7 +529,7 @@ func (m *InitializeStaticVerifierResp) Reset()         { *m = InitializeStaticVe
 func (m *InitializeStaticVerifierResp) String() string { return proto.CompactTextString(m) }
 func (*InitializeStaticVerifierResp) ProtoMessage()    {}
 func (*InitializeStaticVerifierResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{13}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{13}
 }
 func (m *InitializeStaticVerifierResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_InitializeStaticVerifierResp.Unmarshal(m, b)
@@ -568,7 +568,7 @@ func (m *StartAuthenticationReq) Reset()         { *m = StartAuthenticationReq{}
 func (m *StartAuthenticationReq) String() string { return proto.CompactTextString(m) }
 func (*StartAuthenticationReq) ProtoMessage()    {}
 func (*StartAuthenticationReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{14}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{14}
 }
 func (m *StartAuthenticationReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StartAuthenticationReq.Unmarshal(m, b)
@@ -609,7 +609,7 @@ func (m *VerifyReq) Reset()         { *m = VerifyReq{} }
 func (m *VerifyReq) String() string { return proto.CompactTextString(m) }
 func (*VerifyReq) ProtoMessage()    {}
 func (*VerifyReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{15}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{15}
 }
 func (m *VerifyReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_VerifyReq.Unmarshal(m, b)
@@ -668,7 +668,7 @@ func (m *StartAuthenticationResp) Reset()         { *m = StartAuthenticationResp
 func (m *StartAuthenticationResp) String() string { return proto.CompactTextString(m) }
 func (*StartAuthenticationResp) ProtoMessage()    {}
 func (*StartAuthenticationResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{16}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{16}
 }
 func (m *StartAuthenticationResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_StartAuthenticationResp.Unmarshal(m, b)
@@ -706,7 +706,7 @@ func (m *VerifyResp) Reset()         { *m = VerifyResp{} }
 func (m *VerifyResp) String() string { return proto.CompactTextString(m) }
 func (*VerifyResp) ProtoMessage()    {}
 func (*VerifyResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{17}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{17}
 }
 func (m *VerifyResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_VerifyResp.Unmarshal(m, b)
@@ -750,7 +750,7 @@ func (m *VerifierDetails) Reset()         { *m = VerifierDetails{} }
 func (m *VerifierDetails) String() string { return proto.CompactTextString(m) }
 func (*VerifierDetails) ProtoMessage()    {}
 func (*VerifierDetails) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{18}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{18}
 }
 func (m *VerifierDetails) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_VerifierDetails.Unmarshal(m, b)
@@ -824,7 +824,7 @@ func (m *IdentityData) Reset()         { *m = IdentityData{} }
 func (m *IdentityData) String() string { return proto.CompactTextString(m) }
 func (*IdentityData) ProtoMessage()    {}
 func (*IdentityData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{19}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{19}
 }
 func (m *IdentityData) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_IdentityData.Unmarshal(m, b)
@@ -870,7 +870,7 @@ func (m *UserDetails) Reset()         { *m = UserDetails{} }
 func (m *UserDetails) String() string { return proto.CompactTextString(m) }
 func (*UserDetails) ProtoMessage()    {}
 func (*UserDetails) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{20}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{20}
 }
 func (m *UserDetails) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_UserDetails.Unmarshal(m, b)
@@ -915,7 +915,7 @@ func (m *LoginAsReq) Reset()         { *m = LoginAsReq{} }
 func (m *LoginAsReq) String() string { return proto.CompactTextString(m) }
 func (*LoginAsReq) ProtoMessage()    {}
 func (*LoginAsReq) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{21}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{21}
 }
 func (m *LoginAsReq) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_LoginAsReq.Unmarshal(m, b)
@@ -955,7 +955,7 @@ func (m *LoginAsResp) Reset()         { *m = LoginAsResp{} }
 func (m *LoginAsResp) String() string { return proto.CompactTextString(m) }
 func (*LoginAsResp) ProtoMessage()    {}
 func (*LoginAsResp) Descriptor() ([]byte, []int) {
-	return fileDescriptor_identity_254dd16b148b4f78, []int{22}
+	return fileDescriptor_identity_34920e8ae51de7e3, []int{22}
 }
 func (m *LoginAsResp) XXX_Unmarshal(b []byte) error {
 	return xxx_messageInfo_LoginAsResp.Unmarshal(m, b)
@@ -1461,9 +1461,9 @@ var _IdentityPrivate_serviceDesc = grpc.ServiceDesc{
 	Metadata: "identity.proto",
 }
 
-func init() { proto.RegisterFile("identity.proto", fileDescriptor_identity_254dd16b148b4f78) }
+func init() { proto.RegisterFile("identity.proto", fileDescriptor_identity_34920e8ae51de7e3) }
 
-var fileDescriptor_identity_254dd16b148b4f78 = []byte{
+var fileDescriptor_identity_34920e8ae51de7e3 = []byte{
 	// 987 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x09, 0x6e, 0x88, 0x02, 0xff, 0x9c, 0x57, 0x6d, 0x6f, 0xdc, 0x44,
 	0x10, 0x96, 0xef, 0x92, 0x4b, 0x6e, 0x2e, 0x4d, 0xc2, 0x12, 0x9a, 0xc3, 0x44, 0x28, 0x2c, 0xe5,

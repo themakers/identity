@@ -46,7 +46,7 @@ func (sess *Session) StartStaticVerification(ctx context.Context, vd VerifierDat
 	return AID, err
 }
 
-func (sess *Session) InitializeStaticVerifier(ctx context.Context, initdata map[string]string) error {
+func (sess *Session) InitializeStaticVerifier(ctx context.Context, idn IdentityData, vd VerifierData) error {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return ErrAuthenticationForSessionAlreadyExist
@@ -57,7 +57,7 @@ func (sess *Session) InitializeStaticVerifier(ctx context.Context, initdata map[
 		panic(err)
 	}
 	if auth.UserID == "" {
-		//todo: create new user with initialization data
+		_ = sess.handleIncomingIdentity(ctx, &idn, &vd)
 	}
 	return nil
 }

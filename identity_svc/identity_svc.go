@@ -82,19 +82,23 @@ func (pis *PublicIdentityService) UserMerge(ctx context.Context, req *identity_p
 
 func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *identity_proto.StartVerificationReq) (resp *identity_proto.StartVerificationResp, err error) {
 	sess := pis.is.mgr.Session(ctx)
+	var aid string
 	defer sess.Dispose()
 	addata := map[string]string{}
 	vd := identity.VerifierData{req.VerifierName, req.VerificationData, addata}
 	verType := pis.is.mgr.GetVerifierType(req.VerifierName)
 	switch verType {
 	case "regular":
-		aid, err := sess.StartRegularVerification(ctx, req.Identity, vd)
-		if err != nil {
-			panic(err)
-		}
-		return &identity_proto.StartVerificationResp{AuthenticationID: aid}, nil
+		aid, err = sess.StartRegularVerification(ctx, req.Identity, vd)
+	case "static":
+		aid, err = sess.StartStaticVerification(ctx, vd)
+	default:
+		return &identity_proto.StartVerificationResp{}, nil
 	}
-	return &identity_proto.StartVerificationResp{}, nil
+	if err != nil {
+		panic(err)
+	}
+	return &identity_proto.StartVerificationResp{AuthenticationID: aid}, nil
 }
 
 func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, req *identity_proto.CancelAuthenticationReq) (resp *identity_proto.Status, err error) {

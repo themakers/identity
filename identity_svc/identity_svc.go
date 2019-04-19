@@ -67,7 +67,7 @@ func (pis *PublicIdentityService) InitializeStaticVerifier(ctx context.Context, 
 	defer sess.Dispose()
 	resp = &identity_proto.InitializeStaticVerifierResp{}
 	vd := identity.VerifierData{VerifierName: req.VerifierName, AuthenticationData: req.InitializationData, AdditionalData: map[string]string{}}
-	_ = sess.InitializeStaticVerifier(ctx, &vd)
+	_ = sess.InitializeStaticVerifier(ctx, vd.AuthenticationData)
 	return resp, nil
 
 }
@@ -118,7 +118,7 @@ func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *
 
 func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Context, u *identity_proto.MyVerifiersDetailRequest) (response *identity_proto.VerifierDetailsResponse, err error) {
 	resp := &identity_proto.VerifierDetailsResponse{}
-	idns, vers := pis.is.mgr.ListMyIdentitiesAndVerifiers(u.Identity)
+	idns, vers := pis.is.mgr.ListMyIdentitiesAndVerifiers(ctx)
 	for _, ver := range vers {
 		resp.Verifiers = append(resp.Verifiers, &identity_proto.VerifierDetails{
 			Name:           ver.Name,

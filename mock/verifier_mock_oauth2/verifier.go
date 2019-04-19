@@ -14,7 +14,7 @@ type Verifier struct {
 
 func (ver *Verifier) Info() identity.VerifierInfo {
 	return identity.VerifierInfo{
-		IdentityName: "mock_identity",
+		IdentityName: "mock_identity_oauth2",
 		Name:         "mock_oauth2",
 	}
 

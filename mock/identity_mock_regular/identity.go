@@ -1,4 +1,4 @@
-package identity_mock
+package identity_mock_regular
 
 import (
 	"github.com/themakers/identity/identity"
@@ -17,7 +17,7 @@ func New() *Identity {
 func (idn *Identity) Info() identity.IdentityInfo {
 
 	return identity.IdentityInfo{
-		Name: "mock_identity",
+		Name: "mock_identity_regular",
 	}
 }
 

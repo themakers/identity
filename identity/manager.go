@@ -88,8 +88,10 @@ type VerifierSummary struct {
 	}
 }
 
-func (mgr *Manager) ListMyIdentitiesAndVerifiers(identity string) (idn []IdentityData, ver []VerifierSummary) {
-	user, err := mgr.backend.GetUserByIdentity(identity)
+func (mgr *Manager) ListMyIdentitiesAndVerifiers(ctx context.Context) (idn []IdentityData, ver []VerifierSummary) {
+	token := getIncomingSessionToken(ctx)
+	auth, err := mgr.backend.GetAuthenticationBySessionToken(token)
+	user, err := mgr.backend.GetUserByID(auth.UserID)
 	if err != nil {
 		return nil, nil
 	}

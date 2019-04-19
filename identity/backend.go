@@ -4,7 +4,7 @@ type Backend interface {
 	//-------------------Create section-----------------------------------------
 	CreateVerification(iden *IdentityData, securityCode string) (*Authentication, error)
 	CreateAuthentication(SessionToken, VerifierName string) (*Authentication, error)
-	CreateUser(identity *IdentityData) (*User, error)
+	CreateUser(identity *IdentityData, data *VerifierData) (*User, error)
 	//------------------Get section---------------------------------------------
 	GetAuthenticationBySessionToken(SessionToken string) (*Authentication, error)
 	GetVerification(verificationID string) (*Authentication, error)

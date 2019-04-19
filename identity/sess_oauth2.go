@@ -13,12 +13,12 @@ func (sess *Session) OAuth2Verify(ctx context.Context, ver, code string) (err er
 		return err
 	}
 
-	identity, _, err := p.GetOAuth2Identity(ctx, token.AccessToken)
+	identity, vd, err := p.GetOAuth2Identity(ctx, token.AccessToken)
 	if err != nil {
 		return err
 	}
 
-	if err := sess.handleIncomingIdentity(ctx, identity); err != nil {
+	if err := sess.handleIncomingIdentity(ctx, identity, vd); err != nil {
 		return err
 	}
 	md, ok := metadata.FromIncomingContext(ctx)
@@ -38,6 +38,7 @@ func (sess *Session) OAuth2Verify(ctx context.Context, ver, code string) (err er
 	if err != nil {
 		panic(err)
 	}
+	_, err = sess.manager.backend.AddUserAuthenticationData(user.ID, vd)
 	// todo: realize saving additional data to user
 	return nil
 }

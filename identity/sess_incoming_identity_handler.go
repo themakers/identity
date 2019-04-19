@@ -5,7 +5,7 @@ import (
 	"log"
 )
 
-func (sess *Session) handleIncomingIdentity(ctx context.Context, identity *IdentityData) (err error) {
+func (sess *Session) handleIncomingIdentity(ctx context.Context, identity *IdentityData, data *VerifierData) (err error) {
 	userID, err := sess.sess.GetUser()
 	if err != nil {
 		return err
@@ -21,7 +21,7 @@ func (sess *Session) handleIncomingIdentity(ctx context.Context, identity *Ident
 	switch {
 	case userID == "" && user == nil: // Empty session AND new identity => create user
 		log.Println("Empty session AND new identity => create user")
-		user, err = sess.manager.backend.CreateUser(identity)
+		user, err = sess.manager.backend.CreateUser(identity, data)
 		if err != nil {
 			return err
 		}

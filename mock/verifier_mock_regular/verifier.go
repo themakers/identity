@@ -24,7 +24,7 @@ func New(cb Callback) *Verifier {
 func (ver *Verifier) Info() identity.VerifierInfo {
 	return identity.VerifierInfo{
 		Name:         "mock_regular",
-		IdentityName: "mock_identity",
+		IdentityName: "mock_identity_regular",
 	}
 }
 

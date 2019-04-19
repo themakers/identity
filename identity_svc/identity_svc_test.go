@@ -7,7 +7,8 @@ import (
 	"github.com/themakers/identity/backend_mongo"
 	"github.com/themakers/identity/identity"
 	"github.com/themakers/identity/identity_svc/identity_proto"
-	"github.com/themakers/identity/mock/identity_mock"
+	"github.com/themakers/identity/mock/identity_mock_oauth2"
+	"github.com/themakers/identity/mock/identity_mock_regular"
 	"github.com/themakers/identity/mock/verifier_mock_oauth2"
 	"github.com/themakers/identity/mock/verifier_mock_regular"
 	"github.com/themakers/identity/mock/verifier_mock_static"
@@ -33,7 +34,7 @@ func serve(ctx context.Context, verifiers ...identity.Verifier) (port int) {
 
 	stPoll := session_redis.NewStoragePool("127.0.0.1:6379", "redis")
 
-	idenSvc, err := New(backend, &session.Manager{Storage: stPoll, DefaultLifetime: 5}, []identity.Identity{identity_mock.New()}, verifiers)
+	idenSvc, err := New(backend, &session.Manager{Storage: stPoll, DefaultLifetime: 5}, []identity.Identity{identity_mock_regular.New(), identity_mock_oauth2.New()}, verifiers)
 
 	idenSvc.Register(server, server)
 
@@ -46,6 +47,7 @@ func serve(ctx context.Context, verifiers ...identity.Verifier) (port int) {
 	return lis.Addr().(*net.TCPAddr).Port
 }
 
+/*
 func Test1FRegular(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -83,18 +85,18 @@ func Test1FRegular(t *testing.T) {
 	client := identity_proto.NewIdentityClient(cc)
 
 	// стартуем тестирование
-	/*
+
 		Convey("Test list of identities", t, func() {
 			var trailer metadata.MD
 			idn, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
 			if err != nil {
 				panic(err)
 			}
-			So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity"})
+			So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity_regular", "mock_identity_oauth2"})
 			So(idn.Verifiers[0].Name, ShouldEqual, "mock_regular")
 
 		})
-
+/*
 		Convey("Test user start authentication", t, func() {
 			var trailer metadata.MD
 			_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
@@ -153,7 +155,7 @@ func Test1FRegular(t *testing.T) {
 			So(vRespFalse.VerifyStatus, ShouldEqual, false)
 
 		})
-	*/
+*/ /*
 	Convey("Test 1Factor of new user ", t, func() {
 
 		// пользователь получает список доступных identity and verifiers
@@ -168,7 +170,7 @@ func Test1FRegular(t *testing.T) {
 			panic(err)
 		}
 		vd := make(map[string]string)
-		vd["mock_identity"] = ""
+		vd["mock_identity_regular"] = ""
 		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd}, grpc.Trailer(&trailer))
 		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
 
@@ -184,8 +186,8 @@ func Test1FRegular(t *testing.T) {
 		}
 		So(auth.Authenticated, ShouldEqual, true)
 	})
-}
-
+}*/
+/*
 func Test1FOauth(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -233,9 +235,7 @@ func Test1FOauth(t *testing.T) {
 			panic(err)
 		}
 		So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity"})
-
 		So([]string{idn.Verifiers[0].Name, idn.Verifiers[1].Name, idn.Verifiers[2].Name}, ShouldResemble, []string{"mock_regular", "mock_static", "mock_oauth2"})
-
 	})
 
 	Convey("Test two factor auth - regular/oauth2", t, func() {
@@ -249,26 +249,19 @@ func Test1FOauth(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		vd := make(map[string]string)
-		vd["mock_identity"] = ""
-		//svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_oauth2", VerificationData: vd, Identity:oauth2VerificationData.Identity}, grpc.Trailer(&trailer))
-		//So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
-
 		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_oauth2", VerificationCode: "asdas"})
-
 		if err != nil {
 			panic(err)
 		}
-
 		auth, err := client.CheckStatus(ctx, &identity_proto.StatusReq{})
 		if err != nil {
 			panic(err)
 		}
 		So(auth.Authenticated, ShouldEqual, true)
 	})
-}
+}*/
 
-func Test1FStatic(t *testing.T) {
+func Test2FOAuth2Regular(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -314,7 +307,7 @@ func Test1FStatic(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity"})
+		So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity_regular", "mock_identity_oauth2"})
 
 		So([]string{idn.Verifiers[0].Name, idn.Verifiers[1].Name, idn.Verifiers[2].Name}, ShouldResemble, []string{"mock_regular", "mock_static", "mock_oauth2"})
 
@@ -342,6 +335,125 @@ func Test1FStatic(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
+		_, err = client.ListMyIdentitiesAndVerifiers(ctx, &identity_proto.MyVerifiersDetailRequest{}, grpc.Trailer(&trailer))
+		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_regular"}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}
+		vd = make(map[string]string)
+		vd["mock_identity"] = ""
+		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "7999332211", VerificationData: vd}, grpc.Trailer(&trailer))
+		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
+
+		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "7999332211"})
+
+		if err != nil {
+			panic(err)
+		}
+
+		auth, err = client.CheckStatus(ctx, &identity_proto.StatusReq{})
+		if err != nil {
+			panic(err)
+		}
+		So(auth.Authenticated, ShouldEqual, true)
+	})
+}
+
+func Test2FRegularOAuth2(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	select {
+	case <-ctx.Done():
+		return
+	default:
+	}
+
+	regularVerificationData := struct {
+		Code     string
+		Identity string
+	}{}
+
+	staticVerificationData := struct {
+		Login string
+		Pass  string
+	}{}
+	oauth2VerificationData := struct {
+		Identity string
+	}{}
+
+	// создаем новый сервер и сохранеяем порт, на котором он работает
+	port := serve(ctx, verifier_mock_regular.New(func(idn, code string) {
+		regularVerificationData.Code = code
+		regularVerificationData.Identity = idn
+	}), verifier_mock_static.New(func(login, pass string) {
+		staticVerificationData.Login = login
+		staticVerificationData.Pass = pass
+	}), verifier_mock_oauth2.New(func(idn string) {
+		oauth2VerificationData.Identity = idn
+	}))
+
+	//
+	cc, err := grpc.DialContext(ctx, fmt.Sprintf("127.0.0.1:%d", port), grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+	client := identity_proto.NewIdentityClient(cc)
+	Convey("Test list of identities", t, func() {
+		var trailer metadata.MD
+		idn, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}
+		So(idn.IdentitiyNames, ShouldResemble, []string{"mock_identity_regular", "mock_identity_oauth2"})
+
+		So([]string{idn.Verifiers[0].Name, idn.Verifiers[1].Name, idn.Verifiers[2].Name}, ShouldResemble, []string{"mock_regular", "mock_static", "mock_oauth2"})
+
+	})
+
+	Convey("Test two factor auth - regular/oauth2", t, func() {
+		var trailer metadata.MD
+		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}
+		ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
+		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_regular"}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}
+		vd := make(map[string]string)
+		vd["mock_identity_regular"] = ""
+
+		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "7999332211", VerificationData: vd}, grpc.Trailer(&trailer))
+		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
+
+		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "7999332211"})
+
+		if err != nil {
+			panic(err)
+		}
+
+		auth, err := client.CheckStatus(ctx, &identity_proto.StatusReq{})
+		if err != nil {
+			panic(err)
+		}
+		//_, err = client.ListMyIdentitiesAndVerifiers(ctx, &identity_proto.MyVerifiersDetailRequest{}, grpc.Trailer(&trailer))
+		/*_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_oauth2"}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}*/
+		//vd["mock_identity"] = ""
+		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_oauth2", VerificationCode: "asdas"})
+
+		if err != nil {
+			panic(err)
+		}
+		auth, err = client.CheckStatus(ctx, &identity_proto.StatusReq{})
+		if err != nil {
+			panic(err)
+		}
+
 		So(auth.Authenticated, ShouldEqual, true)
 	})
 }

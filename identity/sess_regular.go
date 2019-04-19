@@ -17,7 +17,7 @@ func (sess *Session) StartRegularVerification(ctx context.Context, idn string, v
 
 	idn, err = sess.manager.idn[v.Info().IdentityName].NormalizeAndValidateData(idn)
 
-	err = sess.handleIncomingIdentity(ctx, &IdentityData{Identity: idn, Name: v.Info().IdentityName})
+	err = sess.handleIncomingIdentity(ctx, &IdentityData{Identity: idn, Name: v.Info().IdentityName}, &vd)
 	if err != nil {
 		panic(err)
 	}

@@ -67,7 +67,7 @@ func (pis *PublicIdentityService) InitializeStaticVerifier(ctx context.Context, 
 	defer sess.Dispose()
 	resp = &identity_proto.InitializeStaticVerifierResp{}
 	vd := identity.VerifierData{VerifierName: req.VerifierName, AuthenticationData: req.InitializationData, AdditionalData: map[string]string{}}
-	_ = sess.InitializeStaticVerifier(ctx, &vd)
+	_ = sess.InitializeStaticVerifier(ctx, vd.AuthenticationData)
 	return resp, nil
 
 }

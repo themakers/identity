@@ -18,5 +18,5 @@ func (sess *Session) InitializeStaticVerifier(ctx context.Context, initdata map[
 	if auth.UserID == "" {
 		//todo: create new user with initialization data
 	}
-
+	return nil
 }

@@ -3,17 +3,19 @@ package identity
 import (
 	"context"
 	"google.golang.org/grpc/metadata"
+	"log"
 )
 
 func (sess *Session) OAuth2Verify(ctx context.Context, ver, code string) (err error) {
-	p := sess.manager.ver[ver].internal.oauth2Ref
+	v := sess.manager.ver[ver].internal.oauth2Ref
+	log.Println("OAuth2 VERIFIER", sess.manager.ver[ver], v, v.Info().Name)
 
-	token, err := p.HandleOAuth2Callback(ctx, code)
+	token, err := v.HandleOAuth2Callback(ctx, code)
 	if err != nil {
 		return err
 	}
 
-	identity, vd, err := p.GetOAuth2Identity(ctx, token.AccessToken)
+	identity, vd, err := v.GetOAuth2Identity(ctx, token.AccessToken)
 	if err != nil {
 		return err
 	}

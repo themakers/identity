@@ -54,7 +54,6 @@ func (sess *Session) RegularVerify(ctx context.Context, AuthenticationID, securi
 					data := VerifierData{VerifierName: vername, AuthenticationData: map[string]string{}, AdditionalData: map[string]string{}}
 					_, err = sess.manager.backend.AddUserAuthenticationData(auth.UserID, &data)
 					err = sess.manager.backend.UpdateFactorStatus(AuthenticationID, vername)
-					// todo : update verifier status in authentication
 					return nil
 				}
 			}

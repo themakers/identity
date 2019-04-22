@@ -183,7 +183,7 @@ func (b *Backend) CreateUser(iden *identity.IdentityData, data *identity.Verifie
 		ID:                xid.New().String(),
 		Identities:        []identity.IdentityData{identity.IdentityData{iden.Name, iden.Identity}},
 		Verifiers:         []identity.VerifierData{identity.VerifierData{VerifierName: data.VerifierName, AdditionalData: data.AdditionalData, AuthenticationData: data.AuthenticationData}},
-		AuthFactorsNumber: 1,
+		AuthFactorsNumber: 2,
 	}
 
 	if err := coll.Insert(user); err != nil {
@@ -212,7 +212,6 @@ func (b *Backend) CreateAuthentication(SessionToken, VerifierName string) (*iden
 	if err := coll.Find(bson.M{"_id": SessionToken}).One(&auth); err == nil {
 		return &auth, identity.ErrAuthenticationForSessionAlreadyExist
 	} else {
-		fmt.Println(err)
 		fs := map[string]bool{VerifierName: false}
 		auth = identity.Authentication{
 			SessionToken:  SessionToken,
@@ -319,10 +318,10 @@ func (b *Backend) AddTempAuthDataToAuth(aid string, data map[string]map[string]s
 
 func (b *Backend) UpdateFactorStatus(aid, VerifierName string) error {
 	coll, close, err := b.session(collAuthentications)
+	defer close()
 	if err != nil {
 		return err
 	}
-	defer close()
 	auth, err := b.GetAuthenticationBySessionToken(aid)
 	res := auth.FactorsStatus
 	res[VerifierName] = true

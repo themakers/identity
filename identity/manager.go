@@ -3,7 +3,6 @@ package identity
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/themakers/session"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -98,14 +97,11 @@ func (mgr *Manager) ListMyIdentitiesAndVerifiers(ctx context.Context) (idn []Ide
 	for _, uiden := range user.Identities {
 		idn = append(idn, IdentityData{Name: uiden.Name,
 			Identity: uiden.Identity})
-		for _, v := range mgr.verifiers {
-			if uiden.Name == v.Info().IdentityName {
-				ver = append(ver, mgr.ver[v.Info().Name])
-			}
+		for _, v := range user.Verifiers {
+			ver = append(ver, mgr.ver[v.VerifierName])
 		}
 	}
-
-	return
+	return idn, ver
 }
 
 func (mgr *Manager) ListAllIndentitiesAndVerifiers() (idn []IdentityData, ver []VerifierSummary) {
@@ -161,6 +157,7 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 	return sess
 }
 
+// no usage
 func (mgr *Manager) GetStatus(ctx context.Context) (*Authentication, error) {
 	token := getIncomingSessionToken(ctx)
 	auth, err := mgr.backend.GetAuthenticationBySessionToken(token)
@@ -183,6 +180,7 @@ func (mgr *Manager) StartAuthentication(ctx context.Context, vname string) (res 
 	return true, nil
 }
 
+// no usage
 func (mgr *Manager) GetVerificationCode(ctx context.Context, vname string) string {
 	token := getIncomingSessionToken(ctx)
 	auth, err := mgr.backend.GetAuthenticationBySessionToken(token)
@@ -209,7 +207,6 @@ func (mgr *Manager) GetVerificationCode(ctx context.Context, vname string) strin
 //todo add functionality to getvt method
 
 func (mgr *Manager) GetVerifierType(vname string) string {
-	fmt.Println(mgr.ver[vname])
 	if mgr.ver[vname].SupportRegular {
 		return "regular"
 	}
@@ -219,6 +216,7 @@ func (mgr *Manager) GetVerifierType(vname string) string {
 	if mgr.ver[vname].SupportStatic {
 		return "static"
 	}
+
 	return ""
 }
 

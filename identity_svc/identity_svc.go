@@ -2,7 +2,6 @@ package identity_svc
 
 import (
 	"context"
-	"fmt"
 	"github.com/themakers/identity/identity"
 	"github.com/themakers/identity/identity_svc/identity_proto"
 	"github.com/themakers/session"
@@ -135,7 +134,7 @@ func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Conte
 	for _, idn := range idns {
 		resp.IdentitiyNames = append(resp.IdentitiyNames, idn.Name)
 	}
-	return
+	return resp, nil
 }
 
 func (pis *PublicIdentityService) ListIdentitiesAndVerifiers(ctx context.Context, q *identity_proto.VerifiersDetailsRequest) (response *identity_proto.VerifierDetailsResponse, err error) {
@@ -177,14 +176,11 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_prot
 	case "oauth2":
 		if err := sess.OAuth2Verify(ctx, req.VerifierName, req.VerificationCode); err != nil {
 			resp.VerifyStatus = false
-			fmt.Println(err)
 		} else {
 			resp.VerifyStatus = true
 		}
 		return resp, nil
 	}
-	// todo: create switch to change verifier type
-
 	return resp, nil
 }
 

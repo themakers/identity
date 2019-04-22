@@ -438,11 +438,11 @@ func Test2FRegularOAuth2(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-		//_, err = client.ListMyIdentitiesAndVerifiers(ctx, &identity_proto.MyVerifiersDetailRequest{}, grpc.Trailer(&trailer))
-		/*_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_oauth2"}, grpc.Trailer(&trailer))
+		_, err = client.ListMyIdentitiesAndVerifiers(ctx, &identity_proto.MyVerifiersDetailRequest{}, grpc.Trailer(&trailer))
+		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_oauth2"}, grpc.Trailer(&trailer))
 		if err != nil {
 			panic(err)
-		}*/
+		}
 		//vd["mock_identity"] = ""
 		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_oauth2", VerificationCode: "asdas"})
 

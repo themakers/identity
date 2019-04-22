@@ -67,7 +67,7 @@ func (pis *PublicIdentityService) InitializeStaticVerifier(ctx context.Context, 
 	defer sess.Dispose()
 	resp = &identity_proto.InitializeStaticVerifierResp{}
 	vd := identity.VerifierData{VerifierName: req.VerifierName, AuthenticationData: req.InitializationData, AdditionalData: map[string]string{}}
-	_ = sess.InitializeStaticVerifier(ctx, vd.AuthenticationData)
+	_ = sess.InitializeStaticVerifier(ctx, identity.IdentityData{Name: "", Identity: ""}, vd)
 	return resp, nil
 
 }
@@ -82,19 +82,23 @@ func (pis *PublicIdentityService) UserMerge(ctx context.Context, req *identity_p
 
 func (pis *PublicIdentityService) StartVerification(ctx context.Context, req *identity_proto.StartVerificationReq) (resp *identity_proto.StartVerificationResp, err error) {
 	sess := pis.is.mgr.Session(ctx)
+	var aid string
 	defer sess.Dispose()
 	addata := map[string]string{}
 	vd := identity.VerifierData{req.VerifierName, req.VerificationData, addata}
 	verType := pis.is.mgr.GetVerifierType(req.VerifierName)
 	switch verType {
 	case "regular":
-		aid, err := sess.StartRegularVerification(ctx, req.Identity, vd)
-		if err != nil {
-			panic(err)
-		}
-		return &identity_proto.StartVerificationResp{AuthenticationID: aid}, nil
+		aid, err = sess.StartRegularVerification(ctx, req.Identity, vd)
+	case "static":
+		aid, err = sess.StartStaticVerification(ctx, vd)
+	default:
+		return &identity_proto.StartVerificationResp{}, nil
 	}
-	return &identity_proto.StartVerificationResp{}, nil
+	if err != nil {
+		panic(err)
+	}
+	return &identity_proto.StartVerificationResp{AuthenticationID: aid}, nil
 }
 
 func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, req *identity_proto.CancelAuthenticationReq) (resp *identity_proto.Status, err error) {
@@ -118,7 +122,7 @@ func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *
 
 func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Context, u *identity_proto.MyVerifiersDetailRequest) (response *identity_proto.VerifierDetailsResponse, err error) {
 	resp := &identity_proto.VerifierDetailsResponse{}
-	idns, vers := pis.is.mgr.ListMyIdentitiesAndVerifiers(u.Identity)
+	idns, vers := pis.is.mgr.ListMyIdentitiesAndVerifiers(ctx)
 	for _, ver := range vers {
 		resp.Verifiers = append(resp.Verifiers, &identity_proto.VerifierDetails{
 			Name:           ver.Name,

@@ -22,6 +22,6 @@ func New() *Verifier {
 	return ver
 }
 
-func (ver *Verifier) StartStaticVerification(ctx context.Context, password_hash, password, login string) (err error) {
-	return bcrypt.CompareHashAndPassword([]byte(password_hash), []byte(password))
+func (ver *Verifier) StartStaticVerification(ctx context.Context, password_hash, password, login string) (err bool) {
+	return bcrypt.CompareHashAndPassword([]byte(password_hash), []byte(password)) == nil
 }

@@ -29,13 +29,14 @@ func (sess *Session) StartStaticVerification(ctx context.Context, vd VerifierDat
 	if user == nil {
 		panic(err)
 	}
+	var check bool
 	for _, e := range user.Verifiers {
 		if e.VerifierName == vername {
-			err = p.StartStaticVerification(ctx, e.AuthenticationData[login], password, login)
+			check = p.StartStaticVerification(ctx, e.AuthenticationData[login], password, login)
 			break
 		}
 	}
-	if err != nil {
+	if !check {
 		panic(err)
 	}
 	_, err = sess.manager.backend.AddUserToAuthentication(AID, user.ID)

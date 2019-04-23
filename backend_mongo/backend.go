@@ -336,3 +336,17 @@ func (b *Backend) UpdateFactorStatus(aid, VerifierName string) error {
 	}
 	return nil
 }
+
+func (b *Backend) GetUserByAuthenticationData(authkey, verifiername string) (*identity.User, error) {
+	coll, close, err := b.session(collUsers)
+	defer close()
+	if err != nil {
+		panic(err)
+	}
+	user := identity.User{}
+	if err := coll.Find(bson.M{"Verifiers.VerifierName": verifiername}).One(&user); err != nil {
+		return nil, err
+	} else {
+		return &user, err
+	}
+}

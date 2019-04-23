@@ -16,6 +16,7 @@ type Backend interface {
 	AddUserAuthenticationData(uid string, data *VerifierData) (*User, error)
 	AddUserToAuthentication(aid, uid string) (*Authentication, error)
 	AddTempAuthDataToAuth(aid string, data map[string]map[string]string) (*Authentication, error)
+	AddUserVerifier(uid string, data *VerifierData) (*User, error)
 	UpdateFactorStatus(aid, VerifierName string) error
 	//DropIdentity(identity *IdentityData) error
 }

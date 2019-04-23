@@ -51,6 +51,7 @@ func (sess *Session) RegularVerify(ctx context.Context, AuthenticationID, securi
 			for inkey, invalue := range value {
 				if inkey == idn && invalue == securityCode {
 					data := VerifierData{VerifierName: vername, AuthenticationData: map[string]string{}, AdditionalData: map[string]string{}}
+					_, err = sess.manager.backend.AddUserVerifier(auth.UserID, &data)
 					_, err = sess.manager.backend.AddUserAuthenticationData(auth.UserID, &data)
 					err = sess.manager.backend.UpdateFactorStatus(AuthenticationID, vername)
 					return nil

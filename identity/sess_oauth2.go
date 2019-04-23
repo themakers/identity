@@ -40,6 +40,7 @@ func (sess *Session) OAuth2Verify(ctx context.Context, ver, code string) (err er
 	if err != nil {
 		panic(err)
 	}
+	_, err = sess.manager.backend.AddUserVerifier(user.ID, vd)
 	_, err = sess.manager.backend.AddUserAuthenticationData(user.ID, vd)
 	// todo: realize saving additional data to user
 	return nil

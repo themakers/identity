@@ -251,6 +251,26 @@ func (b *Backend) AddUserAuthenticationData(uid string, data *identity.VerifierD
 	user := identity.User{}
 	if _, err := coll.Find(bson.M{"_id": uid}).Apply(Change{
 		Update: bson.M{
+			"$set": bson.M{"Verifiers.AuthenticationData": data.AuthenticationData},
+		}, ReturnNew: true,
+	}, &user); err != nil {
+		return nil, nil
+	}
+
+	return &user, nil
+}
+
+func (b *Backend) AddUserVerifier(uid string, data *identity.VerifierData) (*identity.User, error) {
+	coll, close, err := b.session(collUsers)
+	if err != nil {
+		return nil, err
+	}
+	defer close()
+	user := identity.User{}
+	//data.AuthenticationData = map[string]string{}
+	//data.AdditionalData = map[string]string{}
+	if _, err := coll.Find(bson.M{"_id": uid}).Apply(Change{
+		Update: bson.M{
 			"$addToSet": bson.M{"Verifiers": data},
 		}, ReturnNew: true,
 	}, &user); err != nil {

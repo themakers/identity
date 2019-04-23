@@ -60,6 +60,7 @@ func (sess *Session) InitializeStaticVerifier(ctx context.Context, idn IdentityD
 	if auth.UserID == "" {
 		_ = sess.handleIncomingIdentity(ctx, &idn, &vd)
 	} else {
+		_, err = sess.manager.backend.AddUserVerifier(auth.UserID, &vd)
 		_, err = sess.manager.backend.AddUserAuthenticationData(auth.UserID, &vd)
 		if err != nil {
 			panic(err)

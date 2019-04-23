@@ -5,9 +5,11 @@ import (
 	"github.com/themakers/identity/identity"
 	"github.com/themakers/identity/identity_svc/identity_proto"
 	"github.com/themakers/session"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"log"
 )
 
 //go:generate protoc -I ../identity-proto ../identity-proto/identity.proto --go_out=plugins=grpc:./identity_proto
@@ -65,7 +67,17 @@ func (pis *PublicIdentityService) InitializeStaticVerifier(ctx context.Context, 
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 	resp = &identity_proto.InitializeStaticVerifierResp{}
+	adata := req.InitializationData
+	for key, value := range adata {
+		passhash, err := bcrypt.GenerateFromPassword([]byte(value), 14)
+		log.Println("Test password", bcrypt.CompareHashAndPassword(passhash, []byte(value)))
+		if err != nil {
+			panic(err)
+		}
+		adata[key] = string(passhash)
+	}
 	vd := identity.VerifierData{VerifierName: req.VerifierName, AuthenticationData: req.InitializationData, AdditionalData: map[string]string{}}
+	log.Println(vd)
 	_ = sess.InitializeStaticVerifier(ctx, identity.IdentityData{Name: "", Identity: ""}, vd)
 	return resp, nil
 
@@ -175,6 +187,14 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_prot
 		return resp, nil
 	case "oauth2":
 		if err := sess.OAuth2Verify(ctx, req.VerifierName, req.VerificationCode); err != nil {
+			resp.VerifyStatus = false
+		} else {
+			resp.VerifyStatus = true
+		}
+		return resp, nil
+	case "static":
+		_, err = sess.StartStaticVerification(ctx, identity.VerifierData{VerifierName: req.VerifierName, AuthenticationData: map[string]string{req.VerifierName: req.Identity}, AdditionalData: map[string]string{}})
+		if err != nil {
 			resp.VerifyStatus = false
 		} else {
 			resp.VerifyStatus = true

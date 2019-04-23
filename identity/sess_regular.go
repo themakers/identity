@@ -42,7 +42,6 @@ func (sess *Session) StartRegularVerification(ctx context.Context, idn string, v
 }
 
 func (sess *Session) RegularVerify(ctx context.Context, AuthenticationID, securityCode, vername, idn string) (err error) {
-	// todo make check aid from context and authenticationid as value
 	auth, err := sess.manager.backend.GetAuthenticationBySessionToken(AuthenticationID)
 	if err != nil {
 		panic(err)

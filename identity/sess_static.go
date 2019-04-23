@@ -13,8 +13,8 @@ func (sess *Session) StartStaticVerification(ctx context.Context, vd VerifierDat
 	}
 	vername := vd.VerifierName
 	AID := md[SessionTokenName][0]
-	p := sess.manager.ver[vername].internal.staticRef
-	log.Println("Static VERIFIER", sess.manager.ver[vername], p, p.Info().Name)
+	v := sess.manager.ver[vername].internal.staticRef
+	log.Println("Static VERIFIER", sess.manager.ver[vername], v, v.Info().Name)
 	var user *User
 	var login, password string
 	for login, password = range vd.AuthenticationData {
@@ -32,7 +32,7 @@ func (sess *Session) StartStaticVerification(ctx context.Context, vd VerifierDat
 	var check bool
 	for _, e := range user.Verifiers {
 		if e.VerifierName == vername {
-			check = p.StartStaticVerification(ctx, e.AuthenticationData[login], password, login)
+			check = v.StartStaticVerification(ctx, e.AuthenticationData[login], password, login)
 			break
 		}
 	}
@@ -59,6 +59,11 @@ func (sess *Session) InitializeStaticVerifier(ctx context.Context, idn IdentityD
 	}
 	if auth.UserID == "" {
 		_ = sess.handleIncomingIdentity(ctx, &idn, &vd)
+	} else {
+		_, err = sess.manager.backend.AddUserAuthenticationData(auth.UserID, &vd)
+		if err != nil {
+			panic(err)
+		}
 	}
 	return nil
 }

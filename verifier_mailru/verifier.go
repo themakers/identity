@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/json"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/mailru"
@@ -71,10 +70,10 @@ func strMD5(str string) string {
 	return hex.EncodeToString(tstr[:])
 }
 
-func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, err error) {
+func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, verifierData *identity.VerifierData, err error) {
 	u, err := url.Parse("http://www.appsmail.ru/platform/api")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	query := url.Values{
 		"method":      {"users.getInfo"},
@@ -90,28 +89,23 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	var user UserInfo
 	//todo: validate service answer
-	if err := json.Unmarshal(data, &user); err != nil {
-		return nil, err
-	}
-
-	return &identity.IdentityData{}, nil
+	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "mailru", AuthenticationData: nil, AdditionalData: map[string]string{"mailru": string(data[:])}}, nil
 }
 
 type UserInfo []struct {

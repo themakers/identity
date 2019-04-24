@@ -157,17 +157,6 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 	return sess
 }
 
-// no usage
-func (mgr *Manager) GetStatus(ctx context.Context) (*Authentication, error) {
-	token := getIncomingSessionToken(ctx)
-	auth, err := mgr.backend.GetAuthenticationBySessionToken(token)
-	if err != nil {
-		return &Authentication{}, err
-	}
-
-	return auth, nil
-}
-
 func (mgr *Manager) StartAuthentication(ctx context.Context, vname string) (res bool, err error) {
 	token := getIncomingSessionToken(ctx)
 	_, err = mgr.backend.CreateAuthentication(token, vname)
@@ -179,32 +168,6 @@ func (mgr *Manager) StartAuthentication(ctx context.Context, vname string) (res 
 	}
 	return true, nil
 }
-
-// no usage
-func (mgr *Manager) GetVerificationCode(ctx context.Context, vname string) string {
-	token := getIncomingSessionToken(ctx)
-	auth, err := mgr.backend.GetAuthenticationBySessionToken(token)
-	if err != nil {
-		panic(err)
-	}
-	user, err := mgr.backend.GetUserByID(auth.UserID)
-	if err != nil {
-		panic(err)
-	}
-	code := ""
-	if user == nil {
-		code = ""
-	} else {
-		for _, ver := range user.Verifiers {
-			code = ver.AuthenticationData[vname]
-
-		}
-	}
-	return code
-
-}
-
-//todo add functionality to getvt method
 
 func (mgr *Manager) GetVerifierType(vname string) string {
 	if mgr.ver[vname].SupportRegular {

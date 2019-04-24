@@ -6,6 +6,7 @@ import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/rs/xid"
 	"github.com/themakers/identity/identity"
+	"log"
 	"sync"
 	"time"
 )
@@ -127,11 +128,16 @@ func (b *Backend) GetUserByLogin(login, vername string) (*identity.User, error) 
 	defer close()
 
 	user := identity.User{}
-
-	if err := coll.Find(bson.M{"Verifiers": bson.M{"$elemMatch": bson.M{"VerifierName": vername, "AuthenticationData": bson.M{login: bson.M{"$exists": true}}}}}).One(&user); err != nil && err == ErrNotFound {
+	/*if err := coll.Find(bson.M{"Verifiers": bson.M{"$elemMatch": bson.M{"VerifierName": vername, "AuthenticationData": bson.M{login: bson.M{"$exists": true}}}}}).One(&user); err != nil && err == ErrNotFound {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
+	}*/
+	if err := coll.Find(bson.M{fmt.Sprintf("Verifiers.AuthenticationData.%s", login): bson.M{"$exists": true}}).One(&user); err != nil {
+		log.Println(err)
+		return nil, err
+	} else {
+		return &user, nil
 	}
 
 	return &user, nil
@@ -267,8 +273,6 @@ func (b *Backend) AddUserVerifier(uid string, data *identity.VerifierData) (*ide
 	}
 	defer close()
 	user := identity.User{}
-	//data.AuthenticationData = map[string]string{}
-	//data.AdditionalData = map[string]string{}
 	if _, err := coll.Find(bson.M{"_id": uid}).Apply(Change{
 		Update: bson.M{
 			"$addToSet": bson.M{"Verifiers": data},

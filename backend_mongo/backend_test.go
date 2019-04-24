@@ -2,7 +2,6 @@ package backend_mongo
 
 import (
 	. "github.com/smartystreets/goconvey/convey"
-	"log"
 	"testing"
 )
 
@@ -26,22 +25,12 @@ func TestBackend_GetUserByIdentity(t *testing.T) {
 func TestBackend_GetUserByID(t *testing.T) {
 	back := initdb()
 	Convey("test find user by id", t, func() {
-		user, _ := back.GetUserByID("bivcpjnvu4hoqsk0v1mg")
+		user, _ := back.GetUserByID("bivim1vvu4ht1ck1dne0")
 		So(user.ID, ShouldNotEqual, "")
 	})
 
 }
 
-func TestBackend_GetUserByAuthenticationData(t *testing.T) {
-	back := initdb()
-	Convey("test get user by authentication data", t, func() {
-		user, err := back.GetUserByAuthenticationData("micres", "Login")
-		log.Println(err, user.ID)
-		So(user.ID, ShouldNotEqual, "")
-	})
-}
-
-/*
 func TestBackend_GetUserByLogin(t *testing.T) {
 	back := initdb()
 	Convey("test get user by login", t, func() {
@@ -49,4 +38,3 @@ func TestBackend_GetUserByLogin(t *testing.T) {
 		So(user.ID, ShouldNotEqual, "")
 	})
 }
-*/

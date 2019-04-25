@@ -5,7 +5,7 @@ import (
 	"github.com/themakers/identity/identity"
 	"github.com/themakers/identity/identity_svc/identity_proto"
 	"github.com/themakers/session"
-	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/crypto/scrypt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -18,6 +18,7 @@ const (
 	UserIDName = "user_id"
 )
 
+const salt = "salt"
 const SessionTokenName = "session_token"
 
 type IdentitySvc struct {
@@ -69,12 +70,12 @@ func (pis *PublicIdentityService) InitializeStaticVerifier(ctx context.Context, 
 	resp = &identity_proto.InitializeStaticVerifierResp{}
 	adata := req.InitializationData
 	for key, value := range adata {
-		passhash, err := bcrypt.GenerateFromPassword([]byte(value), 14)
-		log.Println("Test password", bcrypt.CompareHashAndPassword(passhash, []byte(value)))
-		if err != nil {
-			panic(err)
+		hash, hash_err := scrypt.Key([]byte(value), []byte(salt), 1<<15, 8, 1, 32)
+		if hash_err != nil {
+			panic(hash_err)
 		}
-		adata[key] = string(passhash)
+		log.Println("Test password", string(hash) == string(value))
+		adata[key] = string(hash)
 	}
 	vd := identity.VerifierData{VerifierName: req.VerifierName, AuthenticationData: req.InitializationData, AdditionalData: map[string]string{}}
 	log.Println(vd)

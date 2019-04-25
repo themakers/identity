@@ -120,7 +120,7 @@ func (pis *PublicIdentityService) StartAuthentication(ctx context.Context, req *
 	sess := pis.is.mgr.Session(ctx)
 	defer sess.Dispose()
 
-	authres, err := pis.is.mgr.StartAuthentication(ctx, req.VerifierName)
+	authres, err := sess.StartAuthentication(ctx, req.VerifierName)
 	if err != nil {
 		panic(err)
 	}
@@ -192,14 +192,14 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, req *identity_prot
 			resp.VerifyStatus = true
 		}
 		return resp, nil
-	case "static":
-		_, err = sess.StartStaticVerification(ctx, identity.VerifierData{VerifierName: req.VerifierName, AuthenticationData: map[string]string{req.VerifierName: req.Identity}, AdditionalData: map[string]string{}})
-		if err != nil {
-			resp.VerifyStatus = false
-		} else {
-			resp.VerifyStatus = true
-		}
-		return resp, nil
+		//case "static":
+		//	_, err = sess.StartStaticVerification(ctx, identity.VerifierData{VerifierName: req.VerifierName, AuthenticationData: map[string]string{req.VerifierName: req.Identity}, AdditionalData: map[string]string{}})
+		//	if err != nil {
+		//		resp.VerifyStatus = false
+		//	} else {
+		//		resp.VerifyStatus = true
+		//	}
+		//	return resp, nil
 	}
 	return resp, nil
 }

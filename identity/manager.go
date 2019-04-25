@@ -63,7 +63,6 @@ func New(backend Backend, sessMgr *session.Manager, identities []Identity, verif
 	for _, idn := range identities {
 		mgr.idn[idn.Info().Name] = idn
 	}
-
 	return mgr, nil
 }
 
@@ -149,24 +148,11 @@ func (mgr *Manager) Session(ctx context.Context) *Session {
 		token, _ := sess.sess.GetID()
 
 		md.Set(SessionTokenName, token)
-		//trailer := metadata.Pairs(SessionTokenName, token)
 		if err := grpc.SetTrailer(ctx, md); err != nil {
 			panic(err)
 		}
 	}
 	return sess
-}
-
-func (mgr *Manager) StartAuthentication(ctx context.Context, vname string) (res bool, err error) {
-	token := getIncomingSessionToken(ctx)
-	_, err = mgr.backend.CreateAuthentication(token, vname)
-	if err != nil && err != ErrAuthenticationForSessionAlreadyExist {
-		return false, err
-	}
-	if err == ErrAuthenticationForSessionAlreadyExist {
-		return true, nil
-	}
-	return true, nil
 }
 
 func (mgr *Manager) GetVerifierType(vname string) string {

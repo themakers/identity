@@ -24,3 +24,15 @@ func (sess *Session) CheckStatus(ctx context.Context) (int, error) {
 	}
 	return toAuth, nil
 }
+
+func (sess *Session) StartAuthentication(ctx context.Context, vname string) (res bool, err error) {
+	token := getIncomingSessionToken(ctx)
+	_, err = sess.manager.backend.CreateAuthentication(token, vname)
+	if err != nil && err != ErrAuthenticationForSessionAlreadyExist {
+		return false, err
+	}
+	if err == ErrAuthenticationForSessionAlreadyExist {
+		return true, nil
+	}
+	return true, nil
+}

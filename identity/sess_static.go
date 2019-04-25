@@ -20,7 +20,7 @@ func (sess *Session) StartStaticVerification(ctx context.Context, vd VerifierDat
 	for login, password = range vd.AuthenticationData {
 		user, err = sess.manager.backend.GetUserByLogin(login, vername)
 		if err != nil {
-			panic(err)
+			return "", nil
 		}
 		if user != nil {
 			break
@@ -37,12 +37,13 @@ func (sess *Session) StartStaticVerification(ctx context.Context, vd VerifierDat
 		}
 	}
 	if !check {
-		panic(err)
+		return "", err
 	}
 	_, err = sess.manager.backend.AddUserToAuthentication(AID, user.ID)
 	if err != nil {
 		panic(err)
 	}
+	err = sess.manager.backend.UpdateFactorStatus(AID, vername)
 
 	return AID, err
 }

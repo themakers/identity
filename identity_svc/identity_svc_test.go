@@ -511,17 +511,11 @@ func Test2FRegularStatic(t *testing.T) {
 		vd := map[string]string{}
 		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79992233111", VerificationData: vd}, grpc.Trailer(&trailer))
 		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
-
 		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79992233111"})
 
 		if err != nil {
 			panic(err)
 		}
-
-		//auth, err := client.CheckStatus(ctx, &identity_proto.StatusReq{})
-		//if err != nil {
-		//	panic(err)
-		//}
 		_, err = client.ListMyIdentitiesAndVerifiers(ctx, &identity_proto.MyVerifiersDetailRequest{}, grpc.Trailer(&trailer))
 		res, err := client.InitializeStaticVerifier(ctx, &identity_proto.InitializeStaticVerifierReq{VerifierName: "Login", InitializationData: map[string]string{"micresh": "wepo23nri"}}, grpc.Trailer(&trailer))
 		log.Println(res)
@@ -529,13 +523,118 @@ func Test2FRegularStatic(t *testing.T) {
 			log.Println(res)
 			panic(err)
 		}
+		// test false password and true login
+		_, err = client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "Login", Identity: "", VerificationData: map[string]string{"micresh": "wepo23nri123"}})
 		auth, err := client.CheckStatus(ctx, &identity_proto.StatusReq{})
 		if err != nil {
 			panic(err)
 		}
-
 		So(auth.Authenticated, ShouldEqual, false)
+		// test true password and false login
+		_, err = client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "Login", Identity: "", VerificationData: map[string]string{"miccresh": "wepo23nri"}})
+		auth, err = client.CheckStatus(ctx, &identity_proto.StatusReq{})
+		if err != nil {
+			panic(err)
+		}
+		So(auth.Authenticated, ShouldEqual, false)
+		// test true password and true login
+		_, err = client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "Login", Identity: "", VerificationData: map[string]string{"micresh": "wepo23nri"}})
+		auth, err = client.CheckStatus(ctx, &identity_proto.StatusReq{})
+		if err != nil {
+			panic(err)
+		}
+		So(auth.Authenticated, ShouldEqual, true)
 	})
+}
+
+func Test2FStaticRegular(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	select {
+	case <-ctx.Done():
+		return
+	default:
+	}
+
+	regularVerificationData := struct {
+		Code     string
+		Identity string
+	}{}
+
+	staticVerificationData := struct {
+		Login string
+		Pass  string
+	}{}
+	oauth2VerificationData := struct {
+		Identity string
+	}{}
+
+	// создаем новый сервер и сохранеяем порт, на котором он работает
+	port := serve(ctx, verifier_mock_regular.New(func(idn, code string) {
+		regularVerificationData.Code = code
+		regularVerificationData.Identity = idn
+	}), verifier_mock_static.New(func(login, pass string) {
+		staticVerificationData.Login = login
+		staticVerificationData.Pass = pass
+	}), verifier_mock_oauth2.New(func(idn string) {
+		oauth2VerificationData.Identity = idn
+	}), verifier_password.New())
+
+	//
+	cc, err := grpc.DialContext(ctx, fmt.Sprintf("127.0.0.1:%d", port), grpc.WithInsecure())
+	if err != nil {
+		panic(err)
+	}
+	client := identity_proto.NewIdentityClient(cc)
+	Convey("Test two factor auth - regular/static", t, func() {
+		var trailer metadata.MD
+		_, err := client.ListIdentitiesAndVerifiers(ctx, &identity_proto.VerifiersDetailsRequest{}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}
+		ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
+		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "Login"}, grpc.Trailer(&trailer))
+		if err != nil {
+			panic(err)
+		}
+		vd := map[string]string{}
+		_, err = client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "Login", Identity: "", VerificationData: map[string]string{"micresh": "wepo23nri"}})
+		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79992233111", VerificationData: vd}, grpc.Trailer(&trailer))
+		// test correct code and incorrect identity
+		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79998233111"})
+		if err != nil {
+			panic(err)
+		}
+		auth, err := client.CheckStatus(ctx, &identity_proto.StatusReq{})
+		if err != nil {
+			panic(err)
+		}
+		So(auth.Authenticated, ShouldEqual, false)
+		// test incorrect code and correct identity
+		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: "12345", AuthenticationID: svResp.AuthenticationID, Identity: "79992233111"})
+		if err != nil {
+			panic(err)
+		}
+		auth, err = client.CheckStatus(ctx, &identity_proto.StatusReq{})
+		if err != nil {
+			panic(err)
+		}
+		So(auth.Authenticated, ShouldEqual, false)
+
+		// test correct identity and code
+		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79992233111"})
+		if err != nil {
+			panic(err)
+		}
+		auth, err = client.CheckStatus(ctx, &identity_proto.StatusReq{})
+		if err != nil {
+			panic(err)
+		}
+		So(auth.Authenticated, ShouldEqual, true)
+
+	})
+
 }
 
 // after get resp_1 user can switch a verification method
@@ -570,5 +669,3 @@ func Test2FRegularStatic(t *testing.T) {
 // Test scenario #7 - 2F auth by oauth and static
 
 // Test scenario #8 - 2F auth by regular and oauth
-
-// Test scenario #9 - 2F auth by regular and oauth

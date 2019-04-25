@@ -12,7 +12,6 @@ import (
 var (
 	ErrSecurityCodeMismatch                 = errors.New("security code mismatch")
 	ErrAuthenticationForSessionAlreadyExist = errors.New("Authentication for session already exist")
-	ErrUserNotFound                         = errors.New("User not found")
 )
 
 type Options struct {

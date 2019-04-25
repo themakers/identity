@@ -257,7 +257,10 @@ func (b *Backend) AddUserAuthenticationData(uid string, data *identity.VerifierD
 	user := identity.User{}
 	if _, err := coll.Find(bson.M{"_id": uid}).Apply(Change{
 		Update: bson.M{
-			"$set": bson.M{"Verifiers.AuthenticationData": data.AuthenticationData},
+			"$set": bson.M{
+				"Verifiers.AuthenticationData": data.AuthenticationData,
+				"Verifiers.AdditionalData":     data.AdditionalData,
+			},
 		}, ReturnNew: true,
 	}, &user); err != nil {
 		return nil, nil

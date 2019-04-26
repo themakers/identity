@@ -25,7 +25,6 @@ func (idn *Identity) Info() identity.IdentityInfo {
 func (idn *Identity) NormalizeAndValidateData(identity string) (result string, err error) {
 
 	mailRegExp := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
-	//TODO maybe need a check character @ in email
 	if mailRegExp.MatchString(identity) {
 		return strings.ToLower(identity), nil
 	} else {

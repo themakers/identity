@@ -86,35 +86,6 @@ type VerifierSummary struct {
 	}
 }
 
-func (mgr *Manager) ListMyIdentitiesAndVerifiers(ctx context.Context) (idn []IdentityData, ver []VerifierSummary) {
-	token := getIncomingSessionToken(ctx)
-	auth, err := mgr.backend.GetAuthenticationBySessionToken(token)
-	user, err := mgr.backend.GetUserByID(auth.UserID)
-	if err != nil {
-		return nil, nil
-	}
-	for _, uiden := range user.Identities {
-		idn = append(idn, IdentityData{Name: uiden.Name,
-			Identity: uiden.Identity})
-		for _, v := range user.Verifiers {
-			ver = append(ver, mgr.ver[v.VerifierName])
-		}
-	}
-	return idn, ver
-}
-
-func (mgr *Manager) ListAllIndentitiesAndVerifiers() (idn []IdentityData, ver []VerifierSummary) {
-
-	for _, v := range mgr.verifiers {
-		ver = append(ver, mgr.ver[v.Info().Name])
-	}
-	for _, i := range mgr.identities {
-		idn = append(idn, IdentityData{Name: i.Info().Name,
-			Identity: i.Info().Name})
-	}
-	return idn, ver
-}
-
 const SessionTokenName = "session_token"
 
 func getIncomingSessionToken(ctx context.Context) (token string) {

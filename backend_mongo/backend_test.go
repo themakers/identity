@@ -25,7 +25,7 @@ func TestBackend_GetUserByIdentity(t *testing.T) {
 func TestBackend_GetUserByID(t *testing.T) {
 	back := initdb()
 	Convey("test find user by id", t, func() {
-		user, _ := back.GetUserByID("bivim1vvu4ht1ck1dne0")
+		user, _ := back.GetUserByID("bj0mtfnvu4hpvpmilh30")
 		So(user.ID, ShouldNotEqual, "")
 	})
 

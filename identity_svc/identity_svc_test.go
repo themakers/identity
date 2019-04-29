@@ -423,16 +423,12 @@ func Test2FRegularOAuth2(t *testing.T) {
 		}
 		vd := make(map[string]string)
 		vd["mock_identity_regular"] = ""
-
 		svResp, err := client.StartVerification(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "7999332211", VerificationData: vd}, grpc.Trailer(&trailer))
 		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
-
 		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "7999332211"})
-
 		if err != nil {
 			panic(err)
 		}
-
 		auth, err := client.CheckStatus(ctx, &identity_proto.StatusReq{})
 		if err != nil {
 			panic(err)
@@ -444,7 +440,6 @@ func Test2FRegularOAuth2(t *testing.T) {
 		}
 		//vd["mock_identity"] = ""
 		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_oauth2", VerificationCode: "asdas"})
-
 		if err != nil {
 			panic(err)
 		}
@@ -452,7 +447,6 @@ func Test2FRegularOAuth2(t *testing.T) {
 		if err != nil {
 			panic(err)
 		}
-
 		So(auth.Authenticated, ShouldEqual, true)
 	})
 }

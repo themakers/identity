@@ -1,11 +1,14 @@
 package identity_phone
 
 import (
+	"errors"
 	"github.com/themakers/identity/identity"
 	"unicode"
 )
 
 var _ identity.Identity = new(Identity)
+
+var ErrPhoneNumberNotValid = errors.New("phone number isn't valid")
 
 type Identity struct {
 }
@@ -30,6 +33,8 @@ func (idn *Identity) NormalizeAndValidateData(identity string) (result string, e
 		result = string(rune('7')) + result[1:]
 	} else if len(result) == 10 && result[0] == '9' {
 		result = string(rune('7')) + result[:]
+	} else {
+		return "", ErrPhoneNumberNotValid
 	}
 	return result, nil
 

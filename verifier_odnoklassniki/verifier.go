@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/odnoklassniki"
@@ -115,16 +116,21 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 		return nil, nil, err
 	}
 	var response response
-	//todo: validate service answer
 	if err := json.Unmarshal(data, &response); err != nil {
 		return nil, nil, err
+	}
+	if response.ErrorMsg != "" {
+		return nil, nil, errors.New(response.ErrorMsg)
 	}
 
 	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "odnoklassniki", AuthenticationData: nil, AdditionalData: map[string]string{"odnoklassniki": string(response.Response[:])}}, nil
 }
 
 type response struct {
-	Response string `json:"response"`
+	Response  string `json:"response"`
+	ErrorCode int    `json:"error_code"`
+	ErrorMsg  string `json:"error_msg"`
+	ErrorData string `json:"error_data"`
 }
 
 type UserInfo struct {

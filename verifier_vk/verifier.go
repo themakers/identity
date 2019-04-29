@@ -2,6 +2,8 @@ package verifier_vk
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/vk"
@@ -88,7 +90,26 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 	if err != nil {
 		return nil, nil, err
 	}
-	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "vk", AuthenticationData: nil, AdditionalData: map[string]string{"vk": string(data[:])}}, nil
+	var response response
+
+	if err := json.Unmarshal(data, &response); err != nil {
+		return nil, nil, err
+	}
+
+	if response.Error.ErrorMsg != "" {
+		return nil, nil, errors.New(response.Error.ErrorMsg)
+	}
+
+	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "vk", AuthenticationData: nil, AdditionalData: map[string]string{"vk": string(response.Response[0][:])}}, nil
+}
+
+type response struct {
+	Error struct {
+		ErrorCode     int    `json:"error_code"`
+		ErrorMsg      string `json:"error_msg"`
+		RequestParams string `json:"request_params"`
+	} `json:"error"`
+	Response []string `json:"response"`
 }
 
 type UserInfo struct {

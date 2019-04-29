@@ -2,6 +2,7 @@ package verifier_facebook
 
 import (
 	"context"
+	"errors"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/facebook"
@@ -93,12 +94,20 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 		return nil, nil, err
 	}
 
-	//todo: validate service answer
-
+	var userInfo UserInfo
+	if userInfo.Error.Message != "" {
+		return nil, nil, errors.New(userInfo.Error.Message)
+	}
 	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "facebook", AuthenticationData: nil, AdditionalData: map[string]string{"facebook": string(data[:])}}, nil
 }
 
 type UserInfo struct {
+	Error struct {
+		Message   string `json:"message"`
+		Type      string `json:"type"`
+		Code      uint32 `json:"Code"`
+		FbtraceId string `json:"fbtrace_id"`
+	} `json:"error"`
 	Id      int `json:"id"`
 	Address struct {
 		City        string  `json:"city"`

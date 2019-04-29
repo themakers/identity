@@ -2,7 +2,6 @@ package verifier_github
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
@@ -63,10 +62,10 @@ func (v *Verifier) HandleOAuth2Callback(ctx context.Context, code string) (token
 	return token, nil
 }
 
-func (v *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, err error) {
+func (v *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, verifierData *identity.VerifierData, err error) {
 	u, err := url.Parse("https://api.github.com/user")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	query := url.Values{
 		"access_token": {accessToken},
@@ -77,28 +76,22 @@ func (v *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (i
 
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-
-	var user UserInfo
 	//todo: validate service answer
-	if err := json.Unmarshal(data, &user); err != nil {
-		return nil, err
-	}
-
-	return &identity.IdentityData{}, nil
+	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "github", AuthenticationData: nil, AdditionalData: map[string]string{"github": string(data[:])}}, nil
 }
 
 type UserInfo struct {

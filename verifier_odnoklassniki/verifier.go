@@ -74,11 +74,11 @@ func strMD5(str string) string {
 	return hex.EncodeToString(tstr[:])
 }
 
-func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, err error) {
+func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, verifierData *identity.VerifierData, err error) {
 	//get access token
 	u, err := url.Parse("https://api.ok.ru/fb.do")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	var session_secret_key = strMD5(accessToken + application_key)
 	string4sig := strMD5("application_key=" + application_key + "fields=" + fields + "format=jsonmethod=users.getCurrentUser" + session_secret_key)
@@ -100,32 +100,27 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-
-	var user UserInfo
 	var response response
 	//todo: validate service answer
 	if err := json.Unmarshal(data, &response); err != nil {
-		return nil, err
-	}
-	if err := json.Unmarshal([]byte(response.Response), &user); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return &identity.IdentityData{}, nil
+	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "odnoklassniki", AuthenticationData: nil, AdditionalData: map[string]string{"odnoklassniki": string(response.Response[:])}}, nil
 }
 
 type response struct {

@@ -2,7 +2,6 @@ package verifier_vk
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/vk"
@@ -64,11 +63,11 @@ func (prov *Verifier) HandleOAuth2Callback(ctx context.Context, code string) (to
 	return token, nil
 }
 
-func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, err error) {
+func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, verifierData *identity.VerifierData, err error) {
 
 	u, err := url.Parse("https://api.vk.com/method/users.get")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	query := url.Values{
 		"fields":       {fields},
@@ -79,24 +78,17 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-
-	var user UserInfo
-
-	if err := json.Unmarshal(data, &user); err != nil {
-		return nil, err
-	}
-
-	return &identity.IdentityData{}, nil
+	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "vk", AuthenticationData: nil, AdditionalData: map[string]string{"vk": string(data[:])}}, nil
 }
 
 type UserInfo struct {

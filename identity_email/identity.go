@@ -1,7 +1,9 @@
 package identity_email
 
 import (
+	"errors"
 	"github.com/themakers/identity/identity"
+	"regexp"
 	"strings"
 )
 
@@ -21,6 +23,11 @@ func (idn *Identity) Info() identity.IdentityInfo {
 }
 
 func (idn *Identity) NormalizeAndValidateData(identity string) (result string, err error) {
-	//TODO maybe need a check character @ in email
-	return strings.ToLower(identity), nil
+
+	mailRegExp := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	if mailRegExp.MatchString(identity) {
+		return strings.ToLower(identity), nil
+	} else {
+		return "", errors.New("Email is not valid")
+	}
 }

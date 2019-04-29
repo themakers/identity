@@ -16,7 +16,8 @@ type Config struct {
 }
 
 var _ identity.RegularVerification = new(Verifier)
-var _ identity.ReverseVerification = new(Verifier)
+
+//var _ identity.ReverseVerification = new(Verifier)
 
 type Verifier struct {
 	smsg *smsg.Client
@@ -80,27 +81,27 @@ func (prov *Verifier) StartType1Worker(ctx context.Context, event chan<- identit
 //// Type 2
 ////
 
-func (prov *Verifier) StartType2Verification(ctx context.Context, idn string) (securityCode string, iden *identity.Identity, err error) {
+func (prov *Verifier) StartRegularVerification(ctx context.Context, idn string, vd identity.VerifierData) (securityCode string, err error) {
 	idn = NormalizePhone(idn)
 	sc := newSecurityCode(6)
 
 	smc, err := prov.smsg.SendMessage(ctx, idn, sc, false)
 	if err != nil {
 		log.Println("ERROR", idn, sc, err)
-		return "", nil, err
+		return "", err
 	}
 	log.Println("OK", idn, sc, err)
 
 	switch accepted := <-smc.Accepted; accepted := accepted.(type) {
 	case error:
-		return "", nil, accepted
+		return "", accepted
 	case string:
 		log.Println("Message accepted:", accepted)
 	}
 
 	switch sent := <-smc.Sent; sent := sent.(type) {
 	case error:
-		return "", nil, sent
+		return "", sent
 	case bool:
 		log.Println("Message sent:", sent)
 	}
@@ -112,11 +113,7 @@ func (prov *Verifier) StartType2Verification(ctx context.Context, idn string) (s
 		log.Println("Message delivered:", delivered)
 	}
 
-	return sc, &identity.Identity{
-		Verifier: prov.Info().Name,
-		ID:       idn,
-		// TODO fields
-	}, nil
+	return sc, nil
 }
 
 func newSecurityCode(l int) (code string) {

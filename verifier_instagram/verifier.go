@@ -62,10 +62,10 @@ func (prov *Verifier) HandleOAuth2Callback(ctx context.Context, code string) (to
 	return token, nil
 }
 
-func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, err error) {
+func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, verifierData *identity.VerifierData, err error) {
 	u, err := url.Parse("https://api.instagram.com/v1/users/self/")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	query := url.Values{
 		"access_token": {accessToken},
@@ -76,31 +76,27 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	var user UserInfo
 	var data_wrapper data_wrapper
 	if err := json.Unmarshal(data, &data_wrapper); err != nil {
-		return nil, err
-	}
-	if err := json.Unmarshal([]byte(data_wrapper.Data), &user); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return &identity.IdentityData{}, nil
+	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "instagram", AuthenticationData: nil, AdditionalData: map[string]string{"instagram": string(data_wrapper.Data[:])}}, nil
 }
 
 type data_wrapper struct {

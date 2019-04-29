@@ -8,6 +8,7 @@ import (
 )
 
 var _ identity.Identity = new(Identity)
+var ErrEmailNotValid = errors.New("Email is not valid")
 
 type Identity struct {
 }
@@ -28,6 +29,6 @@ func (idn *Identity) NormalizeAndValidateData(identity string) (result string, e
 	if mailRegExp.MatchString(identity) {
 		return strings.ToLower(identity), nil
 	} else {
-		return "", errors.New("Email is not valid")
+		return "", ErrEmailNotValid
 	}
 }

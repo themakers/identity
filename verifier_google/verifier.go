@@ -2,6 +2,8 @@ package verifier_google
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -91,8 +93,15 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 	if err != nil {
 		return nil, nil, err
 	}
-	//todo: validate service answer
+	var userInfo UserInfo
 
+	if err := json.Unmarshal(data, &userInfo); err != nil {
+		return nil, nil, err
+	}
+
+	if userInfo.Error.Message != "" {
+		return nil, nil, errors.New(userInfo.Error.Message)
+	}
 	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "google", AuthenticationData: nil, AdditionalData: map[string]string{"google": string(data[:])}}, nil
 }
 
@@ -108,6 +117,11 @@ type Metadata struct {
 }
 
 type UserInfo struct {
+	Error struct {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+		Status  string `json:"status"`
+	} `json:"error"`
 	ResourceName string `json:"resourceName"`
 	Etag         string `json:"etag"`
 	Metadata     struct {

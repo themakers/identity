@@ -3,6 +3,7 @@ package verifier_instagram
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/instagram"
@@ -95,12 +96,20 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 	if err := json.Unmarshal(data, &data_wrapper); err != nil {
 		return nil, nil, err
 	}
+	if data_wrapper.Meta.ErrorMessage != "" {
+		return nil, nil, errors.New(data_wrapper.Meta.ErrorMessage)
+	}
 
 	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "instagram", AuthenticationData: nil, AdditionalData: map[string]string{"instagram": string(data_wrapper.Data[:])}}, nil
 }
 
 type data_wrapper struct {
 	Data string `json:"data"`
+	Meta struct {
+		Code         int    `json:"code"`
+		ErrorType    string `json:"error_type"`
+		ErrorMessage string `json:"error_message"`
+	} `json:"meta"`
 }
 
 type UserInfo struct {

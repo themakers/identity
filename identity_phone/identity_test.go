@@ -11,6 +11,8 @@ func TestIdentity_NormalizeAndValidateData(t *testing.T) {
 		So(idn.Info().Name, ShouldEqual, "phone")
 		_, err := idn.NormalizeAndValidateData("779121122556")
 		So(err, ShouldEqual, ErrPhoneNumberNotValid)
+		_, err = idn.NormalizeAndValidateData("799121d22556")
+		So(err, ShouldEqual, ErrPhoneNumberNotValid)
 		res, err := idn.NormalizeAndValidateData("89991112233")
 		So(res, ShouldEqual, "79991112233")
 		res, err = idn.NormalizeAndValidateData("9992233444")

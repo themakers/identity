@@ -4,6 +4,8 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
+	"errors"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/mailru"
@@ -103,12 +105,23 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 	if err != nil {
 		return nil, nil, err
 	}
-
-	//todo: validate service answer
+	var userInfo UserInfo
+	if err := json.Unmarshal(data, &userInfo); err != nil {
+		return nil, nil, err
+	}
+	if userInfo[0].Error.ErrorMsg != "" {
+		return nil, nil, errors.New(userInfo[0].Error.ErrorMsg)
+	}
 	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "mailru", AuthenticationData: nil, AdditionalData: map[string]string{"mailru": string(data[:])}}, nil
 }
 
 type UserInfo []struct {
+	Error struct {
+		ErrorMsg   string `json:"error_msg"`
+		ErrorToken string `json:"error_token"`
+		Extended   string `json:"extended"`
+		ErrorCode  int    `json:"error_code"`
+	} `json:"error"`
 	Uid          string `json:"uid"`
 	FirstName    string `json:"first_name"`
 	LastName     string `json:"last_name"`

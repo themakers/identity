@@ -2,6 +2,7 @@ package verifier_github
 
 import (
 	"context"
+	"errors"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
@@ -90,11 +91,15 @@ func (v *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (i
 	if err != nil {
 		return nil, nil, err
 	}
-	//todo: validate service answer
+	var userInfo UserInfo
+	if userInfo.Message != "" {
+		return nil, nil, errors.New(userInfo.Message)
+	}
 	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "github", AuthenticationData: nil, AdditionalData: map[string]string{"github": string(data[:])}}, nil
 }
 
 type UserInfo struct {
+	Message                 string    `json:"message"`
 	Login                   string    `json:"login"`
 	ID                      int       `json:"id"`
 	NodeID                  string    `json:"node_id"`

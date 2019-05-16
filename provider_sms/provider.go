@@ -105,11 +105,14 @@ func (prov *Provider) StartType2Verification(ctx context.Context, idn string) (s
 		log.Println("Message sent:", sent)
 	}
 
-	switch delivered := <-smc.Delivered; delivered := delivered.(type) {
-	case error:
-		log.Println("Message NOT delivered:", delivered)
-	case bool:
-		log.Println("Message delivered:", delivered)
+	// FIXME
+	if false {
+		switch delivered := <-smc.Delivered; delivered := delivered.(type) {
+		case error:
+			log.Println("Message NOT delivered:", delivered)
+		case bool:
+			log.Println("Message delivered:", delivered)
+		}
 	}
 
 	return sc, &identity.Identity{

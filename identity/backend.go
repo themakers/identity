@@ -27,9 +27,37 @@ type Identity struct {
 
 // TODO introduce security code input error count
 type Verification struct {
-	VerificationID string    `bson:"_id" json:"VerificationID"`
-	SecurityCode   string    `bson:"SecurityCode" json:"SecurityCode"`
-	Identity       Identity  `bson:"Identity" json:"Identity"`
+	VerificationID string   `bson:"_id" json:"VerificationID"`
+	SecurityCode   string   `bson:"SecurityCode" json:"SecurityCode"`
+	Identity       Identity `bson:"Identity" json:"Identity"`
 
-	CreatedTime    time.Time `bson:"CreatedTime" json:"CreatedTime"`
+	// TODO: NewUser bool
+
+	CreatedTime time.Time `bson:"CreatedTime" json:"CreatedTime"`
 }
+
+// TODO: Merge users??? Or remove identity then reattach to another user???
+// TODO: Mock senders
+// TODO: Update verification process to handle multiple verifiers at the same time
+// TODO: Should some identities be unique system wide????
+// TODO: ??? App specific passwords mechanism ???
+
+//type User struct {
+//	ID         string `bson:"_id" json:"ID"`
+//	Force2FA   bool
+//	Identities map[string]Identity `bson:"Identities" json:"Identities"` // /provider/identity/**
+//	Verifiers  []Verifier
+//}
+//
+//type Identity struct {
+//	ID   string `bson:"_id" json:"ID"`
+//	Type string `bson:"Type" json:"Provider"`
+//}
+//
+//type IdentityFields map[string]string
+//
+//type Verifier struct {
+//	Type     string
+//	AuthData map[string][]byte
+//	Fields   map[string][]byte
+//}

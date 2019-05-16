@@ -6,10 +6,10 @@ import (
 	"github.com/themakers/identity/identity_svc/identity_proto"
 	"github.com/themakers/session"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
-	"log"
-	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
+	"log"
 )
 
 //go:generate protoc -I ../identity-proto ../identity-proto/identity.proto --go_out=plugins=grpc:./identity_proto
@@ -43,6 +43,9 @@ func (is *IdentitySvc) Register(public, private *grpc.Server) {
 	identity_proto.RegisterIdentityServer(public, &PublicIdentityService{
 		is: is,
 	})
+	identity_proto.RegisterIdentityPrivateServer(private, &PrivateIdentityService{
+		is: is,
+	})
 }
 
 ////////////////////////////////////////////////////////////////
@@ -51,6 +54,7 @@ func (is *IdentitySvc) Register(public, private *grpc.Server) {
 
 func GetSessionToken(ctx context.Context) (token string) {
 	md, ok := metadata.FromIncomingContext(ctx)
+	log.Println("METADATA", ok, md)
 	if !ok {
 		return ""
 	}
@@ -227,6 +231,36 @@ func (pis *PublicIdentityService) OAuth2Verify(ctx context.Context, q *identity_
 //// PrivateAuthenticationService
 ////
 
-type PrivateAuthenticationService struct {
-	auth *IdentitySvc
+type PrivateIdentityService struct {
+	is *IdentitySvc
+}
+
+func (pis *PrivateIdentityService) LoginAs(ctx context.Context, q *identity_proto.LoginAsReq) (*identity_proto.LoginAsResp, error) {
+	sess := pis.is.mgr.Session(GetSessionToken(ctx))
+	defer sess.Dispose()
+
+	log.Println("LoginAs():", q)
+
+	uid := q.User
+
+	sid, err := sess.LoginAs(uid)
+	if err != nil {
+		return nil, err
+	}
+	{
+		md := make(metadata.MD)
+		if sid != "" {
+			md.Set(SessionTokenName, sid)
+		}
+		if uid != "" {
+			md.Set(UserIDName, uid)
+		}
+		grpc.SetTrailer(ctx, md)
+	}
+
+	return &identity_proto.LoginAsResp{
+		User:    uid,
+		Session: sid,
+		Error:   "",
+	}, nil
 }

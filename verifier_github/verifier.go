@@ -1,9 +1,8 @@
-package provider_github
+package verifier_github
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
+	"errors"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
@@ -20,15 +19,15 @@ type Config struct {
 	Scopes       []string
 }
 
-var _ identity.OAuth2Provider = new(Provider)
+var _ identity.OAuth2Verifier = new(Verifier)
 
-type Provider struct {
+type Verifier struct {
 	oacfg *oauth2.Config
 }
 
-func New(cfg Config) *Provider {
+func NewVerifier(cfg Config) *Verifier {
 	cfg.Scopes = ensureContains(cfg.Scopes, "read:user", "user:email")
-	prov := &Provider{
+	prov := &Verifier{
 		oacfg: &oauth2.Config{
 			RedirectURL:  cfg.RedirectURL,
 			ClientID:     cfg.ClientID,
@@ -41,22 +40,20 @@ func New(cfg Config) *Provider {
 	return prov
 }
 
-func (prov *Provider) Info() identity.ProviderInfo {
-	return identity.ProviderInfo{
-		Name: "github",
+func (v *Verifier) Info() identity.VerifierInfo {
+	name := NewIdentity().Info().Name
+	return identity.VerifierInfo{
+		Name:         name,
+		IdentityName: name,
 	}
 }
 
-func (prov *Provider) NormalizeIdentity(idn string) string {
-	return idn
+func (v *Verifier) GetOAuth2URL(state string) string {
+	return v.oacfg.AuthCodeURL(state, oauth2.AccessTypeOffline)
 }
 
-func (prov *Provider) GetOAuth2URL(state string) string {
-	return prov.oacfg.AuthCodeURL(state, oauth2.AccessTypeOffline)
-}
-
-func (prov *Provider) HandleOAuth2Callback(ctx context.Context, code string) (token *oauth2.Token, err error) {
-	token, err = prov.oacfg.Exchange(ctx, code)
+func (v *Verifier) HandleOAuth2Callback(ctx context.Context, code string) (token *oauth2.Token, err error) {
+	token, err = v.oacfg.Exchange(ctx, code)
 	if err != nil {
 		return nil, err
 	}
@@ -64,10 +61,10 @@ func (prov *Provider) HandleOAuth2Callback(ctx context.Context, code string) (to
 	return token, nil
 }
 
-func (prov *Provider) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.Identity, err error) {
+func (v *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (iden *identity.IdentityData, verifierData *identity.VerifierData, err error) {
 	u, err := url.Parse("https://api.github.com/user")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	query := url.Values{
 		"access_token": {accessToken},
@@ -78,40 +75,28 @@ func (prov *Provider) GetOAuth2Identity(ctx context.Context, accessToken string)
 
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	resp, err := client.Do(req.WithContext(ctx))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-
-	var user UserInfo
-
-	if err := json.Unmarshal(data, user); err != nil {
-		return nil, err
+	var userInfo UserInfo
+	if userInfo.Message != "" {
+		return nil, nil, errors.New(userInfo.Message)
 	}
-
-	return &identity.Identity{
-		Provider: prov.Info().Name,
-		ID:       fmt.Sprint(user.ID),
-		Fields: identity.IdentityFields{
-			"login":  user.Login,
-			"email":  user.Email,
-			"name":   user.Name,
-			"avatar": user.AvatarURL,
-		},
-	}, nil
+	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "github", AuthenticationData: nil, AdditionalData: map[string]string{"github": string(data[:])}}, nil
 }
 
 type UserInfo struct {
+	Message                 string    `json:"message"`
 	Login                   string    `json:"login"`
 	ID                      int       `json:"id"`
 	NodeID                  string    `json:"node_id"`

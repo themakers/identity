@@ -1,63 +1,70 @@
 package identity
 
-import "time"
-
 type Backend interface {
-	CreateVerification(identity *Identity, securityCode string) (*Verification, error)
-	GetVerification(verificationID string) (*Verification, error)
+	//-------------------Create section-----------------------------------------
+	GetAuthentication(id string) (*Authentication, error)
+	CreateAuthentication(id string, objective AuthenticationObjective, userID string) (*Authentication, error)
+	SaveAuthentication(auth *Authentication) error
 
-	GetUserByID(id string) (*User, error)
-	GetUserByIdentity(prov, identity string) (*User, error)
-	PutUserIdentity(id string, identity *Identity) (*User, error)
-	CreateUser(identity *Identity) (*User, error)
+	//------------------Get section---------------------------------------------
+	//CreateUser(identity *IdentityData, data *VerifierData) (*User, error)
+	GetUser(id string) (*User, error)
+	CreateUser(user *User) error
+	SaveUser(user *User) error
+	//GetUserByLogin(login, vername string) (*User, error)
+	GetUserByIdentity(identityName, identity string) (*User, error)
+
+	//------------------Add section ------------------------------------------------
+	//AddUserIdentity(uid string, identity *IdentityData) (*User, error)
+	//AddUserAuthenticationData(uid string, data *VerifierData) (*User, error)
+	//AddUserToAuthentication(aid, uid string) (*Authentication, error)
+	//AddTempAuthDataToAuth(aid string, data map[string]map[string]string) (*Authentication, error)
+	//AddUserVerifier(uid string, data *VerifierData) (*User, error)
+	//UpdateFactorStatus(aid, VerifierName string) error
+	//DropIdentity(identity *IdentityData) error
 }
 
 type User struct {
-	ID         string                         `bson:"_id" json:"ID"`
-	Identities map[string]map[string]Identity `bson:"Identities" json:"Identities"` // /provider/identity/**
+	ID string `bson:"_id" json:"ID"`
+
+	// TODO
+	LastVerificationTime int64 `bson:"LastVerificationTime" json:"LastVerificationTime"`
+
+	Identities        []IdentityData `bson:"Identities" json:"Identities"` // /name/identity/**
+	Verifiers         []VerifierData `bson:"Verifiers" json:"Verifiers"`
+	AuthFactorsNumber int            `bson:"AuthFactorsNumber" json:"AuthFactorsNumber"`
+
+	Version int `bson:"Version" json:"Version"`
 }
 
-type IdentityFields map[string]string
+func (u *User) add(verd *VerifierData, idnd *IdentityData) {
 
-type Identity struct {
-	ID       string         `bson:"_id" json:"ID"`
-	Provider string         `bson:"Provider" json:"Provider"`
-	Fields   IdentityFields `bson:"Fields" json:"Fields"`
 }
 
-// TODO introduce security code input error count
-type Verification struct {
-	VerificationID string   `bson:"_id" json:"VerificationID"`
-	SecurityCode   string   `bson:"SecurityCode" json:"SecurityCode"`
-	Identity       Identity `bson:"Identity" json:"Identity"`
-
-	// TODO: NewUser bool
-
-	CreatedTime time.Time `bson:"CreatedTime" json:"CreatedTime"`
+type IdentityData struct {
+	Name     string `bson:"Name" json:"Name"`
+	Identity string `bson:"Identity" json:"Identity"`
 }
 
-// TODO: Merge users??? Or remove identity then reattach to another user???
-// TODO: Mock senders
-// TODO: Update verification process to handle multiple verifiers at the same time
-// TODO: Should some identities be unique system wide????
-// TODO: ??? App specific passwords mechanism ???
+//--------------------------------------------------------------------------------------------------------
+type VerifierData struct {
+	VerifierName       string `bson:"VerifierName" json:"VerifierName"`
+	Identity           string `bson:"Identity" json:"Identity"`
+	AuthenticationData B      `bson:"AuthenticationData" json:"AuthenticationData"` // /identity/value
+	AdditionalData     B      `bson:"AdditionalData" json:"AdditionalData"`
+}
 
-//type User struct {
-//	ID         string `bson:"_id" json:"ID"`
-//	Force2FA   bool
-//	Identities map[string]Identity `bson:"Identities" json:"Identities"` // /provider/identity/**
-//	Verifiers  []Verifier
-//}
-//
-//type Identity struct {
-//	ID   string `bson:"_id" json:"ID"`
-//	Type string `bson:"Type" json:"Provider"`
-//}
-//
-//type IdentityFields map[string]string
-//
-//type Verifier struct {
-//	Type     string
-//	AuthData map[string][]byte
-//	Fields   map[string][]byte
-//}
+func (u *User) findVerifierData(verifierName, identity string) *VerifierData {
+	for _, vd := range u.Verifiers {
+		if vd.VerifierName == verifierName {
+			if identity != "" {
+				if vd.Identity == identity {
+					return &vd
+				}
+			} else {
+				return &vd
+			}
+		}
+	}
+	return nil
+}

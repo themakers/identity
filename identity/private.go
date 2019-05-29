@@ -5,5 +5,9 @@ func (sess *Session) LoginAs(uid string) (sid string, err error) {
 		return "", err
 	}
 
+	// FIXME
+	sess.user = uid
+	//sess.become(uid)
+
 	return sess.sess.GetID()
 }

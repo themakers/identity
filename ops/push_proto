@@ -1,0 +1,23 @@
+#!/bin/bash -e
+
+commit_msg () {
+  cmsg="$1"
+  if [ -z "$cmsg" ]
+  then
+    echo "***"
+  else
+    echo "$cmsg"
+  fi
+}
+
+cd ../identity_svc
+go generate
+
+cd ../identity-proto
+git commit -a -m "$(commit_msg)" || true
+git push
+
+cd ..
+git commit -m "$(commit_msg)" ./identity-proto || true
+
+git push

@@ -33,7 +33,7 @@ func (sess *Session) regularStart(ctx context.Context, ver *VerifierSummary, aut
 	}
 
 	{
-		user, err := sess.manager.backend.GetUserByIdentity(identityName, identity)
+		user, err := sess.manager.backend.GetUserByIdentity(ctx, identityName, identity)
 		if err != nil {
 			return nil, err
 		}

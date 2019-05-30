@@ -6,13 +6,13 @@ type Backend interface {
 	//-------------------Create section-----------------------------------------
 	GetAuthentication(ctx context.Context, id string) (*Authentication, error)
 	CreateAuthentication(ctx context.Context, id string, objective AuthenticationObjective, userID string) (*Authentication, error)
-	SaveAuthentication(ctx context.Context, auth *Authentication) error
+	SaveAuthentication(ctx context.Context, auth *Authentication) (*Authentication, error)
 
 	//------------------Get section---------------------------------------------
 	//CreateUser(identity *IdentityData, data *VerifierData) (*User, error)
 	GetUser(ctx context.Context, id string) (*User, error)
-	CreateUser(ctx context.Context, user *User) error
-	SaveUser(ctx context.Context, user *User) error
+	CreateUser(ctx context.Context, user *User) (*User, error)
+	SaveUser(ctx context.Context, user *User) (*User, error)
 	//GetUserByLogin(login, vername string) (*User, error)
 	GetUserByIdentity(ctx context.Context, identityName, identity string) (*User, error)
 

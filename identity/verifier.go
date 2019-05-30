@@ -55,7 +55,7 @@ type StaticVerifier interface {
 func (sess *Session) Start(ctx context.Context, verifierName string, args M, identityName, identity string) (M, error) {
 	if verifierName == "" {
 	}
-	auth, err := sess.manager.backend.GetAuthentication(sess.token)
+	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.token)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (sess *Session) Start(ctx context.Context, verifierName string, args M, ide
 		return nil, err
 	}
 
-	if err := sess.manager.backend.SaveAuthentication(auth); err != nil {
+	if _, err := sess.manager.backend.SaveAuthentication(ctx, auth); err != nil {
 		panic(err)
 	}
 
@@ -97,7 +97,7 @@ func (sess *Session) Start(ctx context.Context, verifierName string, args M, ide
 ////
 
 func (sess *Session) Verify(ctx context.Context, verifierName, verificationCode, identityName, identity string) (bool, error) {
-	auth, err := sess.manager.backend.GetAuthentication(sess.token)
+	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.token)
 	if err != nil {
 		return false, err
 	}
@@ -131,11 +131,12 @@ func (sess *Session) Verify(ctx context.Context, verifierName, verificationCode,
 	}
 
 	// FIXME Remove???
-	if err := sess.manager.backend.SaveAuthentication(auth); err != nil {
+	auth, err = sess.manager.backend.SaveAuthentication(ctx, auth)
+	if err != nil {
 		panic(err)
 	}
 
-	if err := sess.handleAuthentication(auth); err != nil {
+	if err := sess.handleAuthentication(ctx, auth); err != nil {
 		return false, err
 	}
 

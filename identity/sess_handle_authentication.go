@@ -1,8 +1,11 @@
 package identity
 
-import "github.com/rs/xid"
+import (
+	"context"
+	"github.com/rs/xid"
+)
 
-func (sess *Session) handleAuthentication(auth *Authentication) error {
+func (sess *Session) handleAuthentication(ctx context.Context, auth *Authentication) error {
 	var (
 		user *User
 		err  error
@@ -10,15 +13,14 @@ func (sess *Session) handleAuthentication(auth *Authentication) error {
 
 	switch auth.Objective {
 	case ObjectiveSignIn:
-		user, err = sess.manager.backend.GetUser(auth.UserID)
+		user, err = sess.manager.backend.GetUser(ctx, auth.UserID)
 	case ObjectiveSignUp:
 		user = &User{
 			ID:                xid.New().String(),
-			Version:           1,
 			AuthFactorsNumber: 1,
 		}
 	case ObjectiveAttach:
-		user, err = sess.manager.backend.GetUser(auth.UserID)
+		user, err = sess.manager.backend.GetUser(ctx, auth.UserID)
 	}
 	if err != nil {
 		return err
@@ -48,14 +50,23 @@ func (sess *Session) handleAuthentication(auth *Authentication) error {
 		}
 	}
 
-	if err := sess.manager.backend.SaveAuthentication(auth); err != nil {
+	auth, err = sess.manager.backend.SaveAuthentication(ctx, auth)
+	if err != nil {
 		panic(err)
 	}
 
 	if completedCount >= auth.RequiredFactorsCount {
 		// TODO Save user
-		if err := sess.manager.backend.SaveUser(user); err != nil {
-			return err
+		if user.Version == 0 {
+			user, err = sess.manager.backend.CreateUser(ctx, user)
+			if err != nil {
+				return err
+			}
+		} else {
+			user, err = sess.manager.backend.SaveUser(ctx, user)
+			if err != nil {
+				return err
+			}
 		}
 
 		// FIXME

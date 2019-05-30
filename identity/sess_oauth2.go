@@ -53,7 +53,7 @@ func (sess *Session) oauth2Verify(ctx context.Context, ver *VerifierSummary, aut
 	stage.IdentityData = identityData
 	stage.VerifierData = verifierData
 
-	user, err := sess.manager.backend.GetUserByIdentity(stage.IdentityName, stage.IdentityData.Identity)
+	user, err := sess.manager.backend.GetUserByIdentity(ctx, stage.IdentityName, stage.IdentityData.Identity)
 	if err != nil {
 		return false, err
 	}

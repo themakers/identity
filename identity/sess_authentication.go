@@ -29,7 +29,7 @@ func (sess *Session) CheckStatus(ctx context.Context) (Status, error) {
 		}, nil
 	}
 
-	auth, err := sess.manager.backend.GetAuthentication(sess.token)
+	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.token)
 	if err != nil {
 		return Status{}, err
 	}
@@ -52,7 +52,7 @@ func (sess *Session) CheckStatus(ctx context.Context) (Status, error) {
 }
 
 func (sess *Session) StartAuthentication(ctx context.Context, objective AuthenticationObjective) error {
-	_, err := sess.manager.backend.CreateAuthentication(sess.token, objective, sess.user)
+	_, err := sess.manager.backend.CreateAuthentication(ctx, sess.token, objective, sess.user)
 	return err
 }
 
@@ -62,7 +62,7 @@ func (sess *Session) ListMyIdentitiesAndVerifiers(ctx context.Context) (idn []Id
 
 	var user *User
 	if userID == "" {
-		auth, err := sess.manager.backend.GetAuthentication(sess.token)
+		auth, err := sess.manager.backend.GetAuthentication(ctx, sess.token)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -73,7 +73,7 @@ func (sess *Session) ListMyIdentitiesAndVerifiers(ctx context.Context) (idn []Id
 		return nil, nil, nil
 	}
 
-	user, err = sess.manager.backend.GetUser(userID)
+	user, err = sess.manager.backend.GetUser(ctx, userID)
 	if err != nil {
 		return nil, nil, err
 	}

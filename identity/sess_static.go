@@ -19,7 +19,7 @@ func (sess *Session) staticStart(ctx context.Context, ver *VerifierSummary, auth
 	}
 
 	if identityName != "" {
-		if user, err := sess.manager.backend.GetUserByIdentity(identityName, identity); err != nil {
+		if user, err := sess.manager.backend.GetUserByIdentity(ctx, identityName, identity); err != nil {
 			return nil, err
 		} else if user != nil {
 			return nil, errors.New("user with such identity already exists")
@@ -82,9 +82,9 @@ func (sess *Session) staticVerify(ctx context.Context, ver *VerifierSummary, aut
 			err  error
 		)
 		if auth.UserID != "" {
-			user, err = sess.manager.backend.GetUser(auth.UserID)
+			user, err = sess.manager.backend.GetUser(ctx, auth.UserID)
 		} else {
-			user, err = sess.manager.backend.GetUserByIdentity(identityName, identity)
+			user, err = sess.manager.backend.GetUserByIdentity(ctx, identityName, identity)
 		}
 		if err != nil {
 			return false, err

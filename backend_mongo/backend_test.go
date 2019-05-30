@@ -12,7 +12,7 @@ func Test_Backend(t *testing.T) {
 	back, err := New(Options{
 		URI:              "mongodb://localhost:27017/?replicaSet=rs0",
 		DBName:           "test_identity_backend",
-		CollectionPrefix: "",
+		CollectionPrefix: "identity_",
 	})
 	if err != nil {
 		t.Error(err)
@@ -67,7 +67,7 @@ func Test_Backend(t *testing.T) {
 					Convey("And try to find it by identity", func() {
 						user, err := back.GetUserByIdentity(ctx, idn1.Name, idn1.Identity)
 						So(err, ShouldBeNil)
-						So(user, ShouldNotBeNil)
+						So(user, ShouldNotBeNil) // FIXME Possible race condition here
 						So(user.Version, ShouldEqual, 2)
 					})
 

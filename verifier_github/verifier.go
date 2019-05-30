@@ -3,6 +3,7 @@ package verifier_github
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/github"
@@ -25,7 +26,7 @@ type Verifier struct {
 	oacfg *oauth2.Config
 }
 
-func NewVerifier(cfg Config) *Verifier {
+func New(cfg Config) *Verifier {
 	cfg.Scopes = ensureContains(cfg.Scopes, "read:user", "user:email")
 	prov := &Verifier{
 		oacfg: &oauth2.Config{
@@ -41,7 +42,7 @@ func NewVerifier(cfg Config) *Verifier {
 }
 
 func (v *Verifier) Info() identity.VerifierInfo {
-	name := NewIdentity().Info().Name
+	name := "github"
 	return identity.VerifierInfo{
 		Name:         name,
 		IdentityName: name,
@@ -92,7 +93,16 @@ func (v *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (i
 	if userInfo.Message != "" {
 		return nil, nil, errors.New(userInfo.Message)
 	}
-	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "github", AuthenticationData: nil, AdditionalData: map[string]string{"github": string(data[:])}}, nil
+	return &identity.IdentityData{
+			Name:     v.Info().IdentityName,
+			Identity: fmt.Sprint(userInfo.ID),
+		}, &identity.VerifierData{
+			VerifierName:       "github",
+			AuthenticationData: nil,
+			AdditionalData: identity.B{
+				"github": data[:],
+			},
+		}, nil
 }
 
 type UserInfo struct {

@@ -49,6 +49,8 @@ func New(backend Backend, sessMgr *session.Manager, identities []Identity, verif
 		if ver, ok := ver.(OAuth2Verifier); ok {
 			vs.SupportOAuth2 = true
 			vs.internal.oauth2Ref = ver
+
+			identities = append(identities, newIdentityStub(vs.Name))
 		}
 		if ver, ok := ver.(StaticVerifier); ok {
 			vs.SupportStatic = true

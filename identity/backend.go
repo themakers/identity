@@ -1,18 +1,20 @@
 package identity
 
+import "context"
+
 type Backend interface {
 	//-------------------Create section-----------------------------------------
-	GetAuthentication(id string) (*Authentication, error)
-	CreateAuthentication(id string, objective AuthenticationObjective, userID string) (*Authentication, error)
-	SaveAuthentication(auth *Authentication) error
+	GetAuthentication(ctx context.Context, id string) (*Authentication, error)
+	CreateAuthentication(ctx context.Context, id string, objective AuthenticationObjective, userID string) (*Authentication, error)
+	SaveAuthentication(ctx context.Context, auth *Authentication) error
 
 	//------------------Get section---------------------------------------------
 	//CreateUser(identity *IdentityData, data *VerifierData) (*User, error)
-	GetUser(id string) (*User, error)
-	CreateUser(user *User) error
-	SaveUser(user *User) error
+	GetUser(ctx context.Context, id string) (*User, error)
+	CreateUser(ctx context.Context, user *User) error
+	SaveUser(ctx context.Context, user *User) error
 	//GetUserByLogin(login, vername string) (*User, error)
-	GetUserByIdentity(identityName, identity string) (*User, error)
+	GetUserByIdentity(ctx context.Context, identityName, identity string) (*User, error)
 
 	//------------------Add section ------------------------------------------------
 	//AddUserIdentity(uid string, identity *IdentityData) (*User, error)

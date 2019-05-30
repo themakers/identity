@@ -79,7 +79,7 @@ func Test_Backend(t *testing.T) {
 
 					Convey("Then try to update user with wrong version", func() {
 						user.AuthFactorsNumber = 3
-						user.Version --
+						user.Version--
 						user, err := back.SaveUser(ctx, user)
 						So(err, ShouldNotBeNil)
 						So(user, ShouldBeNil)
@@ -121,7 +121,7 @@ func Test_Backend(t *testing.T) {
 
 					Convey("Then try to update authentication with wrong version", func() {
 						auth.RequiredFactorsCount = 3
-						auth.Version --
+						auth.Version--
 						auth, err := back.SaveAuthentication(ctx, auth)
 						So(err, ShouldNotBeNil)
 						So(auth, ShouldBeNil)

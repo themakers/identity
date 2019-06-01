@@ -9,20 +9,23 @@ import (
 var _ identity.OAuth2Verifier = new(Verifier)
 
 type Verifier struct {
-	cb Callback
+	idn  string
+	ivfn IdentityVerifiedFn
 }
 
 func (ver *Verifier) Info() identity.VerifierInfo {
 	return identity.VerifierInfo{
-		Name:         "mock_oauth2",
+		Name: "mock_oauth2",
 	}
-
 }
 
-type Callback func(idn string)
+type IdentityVerifiedFn func(idn string)
 
-func New(cb Callback) *Verifier {
-	return &Verifier{cb: cb}
+func New(idn string, ivfn IdentityVerifiedFn) *Verifier {
+	return &Verifier{
+		idn:  idn,
+		ivfn: ivfn,
+	}
 }
 
 func (ver *Verifier) GetOAuth2URL(code string) string {
@@ -34,7 +37,13 @@ func (ver *Verifier) HandleOAuth2Callback(ctx context.Context, code string) (tok
 }
 
 func (ver *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (idn *identity.IdentityData, vd *identity.VerifierData, err error) {
-	idn = &identity.IdentityData{Identity: "uid1234432", Name: ver.Info().IdentityName}
-	vd = &identity.VerifierData{Name: ver.Info().Name, AuthenticationData: map[string]string{}, AdditionalData: map[string]string{"phonenum": "79991112233"}}
-	return idn, vd, nil
+	return &identity.IdentityData{
+			Identity: ver.idn,
+			Name:     ver.Info().IdentityName,
+		}, &identity.VerifierData{
+			Name:               ver.Info().Name,
+			Identity:           ver.idn,
+			AuthenticationData: nil,
+			AdditionalData:     identity.B{},
+		}, nil
 }

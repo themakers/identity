@@ -3,6 +3,7 @@ package verifier_mock_regular
 import (
 	"context"
 	"github.com/themakers/identity/identity"
+	"github.com/themakers/identity/mock/identity_mock_regular"
 	"math/rand"
 	"strconv"
 )
@@ -24,7 +25,7 @@ func New(cb Callback) *Verifier {
 func (ver *Verifier) Info() identity.VerifierInfo {
 	return identity.VerifierInfo{
 		Name:         "mock_regular",
-		IdentityName: "mock_identity_regular",
+		IdentityName: new(identity_mock_regular.Identity).Info().Name,
 	}
 }
 

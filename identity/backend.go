@@ -3,6 +3,8 @@ package identity
 import "context"
 
 type Backend interface {
+	// Cleanup(ctx context.Context) error
+
 	GetAuthentication(ctx context.Context, id string) (*Authentication, error)
 	CreateAuthentication(ctx context.Context, id string, objective AuthenticationObjective, userID string) (*Authentication, error)
 	SaveAuthentication(ctx context.Context, auth *Authentication) (*Authentication, error)

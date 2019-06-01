@@ -67,7 +67,7 @@ func (b *Backend) txn(ctx context.Context, txfn func(ctx mongo.SessionContext) e
 	})
 }
 
-func (b *Backend) Clear(ctx context.Context) error {
+func (b *Backend) cleanup(ctx context.Context) error {
 	return b.txn(ctx, func(ctx mongo.SessionContext) error {
 		if _, err := b.coll(collAuthentications).DeleteMany(ctx, bson.M{}); err != nil {
 			return err

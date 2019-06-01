@@ -98,7 +98,11 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 	if userInfo.Error.Message != "" {
 		return nil, nil, errors.New(userInfo.Error.Message)
 	}
-	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "facebook", AuthenticationData: nil, AdditionalData: map[string]string{"facebook": string(data[:])}}, nil
+	return &identity.IdentityData{}, &identity.VerifierData{
+		Name:               "facebook",
+		AuthenticationData: nil,
+		AdditionalData:     identity.B{"facebook": []byte(data[:])},
+	}, nil
 }
 
 type UserInfo struct {

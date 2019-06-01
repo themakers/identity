@@ -21,7 +21,7 @@ func (idn *Identity) Info() identity.IdentityInfo {
 	}
 }
 
-func (idn *Identity) NormalizeAndValidateData(identity string) (result string, err error) {
+func (idn *Identity) NormalizeAndValidateIdentity(identity string) (result string, err error) {
 	// TODO return error if identity contains non-alphabetic symbols
 	identity = strings.ToLower(identity)
 	return identity, nil

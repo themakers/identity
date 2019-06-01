@@ -18,10 +18,10 @@ func (sess *Session) oauth2Start(ctx context.Context, ver *VerifierSummary, auth
 			UserID:             "",
 			VerifierName:       ver.Name,
 			IdentityName:       ver.Name, // FIXME
-			StoredSecurityCode: "",       //> noop
-			InputSecurityCode:  "",       //> noop
+			Identity:           "",
+			StoredSecurityCode: "", //> noop
+			InputSecurityCode:  "", //> noop
 			OAuth2State:        state,
-			IdentityData:       nil, //> maybe later
 			VerifierData:       nil, //> later
 		}
 
@@ -50,10 +50,11 @@ func (sess *Session) oauth2Verify(ctx context.Context, ver *VerifierSummary, aut
 
 	stage := auth.findStage(ver.Name, ver.Name)
 
-	stage.IdentityData = identityData
+	stage.IdentityName = identityData.Name
+	stage.Identity = identityData.Identity
 	stage.VerifierData = verifierData
 
-	user, err := sess.manager.backend.GetUserByIdentity(ctx, stage.IdentityName, stage.IdentityData.Identity)
+	user, err := sess.manager.backend.GetUserByIdentity(ctx, stage.IdentityName, stage.Identity)
 	if err != nil {
 		return false, err
 	}

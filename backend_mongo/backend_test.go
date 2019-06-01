@@ -126,6 +126,17 @@ func Test_Backend(t *testing.T) {
 						So(err, ShouldNotBeNil)
 						So(auth, ShouldBeNil)
 					})
+
+					Convey("Then try to delete authentication", func() {
+						err := back.RemoveAuthentication(ctx, authID)
+						So(err, ShouldBeNil)
+
+						Convey("Should not find deleted authentication", func() {
+							auth, err := back.GetAuthentication(ctx, authID)
+							So(err, ShouldBeNil)
+							So(auth, ShouldBeNil)
+						})
+					})
 				})
 			})
 		})

@@ -123,7 +123,11 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 		return nil, nil, errors.New(response.ErrorMsg)
 	}
 
-	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "odnoklassniki", AuthenticationData: nil, AdditionalData: map[string]string{"odnoklassniki": string(response.Response[:])}}, nil
+	return &identity.IdentityData{}, &identity.VerifierData{
+		Name:               "odnoklassniki",
+		AuthenticationData: nil,
+		AdditionalData:     identity.B{"odnoklassniki": []byte(response.Response[:])},
+	}, nil
 }
 
 type response struct {

@@ -14,7 +14,6 @@ func (sess *Session) staticStart(ctx context.Context, ver *VerifierSummary, auth
 		StoredSecurityCode: "",  //> noop
 		InputSecurityCode:  "",  //> noop
 		OAuth2State:        "",  //> noop
-		IdentityData:       nil, //> maybe later
 		VerifierData:       nil, //> later
 	}
 
@@ -25,14 +24,12 @@ func (sess *Session) staticStart(ctx context.Context, ver *VerifierSummary, auth
 			return nil, errors.New("user with such identity already exists")
 		}
 
-		stage.IdentityData = &IdentityData{
-			Name:     identityName,
-			Identity: identity,
-		}
+		stage.IdentityName = identityName
+		stage.Identity = identity
 	}
 
 	verifierData := &VerifierData{
-		VerifierName: ver.Name,
+		Name: ver.Name,
 	}
 	res, err := ver.internal.staticRef.InitStaticVerifier(ctx, verifierData, args)
 	if err != nil {
@@ -111,10 +108,10 @@ func (sess *Session) staticVerify(ctx context.Context, ver *VerifierSummary, aut
 			UserID:             "",
 			VerifierName:       ver.Name,
 			IdentityName:       "",
+			Identity:           "",
 			StoredSecurityCode: "", //> noop
 			InputSecurityCode:  "", //> noop
 			OAuth2State:        "",
-			IdentityData:       nil, //> maybe later
 			VerifierData:       nil, //> later
 		}
 

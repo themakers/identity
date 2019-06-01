@@ -102,7 +102,12 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 	if userInfo.Error.Message != "" {
 		return nil, nil, errors.New(userInfo.Error.Message)
 	}
-	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "google", AuthenticationData: nil, AdditionalData: map[string]string{"google": string(data[:])}}, nil
+
+	return &identity.IdentityData{}, &identity.VerifierData{
+		Name: "google",
+		AuthenticationData: nil,
+		AdditionalData: identity.B{"google": data[:]},
+	}, nil
 }
 
 type Source struct {

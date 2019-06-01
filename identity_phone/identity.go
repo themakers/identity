@@ -18,7 +18,6 @@ func New() *Identity {
 }
 
 func (idn *Identity) Info() identity.IdentityInfo {
-
 	return identity.IdentityInfo{
 		Name: "phone",
 	}
@@ -35,6 +34,7 @@ func (idn *Identity) NormalizeAndValidateIdentity(identity string) (result strin
 	} else if len(result) == 10 && result[0] == '9' {
 		result = string(rune('7')) + result[:]
 	} else {
+		// FIXME
 		return "", ErrPhoneNumberNotValid
 	}
 	return result, nil

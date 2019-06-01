@@ -7,7 +7,6 @@ import (
 	"github.com/themakers/identity/backend_mongo"
 	"github.com/themakers/identity/identity"
 	"github.com/themakers/identity/identity_svc/identity_proto"
-	"github.com/themakers/identity/mock/identity_mock_oauth2"
 	"github.com/themakers/identity/mock/identity_mock_regular"
 	"github.com/themakers/identity/mock/verifier_mock_regular"
 	"github.com/themakers/identity/verifier_password"
@@ -30,10 +29,7 @@ func serveIdentitySvc(ctx context.Context, t *testing.T, verifiers ...identity.V
 	backend, err := backend_mongo.New(backend_mongo.Options{
 		DBName:           "identity_test",
 		CollectionPrefix: "idn",
-		Address:          "127.0.0.1",
-		Port:             27017,
-
-		Testing: true,
+		URI: "",
 	})
 	if err != nil {
 		t.Error(err)
@@ -52,7 +48,6 @@ func serveIdentitySvc(ctx context.Context, t *testing.T, verifiers ...identity.V
 		DefaultLifetime: 5 * time.Second,
 	}, []identity.Identity{
 		identity_mock_regular.New(),
-		identity_mock_oauth2.New(),
 	}, verifiers)
 	if err != nil {
 		t.Error(err)

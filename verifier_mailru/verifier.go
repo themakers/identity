@@ -112,7 +112,11 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 	if userInfo[0].Error.ErrorMsg != "" {
 		return nil, nil, errors.New(userInfo[0].Error.ErrorMsg)
 	}
-	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "mailru", AuthenticationData: nil, AdditionalData: map[string]string{"mailru": string(data[:])}}, nil
+	return &identity.IdentityData{}, &identity.VerifierData{
+		Name: "mailru",
+		AuthenticationData: nil,
+		AdditionalData: identity.B{"mailru": []byte(data[:])},
+	}, nil
 }
 
 type UserInfo []struct {

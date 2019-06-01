@@ -6,7 +6,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-var _ identity.Verifier = new(Verifier)
+var _ identity.OAuth2Verifier = new(Verifier)
 
 type Verifier struct {
 	cb Callback
@@ -14,7 +14,6 @@ type Verifier struct {
 
 func (ver *Verifier) Info() identity.VerifierInfo {
 	return identity.VerifierInfo{
-		IdentityName: "mock_identity_oauth2",
 		Name:         "mock_oauth2",
 	}
 
@@ -36,6 +35,6 @@ func (ver *Verifier) HandleOAuth2Callback(ctx context.Context, code string) (tok
 
 func (ver *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (idn *identity.IdentityData, vd *identity.VerifierData, err error) {
 	idn = &identity.IdentityData{Identity: "uid1234432", Name: ver.Info().IdentityName}
-	vd = &identity.VerifierData{VerifierName: ver.Info().Name, AuthenticationData: map[string]string{}, AdditionalData: map[string]string{"phonenum": "79991112233"}}
+	vd = &identity.VerifierData{Name: ver.Info().Name, AuthenticationData: map[string]string{}, AdditionalData: map[string]string{"phonenum": "79991112233"}}
 	return idn, vd, nil
 }

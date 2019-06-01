@@ -100,7 +100,11 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 		return nil, nil, errors.New(response.Error.ErrorMsg)
 	}
 
-	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "vk", AuthenticationData: nil, AdditionalData: map[string]string{"vk": string(response.Response[0][:])}}, nil
+	return &identity.IdentityData{}, &identity.VerifierData{
+		Name:               "vk",
+		AuthenticationData: nil,
+		AdditionalData:     identity.B{"vk": []byte(response.Response[0][:])},
+	}, nil
 }
 
 type response struct {

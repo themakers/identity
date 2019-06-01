@@ -19,12 +19,10 @@ func New() *Identity {
 }
 
 func (idn *Identity) Info() identity.IdentityInfo {
-
 	return identity.IdentityInfo{Name: "email"}
 }
 
 func (idn *Identity) NormalizeAndValidateIdentity(identity string) (result string, err error) {
-
 	mailRegExp := regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 	if mailRegExp.MatchString(identity) {
 		return strings.ToLower(identity), nil

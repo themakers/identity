@@ -13,6 +13,12 @@ type Status struct {
 type StatusAuthenticating struct {
 	Objective        AuthenticationObjective
 	RemainingFactors int
+	CompletedFactors []StatusCompletedFactors
+}
+type StatusCompletedFactors struct {
+	VerifierName string
+	IdentityName string
+	Identity     string
 }
 type StatusAuthenticated struct {
 	User string
@@ -42,10 +48,7 @@ func (sess *Session) CheckStatus(ctx context.Context) (Status, error) {
 	} else {
 		return Status{
 			Token: sess.token,
-			Authenticating: &StatusAuthenticating{
-				Objective:        auth.Objective,
-				RemainingFactors: auth.RequiredFactorsCount, // FIXME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			},
+			Authenticating: auth.status(),
 			Authenticated: nil,
 		}, nil
 	}
@@ -56,8 +59,12 @@ func (sess *Session) StartAuthentication(ctx context.Context, objective Authenti
 	return err
 }
 
+func (sess *Session) CancelAuthentication(ctx context.Context) error {
+	return sess.manager.backend.RemoveAuthentication(ctx, sess.token)
+}
+
 // FIXME Why IdentityData??? Not summary???
-func (sess *Session) ListMyIdentitiesAndVerifiers(ctx context.Context) (idn []IdentityData, ver []VerifierSummary, err  error) {
+func (sess *Session) ListMyIdentitiesAndVerifiers(ctx context.Context) (idn []IdentityData, ver []VerifierSummary, err error) {
 	userID := sess.user
 
 	var user *User
@@ -85,7 +92,7 @@ func (sess *Session) ListMyIdentitiesAndVerifiers(ctx context.Context) (idn []Id
 	}
 
 	for _, v := range user.Verifiers {
-		ver = append(ver, *sess.manager.verifiers[v.VerifierName])
+		ver = append(ver, *sess.manager.verifiers[v.Name])
 	}
 
 	return

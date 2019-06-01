@@ -1,13 +1,7 @@
 package identity
 
 import (
-	"errors"
 	"github.com/themakers/session"
-)
-
-var (
-	ErrSecurityCodeMismatch                 = errors.New("security code mismatch")
-	ErrAuthenticationForSessionAlreadyExist = errors.New("Authentication for session already exist")
 )
 
 type Options struct {
@@ -50,7 +44,8 @@ func New(backend Backend, sessMgr *session.Manager, identities []Identity, verif
 			vs.SupportOAuth2 = true
 			vs.internal.oauth2Ref = ver
 
-			identities = append(identities, newIdentityStub(vs.Name))
+			vs.IdentityName = vs.Name
+			identities = append(identities, newIdentityStub(vs.IdentityName))
 		}
 		if ver, ok := ver.(StaticVerifier); ok {
 			vs.SupportStatic = true

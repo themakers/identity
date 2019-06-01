@@ -96,7 +96,11 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 		return nil, nil, err
 	}
 
-	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "yandex", AuthenticationData: nil, AdditionalData: map[string]string{"yandex": string(data[:])}}, nil
+	return &identity.IdentityData{}, &identity.VerifierData{
+		Name:               "yandex",
+		AuthenticationData: nil,
+		AdditionalData:     identity.B{"yandex": data[:]},
+	}, nil
 }
 
 type UserInfo struct {

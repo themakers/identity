@@ -3,7 +3,6 @@ package verifier_password
 import (
 	"context"
 	"crypto/rand"
-	"errors"
 	"github.com/themakers/identity/identity"
 	"golang.org/x/crypto/scrypt"
 )
@@ -47,7 +46,7 @@ func (v *Verifier) InitStaticVerifier(ctx context.Context, verifierData *identit
 	return identity.M{}, nil
 }
 
-func (v *Verifier) StartStaticVerification(ctx context.Context, verifierData identity.VerifierData, inputCode string) (bool, error) {
+func (v *Verifier) StaticVerify(ctx context.Context, verifierData identity.VerifierData, inputCode string) (bool, error) {
 	hash := verifierData.AuthenticationData["hash"]
 	salt := verifierData.AuthenticationData["salt"]
 

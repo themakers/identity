@@ -97,7 +97,7 @@ func (v *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string) (i
 			Name:     v.Info().IdentityName,
 			Identity: fmt.Sprint(userInfo.ID),
 		}, &identity.VerifierData{
-			VerifierName:       "github",
+			Name:               "github",
 			AuthenticationData: nil,
 			AdditionalData: identity.B{
 				"github": data[:],

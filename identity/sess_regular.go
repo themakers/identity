@@ -22,13 +22,10 @@ func (sess *Session) regularStart(ctx context.Context, ver *VerifierSummary, aut
 		UserID:             "",
 		VerifierName:       ver.Name,
 		IdentityName:       identityName, // FIXME
+		Identity:           identity,
 		StoredSecurityCode: "",
 		InputSecurityCode:  "",
 		OAuth2State:        "",
-		IdentityData: &IdentityData{
-			Name:     identityName,
-			Identity: identity,
-		}, //> maybe later
 		VerifierData: nil, //> later
 	}
 

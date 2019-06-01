@@ -123,7 +123,7 @@ package identity_svc
 //			panic(err)
 //		}
 //		vd := map[string]string{}
-//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd})
+//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{Name: "mock_regular", Identity: "79991112233", VerificationData: vd})
 //		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
 //
 //	})
@@ -135,17 +135,17 @@ package identity_svc
 //			panic(err)
 //		}
 //		ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
-//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_regular"}, grpc.Trailer(&trailer))
+//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{Name: "mock_regular"}, grpc.Trailer(&trailer))
 //		if err != nil {
 //			panic(err)
 //		}
 //		vd := make(map[string]string)
 //		vd["mock_identity"] = ""
-//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd}, grpc.Trailer(&trailer))
+//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{Name: "mock_regular", Identity: "79991112233", VerificationData: vd}, grpc.Trailer(&trailer))
 //		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
 //
-//		vRespTrue, err := client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79991112233"})
-//		vRespFalse, err := client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: "1111", AuthenticationID: svResp.AuthenticationID, Identity: "79991112233"})
+//		vRespTrue, err := client.Verify(ctx, &identity_proto.VerifyReq{Name: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79991112233"})
+//		vRespFalse, err := client.Verify(ctx, &identity_proto.VerifyReq{Name: "mock_regular", VerificationCode: "1111", AuthenticationID: svResp.AuthenticationID, Identity: "79991112233"})
 //
 //		if err != nil {
 //			panic(err)
@@ -164,16 +164,16 @@ package identity_svc
 //			panic(err)
 //		}
 //		ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
-//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_regular"}, grpc.Trailer(&trailer))
+//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{Name: "mock_regular"}, grpc.Trailer(&trailer))
 //		if err != nil {
 //			panic(err)
 //		}
 //		vd := make(map[string]string)
 //		vd["mock_identity_regular"] = ""
-//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79991112233", VerificationData: vd}, grpc.Trailer(&trailer))
+//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{Name: "mock_regular", Identity: "79991112233", VerificationData: vd}, grpc.Trailer(&trailer))
 //		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
 //
-//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79991112233"})
+//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{Name: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79991112233"})
 //
 //		if err != nil {
 //			panic(err)
@@ -243,11 +243,11 @@ package identity_svc
 //			panic(err)
 //		}
 //		ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
-//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_oauth2"}, grpc.Trailer(&trailer))
+//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{Name: "mock_oauth2"}, grpc.Trailer(&trailer))
 //		if err != nil {
 //			panic(err)
 //		}
-//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_oauth2", VerificationCode: "asdas"})
+//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{Name: "mock_oauth2", VerificationCode: "asdas"})
 //		if err != nil {
 //			panic(err)
 //		}
@@ -318,13 +318,13 @@ package identity_svc
 //			panic(err)
 //		}
 //		ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
-//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_oauth2"}, grpc.Trailer(&trailer))
+//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{Name: "mock_oauth2"}, grpc.Trailer(&trailer))
 //		if err != nil {
 //			panic(err)
 //		}
 //		vd := make(map[string]string)
 //		vd["mock_identity"] = ""
-//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_oauth2", VerificationCode: "asdas"})
+//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{Name: "mock_oauth2", VerificationCode: "asdas"})
 //
 //		if err != nil {
 //			panic(err)
@@ -334,16 +334,16 @@ package identity_svc
 //			panic(err)
 //		}
 //		_, err = client.ListMyIdentitiesAndVerifiers(ctx, &identity_proto.MyVerifiersDetailRequest{}, grpc.Trailer(&trailer))
-//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_regular"}, grpc.Trailer(&trailer))
+//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{Name: "mock_regular"}, grpc.Trailer(&trailer))
 //		if err != nil {
 //			panic(err)
 //		}
 //		vd = make(map[string]string)
 //		vd["mock_identity"] = ""
-//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "7999332211", VerificationData: vd}, grpc.Trailer(&trailer))
+//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{Name: "mock_regular", Identity: "7999332211", VerificationData: vd}, grpc.Trailer(&trailer))
 //		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
 //
-//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "7999332211"})
+//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{Name: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "7999332211"})
 //
 //		if err != nil {
 //			panic(err)
@@ -416,15 +416,15 @@ package identity_svc
 //			panic(err)
 //		}
 //		ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
-//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_regular"}, grpc.Trailer(&trailer))
+//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{Name: "mock_regular"}, grpc.Trailer(&trailer))
 //		if err != nil {
 //			panic(err)
 //		}
 //		vd := make(map[string]string)
 //		vd["mock_identity_regular"] = ""
-//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "7999332211", VerificationData: vd}, grpc.Trailer(&trailer))
+//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{Name: "mock_regular", Identity: "7999332211", VerificationData: vd}, grpc.Trailer(&trailer))
 //		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
-//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "7999332211"})
+//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{Name: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "7999332211"})
 //		if err != nil {
 //			panic(err)
 //		}
@@ -433,12 +433,12 @@ package identity_svc
 //			panic(err)
 //		}
 //		_, err = client.ListMyIdentitiesAndVerifiers(ctx, &identity_proto.MyVerifiersDetailRequest{}, grpc.Trailer(&trailer))
-//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_oauth2"}, grpc.Trailer(&trailer))
+//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{Name: "mock_oauth2"}, grpc.Trailer(&trailer))
 //		if err != nil {
 //			panic(err)
 //		}
 //		//vd["mock_identity"] = ""
-//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_oauth2", VerificationCode: "asdas"})
+//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{Name: "mock_oauth2", VerificationCode: "asdas"})
 //		if err != nil {
 //			panic(err)
 //		}
@@ -497,41 +497,41 @@ package identity_svc
 //			panic(err)
 //		}
 //		ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
-//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "mock_regular"}, grpc.Trailer(&trailer))
+//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{Name: "mock_regular"}, grpc.Trailer(&trailer))
 //		if err != nil {
 //			panic(err)
 //		}
 //		vd := map[string]string{}
-//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79992233111", VerificationData: vd}, grpc.Trailer(&trailer))
+//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{Name: "mock_regular", Identity: "79992233111", VerificationData: vd}, grpc.Trailer(&trailer))
 //		So(svResp.AuthenticationID, ShouldEqual, trailer[SessionTokenName][0])
-//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79992233111"})
+//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{Name: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79992233111"})
 //
 //		if err != nil {
 //			panic(err)
 //		}
 //		_, err = client.ListMyIdentitiesAndVerifiers(ctx, &identity_proto.MyVerifiersDetailRequest{}, grpc.Trailer(&trailer))
-//		res, err := client.InitializeStaticVerifier(ctx, &identity_proto.InitializeStaticVerifierReq{VerifierName: "Login", InitializationData: map[string]string{"micresh": "wepo23nri"}}, grpc.Trailer(&trailer))
+//		res, err := client.InitializeStaticVerifier(ctx, &identity_proto.InitializeStaticVerifierReq{Name: "Login", InitializationData: map[string]string{"micresh": "wepo23nri"}}, grpc.Trailer(&trailer))
 //		log.Println(res)
 //		if err != nil {
 //			log.Println(res)
 //			panic(err)
 //		}
 //		// test false password and true login
-//		_, err = client.Start(ctx, &identity_proto.StartVerificationReq{VerifierName: "Login", Identity: "", VerificationData: map[string]string{"micresh": "wepo23nri123"}})
+//		_, err = client.Start(ctx, &identity_proto.StartVerificationReq{Name: "Login", Identity: "", VerificationData: map[string]string{"micresh": "wepo23nri123"}})
 //		auth, err := client.CheckStatus(ctx, &identity_proto.StatusReq{})
 //		if err != nil {
 //			panic(err)
 //		}
 //		So(auth.Authenticated, ShouldEqual, false)
 //		// test true password and false login
-//		_, err = client.Start(ctx, &identity_proto.StartVerificationReq{VerifierName: "Login", Identity: "", VerificationData: map[string]string{"miccresh": "wepo23nri"}})
+//		_, err = client.Start(ctx, &identity_proto.StartVerificationReq{Name: "Login", Identity: "", VerificationData: map[string]string{"miccresh": "wepo23nri"}})
 //		auth, err = client.CheckStatus(ctx, &identity_proto.StatusReq{})
 //		if err != nil {
 //			panic(err)
 //		}
 //		So(auth.Authenticated, ShouldEqual, false)
 //		// test true password and true login
-//		_, err = client.Start(ctx, &identity_proto.StartVerificationReq{VerifierName: "Login", Identity: "", VerificationData: map[string]string{"micresh": "wepo23nri"}})
+//		_, err = client.Start(ctx, &identity_proto.StartVerificationReq{Name: "Login", Identity: "", VerificationData: map[string]string{"micresh": "wepo23nri"}})
 //		auth, err = client.CheckStatus(ctx, &identity_proto.StatusReq{})
 //		if err != nil {
 //			panic(err)
@@ -587,15 +587,15 @@ package identity_svc
 //			panic(err)
 //		}
 //		ctx = metadata.AppendToOutgoingContext(ctx, SessionTokenName, trailer[SessionTokenName][0])
-//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{VerifierName: "Login"}, grpc.Trailer(&trailer))
+//		_, err = client.StartAuthentication(ctx, &identity_proto.StartAuthenticationReq{Name: "Login"}, grpc.Trailer(&trailer))
 //		if err != nil {
 //			panic(err)
 //		}
 //		vd := map[string]string{}
-//		_, err = client.Start(ctx, &identity_proto.StartVerificationReq{VerifierName: "Login", Identity: "", VerificationData: map[string]string{"micresh": "wepo23nri"}})
-//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{VerifierName: "mock_regular", Identity: "79992233111", VerificationData: vd}, grpc.Trailer(&trailer))
+//		_, err = client.Start(ctx, &identity_proto.StartVerificationReq{Name: "Login", Identity: "", VerificationData: map[string]string{"micresh": "wepo23nri"}})
+//		svResp, err := client.Start(ctx, &identity_proto.StartVerificationReq{Name: "mock_regular", Identity: "79992233111", VerificationData: vd}, grpc.Trailer(&trailer))
 //		// test correct code and incorrect identity
-//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79998233111"})
+//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{Name: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79998233111"})
 //		if err != nil {
 //			panic(err)
 //		}
@@ -605,7 +605,7 @@ package identity_svc
 //		}
 //		So(auth.Authenticated, ShouldEqual, false)
 //		// test incorrect code and correct identity
-//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: "12345", AuthenticationID: svResp.AuthenticationID, Identity: "79992233111"})
+//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{Name: "mock_regular", VerificationCode: "12345", AuthenticationID: svResp.AuthenticationID, Identity: "79992233111"})
 //		if err != nil {
 //			panic(err)
 //		}
@@ -616,7 +616,7 @@ package identity_svc
 //		So(auth.Authenticated, ShouldEqual, false)
 //
 //		// test correct identity and code
-//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{VerifierName: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79992233111"})
+//		_, err = client.Verify(ctx, &identity_proto.VerifyReq{Name: "mock_regular", VerificationCode: regularVerificationData.Code, AuthenticationID: svResp.AuthenticationID, Identity: "79992233111"})
 //		if err != nil {
 //			panic(err)
 //		}

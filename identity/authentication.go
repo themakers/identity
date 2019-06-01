@@ -13,18 +13,15 @@ type AuthenticationStage struct {
 
 	UserID string `bson:"UserID" json:"UserID"`
 
-	VerifierName string `bson:"VerifierName" json:"VerifierName"`
+	VerifierName string `bson:"Name" json:"Name"`
 	IdentityName string `bson:"Identity" json:"Identity"`
-
-	//IdentityName string `bson:"IdentityName" json:"IdentityName"`
-	//Identity     string `bson:"Identity" json:"Identity"`
+	Identity     string `bson:"Identity" json:"Identity"`
 
 	StoredSecurityCode string `bson:"StoredSecurityCode" json:"StoredSecurityCode"`
 	InputSecurityCode  string `bson:"InputSecurityCode" json:"InputSecurityCode"`
 
 	OAuth2State string `bson:"OAuth2State" json:"OAuth2State"`
 
-	IdentityData *IdentityData `bson:"IdentityData" json:"IdentityData"`
 	VerifierData *VerifierData `bson:"VerifierData" json:"VerifierData"`
 }
 
@@ -47,11 +44,11 @@ type Authentication struct {
 	Version int `bson:"Version" json:"Version"`
 }
 
-func (a *Authentication) findStage(verifierName, identity string) *AuthenticationStage {
-	for _, stage := range a.Stages {
+func (auth *Authentication) findStage(verifierName, identity string) *AuthenticationStage {
+	for _, stage := range auth.Stages {
 		if stage.VerifierName == verifierName {
 			if identity != "" {
-				if stage.IdentityData != nil && stage.IdentityData.Identity == identity {
+				if stage.Identity == identity {
 					return stage
 				}
 			} else {
@@ -60,4 +57,25 @@ func (a *Authentication) findStage(verifierName, identity string) *Authenticatio
 		}
 	}
 	return nil
+}
+
+
+func (auth *Authentication) status() *StatusAuthenticating {
+	status := &StatusAuthenticating{
+		Objective:        auth.Objective,
+		RemainingFactors: auth.RequiredFactorsCount, // FIXME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	}
+
+	for _, stage := range auth.Stages {
+		if stage.Completed {
+			status.RemainingFactors--
+			status.CompletedFactors = append(status.CompletedFactors, StatusCompletedFactors{
+				VerifierName: stage.VerifierName,
+				IdentityName: stage.IdentityName,
+				Identity:     stage.Identity,
+			})
+		}
+	}
+
+	return status
 }

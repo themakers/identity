@@ -215,8 +215,9 @@ func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, q *i
 	sess := pis.is.sessionObtain(ctx)
 	defer sessionDispose(ctx, sess)
 
-	// TODO
-	panic("not implemented")
+	if err := sess.CancelAuthentication(ctx); err != nil {
+		return &identity_proto.Status{}, err
+	}
 
 	return pis.status(ctx, sess)
 }
@@ -246,20 +247,6 @@ func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Conte
 	return resp, nil
 }
 
-//func (pis *PublicIdentityService) InitializeStaticVerifier(ctx context.Context, q *identity_proto.InitializeStaticVerifierReq) (*identity_proto.InitializeStaticVerifierResp, error) {
-//	sess := pis.is.sessionObtain(ctx)
-//	defer sessionDispose(ctx, sess)
-//
-//	res, err := sess.InitializeStaticVerifier(ctx, q.VerifierName, q.Args)
-//	if err != nil {
-//		return &identity_proto.InitializeStaticVerifierResp{}, err
-//	}
-//
-//	return &identity_proto.InitializeStaticVerifierResp{
-//		Result: res,
-//	}, nil
-//}
-
 func (pis *PublicIdentityService) Start(ctx context.Context, q *identity_proto.StartReq) (*identity_proto.StartResp, error) {
 	sess := pis.is.sessionObtain(ctx)
 	defer sessionDispose(ctx, sess)
@@ -278,7 +265,6 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, q *identity_proto.
 	sess := pis.is.sessionObtain(ctx)
 	defer sessionDispose(ctx, sess)
 
-
 	if _, err := sess.Verify(ctx, q.VerifierName, q.VerificationCode, q.IdentityName, q.Identity); err != nil {
 		return &identity_proto.Status{}, err
 	}
@@ -289,6 +275,8 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, q *identity_proto.
 func (pis *PublicIdentityService) Logout(ctx context.Context, q *identity_proto.LogoutReq) (*identity_proto.Status, error) {
 	sess := pis.is.sessionObtain(ctx)
 	defer sessionDispose(ctx, sess)
+
+	// TODO Also delete Authentication on logout
 
 	// TODO
 	panic("not implemented")
@@ -328,7 +316,6 @@ func (pis *PrivateIdentityService) LoginAs(ctx context.Context, q *identity_prot
 	return &identity_proto.LoginAsResp{
 		User:    uid,
 		Session: sid,
-		Error:   "",
 	}, nil
 }
 
@@ -358,6 +345,13 @@ func convertStatus(status identity.Status) *identity_proto.Status {
 		default:
 			panic("bad objective")
 		}
+		for _, fact := range status.Authenticating.CompletedFactors {
+			au.Authenticating.CompletedFactors = append(au.Authenticating.CompletedFactors, &identity_proto.StatusCompletedFactors{
+				VerifierName: fact.VerifierName,
+				IdentityName: fact.IdentityName,
+				Identity:     fact.Identity,
+			})
+		}
 	case status.Authenticated != nil:
 		s.Status = &identity_proto.Status_Authenticated{
 			Authenticated: &identity_proto.StatusAuthenticated{
@@ -372,4 +366,3 @@ func convertStatus(status identity.Status) *identity_proto.Status {
 
 	return s
 }
-

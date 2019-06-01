@@ -44,9 +44,15 @@ func (sess *Session) handleAuthentication(ctx context.Context, auth *Authenticat
 		switch auth.Objective {
 		case ObjectiveSignIn:
 		case ObjectiveSignUp:
-			user.add(stage.VerifierData, stage.IdentityData)
+			user.add(stage.VerifierData, &IdentityData{
+				Name:     stage.IdentityName,
+				Identity: stage.Identity,
+			})
 		case ObjectiveAttach:
-			user.add(stage.VerifierData, stage.IdentityData)
+			user.add(stage.VerifierData, &IdentityData{
+				Name:     stage.IdentityName,
+				Identity: stage.Identity,
+			})
 		}
 	}
 

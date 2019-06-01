@@ -100,7 +100,7 @@ func (prov *Verifier) GetOAuth2Identity(ctx context.Context, accessToken string)
 		return nil, nil, errors.New(data_wrapper.Meta.ErrorMessage)
 	}
 
-	return &identity.IdentityData{}, &identity.VerifierData{VerifierName: "instagram", AuthenticationData: nil, AdditionalData: map[string]string{"instagram": string(data_wrapper.Data[:])}}, nil
+	return &identity.IdentityData{}, &identity.VerifierData{Name: "instagram", AuthenticationData: nil, AdditionalData: map[string]string{"instagram": string(data_wrapper.Data[:])}}, nil
 }
 
 type data_wrapper struct {

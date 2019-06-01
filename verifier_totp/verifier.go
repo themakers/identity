@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
-	"errors"
 	"github.com/pquerna/otp/totp"
 	"github.com/themakers/identity/identity"
 	"image/png"
@@ -56,12 +55,12 @@ func (v *Verifier) InitStaticVerifier(ctx context.Context, verifierData *identit
 	}, nil
 }
 
-func (v *Verifier) StartStaticVerification(ctx context.Context, verifierData identity.VerifierData, inputCode string) error {
+func (v *Verifier) StaticVerify(ctx context.Context, verifierData identity.VerifierData, inputCode string) (bool, error) {
 	secret := verifierData.AuthenticationData["secret"]
 
 	if totp.Validate(inputCode, string(secret)) {
-		return nil
+		return true, nil
 	} else {
-		return errors.New("wrong code")
+		return false, nil
 	}
 }

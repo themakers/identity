@@ -116,6 +116,15 @@ func (b *Backend) SaveAuthentication(ctx context.Context, auth *identity.Authent
 	return result, nil
 }
 
+func (b *Backend) RemoveAuthentication(ctx context.Context, id string) error {
+	if _, err := b.coll(collAuthentications).DeleteOne(ctx, bson.M{
+		"_id": id,
+	}); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (b *Backend) GetUser(ctx context.Context, id string) (*identity.User, error) {
 	var user identity.User
 	if err := b.coll(collUsers).FindOne(ctx, bson.M{"_id": id}).Decode(&user); err == mongo.ErrNoDocuments {

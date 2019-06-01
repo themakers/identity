@@ -5,6 +5,8 @@ import (
 	"errors"
 )
 
+var ErrVerificationCodeMismatch = errors.New("verification code mismatch")
+
 func (sess *Session) regularStart(ctx context.Context, ver *VerifierSummary, auth *Authentication, args M, identityName, identity string) (M, error) {
 	if ver.IdentityName != identityName {
 		panic("shit happened")
@@ -87,6 +89,6 @@ func (sess *Session) regularVerify(ctx context.Context, ver *VerifierSummary, au
 		return true, nil
 	} else {
 		stage.Completed = false
-		return false, nil
+		return false, ErrVerificationCodeMismatch
 	}
 }

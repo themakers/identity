@@ -67,7 +67,7 @@ func Test(t *testing.T, instantiate func(context.Context) (identity.Backend, fun
 					Convey("And try to find it by identity", func() {
 						user, err := back.GetUserByIdentity(ctx, idn1.Name, idn1.Identity)
 						So(err, ShouldBeNil)
-						So(user, ShouldNotBeNil) // FIXME Possible race condition here
+						So(user, ShouldNotBeNil)
 						So(user.Version, ShouldEqual, 2)
 					})
 

@@ -164,8 +164,10 @@ func (b *Backend) GetUserByIdentity(ctx context.Context, idnName, idn string) (*
 	var user identity.User
 	if err := b.coll(collUsers).FindOne(ctx, bson.M{
 		"Identities": bson.M{
-			"Name":     idnName,
-			"Identity": idn,
+			"$elemMatch": bson.M{
+				"Name":     idnName,
+				"Identity": idn,
+			},
 		},
 	}).Decode(&user); err == mongo.ErrNoDocuments {
 		return nil, nil

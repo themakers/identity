@@ -22,7 +22,7 @@ func Test_Backend(t *testing.T) {
 		}
 
 		cleanup := func(ctx context.Context) error {
-			return back.cleanup(ctx)
+			return back.Cleanup(ctx)
 		}
 
 		return back, cleanup, nil

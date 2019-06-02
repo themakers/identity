@@ -67,7 +67,7 @@ func (b *Backend) txn(ctx context.Context, txfn func(ctx mongo.SessionContext) e
 	})
 }
 
-func (b *Backend) cleanup(ctx context.Context) error {
+func (b *Backend) Cleanup(ctx context.Context) error {
 	return b.txn(ctx, func(ctx mongo.SessionContext) error {
 		if _, err := b.coll(collAuthentications).DeleteMany(ctx, bson.M{}); err != nil {
 			return err
@@ -91,10 +91,11 @@ func (b *Backend) GetAuthentication(ctx context.Context, id string) (*identity.A
 
 func (b *Backend) CreateAuthentication(ctx context.Context, id string, objective identity.AuthenticationObjective, userID string) (*identity.Authentication, error) {
 	auth := identity.Authentication{
-		ID:        id,
-		Objective: objective,
-		UserID:    userID,
-		Version:   1,
+		ID:                   id,
+		Objective:            objective,
+		UserID:               userID,
+		RequiredFactorsCount: 1,
+		Version:              1,
 	}
 	if _, err := b.coll(collAuthentications).InsertOne(ctx, auth); err != nil {
 		return nil, err
@@ -164,7 +165,7 @@ func (b *Backend) GetUserByIdentity(ctx context.Context, idnName, idn string) (*
 	var user identity.User
 	if err := b.coll(collUsers).FindOne(ctx, bson.M{
 		"Identities": bson.M{
-			"$elemMatch": bson.M{
+			"$elemMatch": bson.M{ // FIXME *
 				"Name":     idnName,
 				"Identity": idn,
 			},

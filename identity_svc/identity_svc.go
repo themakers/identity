@@ -143,6 +143,7 @@ func (pis *PublicIdentityService) ListSupportedIdentitiesAndVerifiers(ctx contex
 	for _, ver := range vers {
 		resp.Verifiers = append(resp.Verifiers, &identity_proto.VerifierDetails{
 			Name:           ver.Name,
+			IdentityName:   ver.IdentityName,
 			SupportRegular: ver.SupportRegular,
 			SupportReverse: ver.SupportReverse,
 			SupportOAuth2:  ver.SupportOAuth2,
@@ -183,7 +184,7 @@ func (pis *PublicIdentityService) StartSignUp(ctx context.Context, req *identity
 
 	if _, uid, err := sess.Info(); err != nil {
 		return &identity_proto.Status{}, err
-	} else if uid == "" {
+	} else if uid != "" {
 		return &identity_proto.Status{}, errors.New("should be unauthenticated")
 	}
 
@@ -235,6 +236,7 @@ func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Conte
 	for _, ver := range vers {
 		resp.Verifiers = append(resp.Verifiers, &identity_proto.VerifierDetails{
 			Name:           ver.Name,
+			IdentityName:   ver.IdentityName,
 			SupportRegular: ver.SupportRegular,
 			SupportReverse: ver.SupportReverse,
 			SupportOAuth2:  ver.SupportOAuth2,
@@ -328,39 +330,33 @@ func convertStatus(status identity.Status) *identity_proto.Status {
 		Token: status.Token,
 	}
 
-	switch {
-	case status.Authenticating != nil:
-		au := &identity_proto.Status_Authenticating{
-			Authenticating: &identity_proto.StatusAuthenticating{
-				RemainingFactors: int64(status.Authenticating.RemainingFactors),
-			},
+	if status.Authenticating != nil {
+		au := &identity_proto.StatusAuthenticating{
+			RemainingFactors: int64(status.Authenticating.RemainingFactors),
 		}
 		switch status.Authenticating.Objective {
 		case identity.ObjectiveSignIn:
-			au.Authenticating.Objective = &identity_proto.StatusAuthenticating_SignIn{SignIn: true}
+			au.Objective = &identity_proto.StatusAuthenticating_SignIn{SignIn: true}
 		case identity.ObjectiveSignUp:
-			au.Authenticating.Objective = &identity_proto.StatusAuthenticating_SignUp{SignUp: true}
+			au.Objective = &identity_proto.StatusAuthenticating_SignUp{SignUp: true}
 		case identity.ObjectiveAttach:
-			au.Authenticating.Objective = &identity_proto.StatusAuthenticating_Attach{Attach: true}
+			au.Objective = &identity_proto.StatusAuthenticating_Attach{Attach: true}
 		default:
 			panic("bad objective")
 		}
 		for _, fact := range status.Authenticating.CompletedFactors {
-			au.Authenticating.CompletedFactors = append(au.Authenticating.CompletedFactors, &identity_proto.StatusCompletedFactors{
+			au.CompletedFactors = append(au.CompletedFactors, &identity_proto.StatusCompletedFactors{
 				VerifierName: fact.VerifierName,
 				IdentityName: fact.IdentityName,
 				Identity:     fact.Identity,
 			})
 		}
-	case status.Authenticated != nil:
-		s.Status = &identity_proto.Status_Authenticated{
-			Authenticated: &identity_proto.StatusAuthenticated{
-				User: status.Authenticated.User,
-			},
-		}
-	default:
-		s.Status = &identity_proto.Status_Unauthenticated{
-			Unauthenticated: true,
+		s.Authenticating = au
+	}
+
+	if status.Authenticated != nil {
+		s.Authenticated = &identity_proto.StatusAuthenticated{
+			User: status.Authenticated.User,
 		}
 	}
 

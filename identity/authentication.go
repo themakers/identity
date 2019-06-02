@@ -13,8 +13,8 @@ type AuthenticationStage struct {
 
 	UserID string `bson:"UserID" json:"UserID"`
 
-	VerifierName string `bson:"Name" json:"Name"`
-	IdentityName string `bson:"Identity" json:"Identity"`
+	VerifierName string `bson:"VerifierName" json:"VerifierName"`
+	IdentityName string `bson:"IdentityName" json:"IdentityName"`
 	Identity     string `bson:"Identity" json:"Identity"`
 
 	StoredSecurityCode string `bson:"StoredSecurityCode" json:"StoredSecurityCode"`

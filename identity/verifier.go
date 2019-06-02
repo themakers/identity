@@ -60,13 +60,23 @@ func (sess *Session) Start(ctx context.Context, verifierName string, args M, ide
 		return nil, err
 	}
 
+	ver := sess.manager.verifiers[verifierName]
+
 	idn := sess.manager.identities[identityName]
+
+	switch {
+	case ver.SupportRegular, ver.SupportOAuth2:
+		idn = ver.Identity
+		identityName = idn.Name
+	case ver.SupportStatic:
+	default:
+		panic("shit happened")
+	}
+
 	identity, err = idn.Identity.NormalizeAndValidateIdentity(identity)
 	if err != nil {
 		return nil, err
 	}
-
-	ver := sess.manager.verifiers[verifierName]
 
 	var res M
 
@@ -76,7 +86,7 @@ func (sess *Session) Start(ctx context.Context, verifierName string, args M, ide
 	case ver.SupportOAuth2:
 		res, err = sess.oauth2Start(ctx, ver, auth, args, identityName, identity)
 	case ver.SupportStatic:
-		res, err =  sess.staticStart(ctx, ver, auth, args, identityName, identity)
+		res, err = sess.staticStart(ctx, ver, auth, args, identityName, identity)
 	default:
 		panic("shit happened")
 	}
@@ -91,7 +101,6 @@ func (sess *Session) Start(ctx context.Context, verifierName string, args M, ide
 	return res, nil
 }
 
-
 ////////////////////////////////////////////////////////////////
 //// VERIFY
 ////
@@ -102,13 +111,23 @@ func (sess *Session) Verify(ctx context.Context, verifierName, verificationCode,
 		return false, err
 	}
 
+	ver := sess.manager.verifiers[verifierName]
+
 	idn := sess.manager.identities[identityName]
+
+	switch {
+	case ver.SupportRegular, ver.SupportOAuth2:
+		idn = ver.Identity
+		identityName = idn.Name
+	case ver.SupportStatic:
+	default:
+		panic("shit happened")
+	}
+
 	identity, err = idn.Identity.NormalizeAndValidateIdentity(identity)
 	if err != nil {
 		return false, err
 	}
-
-	ver := sess.manager.verifiers[verifierName]
 
 	var success bool
 

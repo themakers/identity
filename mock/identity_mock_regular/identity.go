@@ -16,7 +16,7 @@ func New() *Identity {
 
 func (idn *Identity) Info() identity.IdentityInfo {
 	return identity.IdentityInfo{
-		Name: "mock_identity_regular",
+		Name: "mock_regular",
 	}
 }
 

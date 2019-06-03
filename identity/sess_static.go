@@ -89,6 +89,7 @@ func (sess *Session) staticVerify(ctx context.Context, ver *VerifierSummary, aut
 		if user == nil {
 			return false, errors.New("user not found")
 		}
+		auth.UserID = user.ID
 
 		verifierData := user.findVerifierData(ver.Name, "")
 		if verifierData == nil {

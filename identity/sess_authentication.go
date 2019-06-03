@@ -25,33 +25,26 @@ type StatusAuthenticated struct {
 }
 
 func (sess *Session) CheckStatus(ctx context.Context) (Status, error) {
+	status := Status{
+		Token:          sess.token,
+		Authenticating: nil,
+		Authenticated: nil,
+	}
+
 	if sess.user != "" {
-		return Status{
-			Token:          sess.token,
-			Authenticating: nil,
-			Authenticated: &StatusAuthenticated{
-				User: sess.user,
-			},
-		}, nil
+		status.Authenticated = &StatusAuthenticated{
+			User: sess.user,
+		}
 	}
 
 	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.token)
 	if err != nil {
 		return Status{}, err
 	}
-	if auth == nil {
-		return Status{
-			Token:          sess.token,
-			Authenticating: nil,
-			Authenticated:  nil,
-		}, nil
-	} else {
-		return Status{
-			Token: sess.token,
-			Authenticating: auth.status(),
-			Authenticated: nil,
-		}, nil
+	if auth != nil {
+		status.Authenticating = auth.status()
 	}
+	return status, nil
 }
 
 func (sess *Session) StartAuthentication(ctx context.Context, objective AuthenticationObjective) error {

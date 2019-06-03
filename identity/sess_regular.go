@@ -3,6 +3,7 @@ package identity
 import (
 	"context"
 	"errors"
+	"fmt"
 )
 
 var ErrVerificationCodeMismatch = errors.New("verification code mismatch")
@@ -28,7 +29,7 @@ func (sess *Session) regularStart(ctx context.Context, ver *VerifierSummary, aut
 		StoredSecurityCode: "",
 		InputSecurityCode:  "",
 		OAuth2State:        "",
-		VerifierData: nil, //> later
+		VerifierData:       nil, //> later
 	}
 
 	{
@@ -79,6 +80,26 @@ func (sess *Session) regularVerify(ctx context.Context, ver *VerifierSummary, au
 	identity, err := idn.NormalizeAndValidateIdentity(identity)
 	if err != nil {
 		return false, err
+	}
+
+	switch auth.Objective {
+	case ObjectiveSignIn:
+		var user *User
+		if auth.UserID != "" {
+			user, err = sess.manager.backend.GetUser(ctx, auth.UserID)
+		} else {
+			user, err = sess.manager.backend.GetUserByIdentity(ctx, idn.Info().Name, identity)
+			if user == nil {
+				panic(fmt.Sprintf("bullshit %s %s", idn.Info().Name, identity))
+			}
+		}
+		if err != nil {
+			return false, err
+		}
+		if user == nil {
+			return false, errors.New("user not found")
+		}
+		auth.UserID = user.ID
 	}
 
 	stage := auth.findStage(ver.Name, identity)

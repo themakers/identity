@@ -73,9 +73,11 @@ func (sess *Session) Start(ctx context.Context, verifierName string, args M, ide
 		panic("shit happened")
 	}
 
-	identity, err = idn.Identity.NormalizeAndValidateIdentity(identity)
-	if err != nil {
-		return nil, err
+	if idn != nil {
+		identity, err = idn.Identity.NormalizeAndValidateIdentity(identity)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	var res M
@@ -124,9 +126,11 @@ func (sess *Session) Verify(ctx context.Context, verifierName, verificationCode,
 		panic("shit happened")
 	}
 
-	identity, err = idn.Identity.NormalizeAndValidateIdentity(identity)
-	if err != nil {
-		return false, err
+	if idn != nil {
+		identity, err = idn.Identity.NormalizeAndValidateIdentity(identity)
+		if err != nil {
+			return false, err
+		}
 	}
 
 	var success bool

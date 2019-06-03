@@ -81,6 +81,10 @@ func (sess *Session) handleAuthentication(ctx context.Context, auth *Authenticat
 			return err
 		}
 		sess.become(user.ID)
+
+		if err := sess.manager.backend.RemoveAuthentication(ctx, auth.ID); err != nil {
+			return err
+		}
 	}
 
 	return nil

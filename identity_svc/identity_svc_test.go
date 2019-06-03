@@ -202,6 +202,9 @@ func testSignUp(ctx context.Context, t *testing.T, state *State) func() {
 							state.user.Trailer())
 						So(err, ShouldNotBeNil)
 						So(err.Error(), ShouldContainSubstring, identity.ErrVerificationCodeMismatch.Error())
+						// FIXME
+						//So(status.Authenticated, ShouldBeNil)
+						//So(status.Authenticating, ShouldNotBeNil)
 
 						Convey("Then successfully complete it", func() {
 							status, err := state.client.Verify(
@@ -228,8 +231,164 @@ func testSignUp(ctx context.Context, t *testing.T, state *State) func() {
 
 func testAttach(ctx context.Context, t *testing.T, state *State) func() {
 	return func() {
-		Convey("Should be unauthenticated", func() {
+		Convey("Should be authenticated", func() {
+			status, err := state.client.CheckStatus(
+				state.user.Context(ctx),
+				&identity_proto.StatusReq{},
+				state.user.Trailer())
+			So(err, ShouldBeNil)
+			So(status.Authenticating, ShouldBeNil)
+			So(status.Authenticated, ShouldNotBeNil)
 
+			Convey("Starting Attach process", func() {
+				status, err := state.client.StartAttach(
+					state.user.Context(ctx),
+					&identity_proto.StartAttachReq{},
+					state.user.Trailer())
+				So(err, ShouldBeNil)
+				So(status.Authenticating, ShouldNotBeNil)
+				So(status.Authenticated, ShouldNotBeNil)
+
+				Convey("Start attaching password", func() {
+					password := "secret"
+					_, err := state.client.Start(
+						state.user.Context(ctx),
+						&identity_proto.StartReq{
+							VerifierName: verifier_password.New().Info().Name,
+							Args: identity.M{
+								"password": password,
+							},
+						},
+						state.user.Trailer())
+					So(err, ShouldBeNil)
+
+					Convey("Then verify new password", func() {
+						status, err := state.client.Verify(
+							state.user.Context(ctx),
+							&identity_proto.VerifyReq{
+								VerifierName:     verifier_password.New().Info().Name,
+								VerificationCode: password,
+							},
+							state.user.Trailer())
+						So(err, ShouldBeNil)
+						So(status.Authenticating, ShouldBeNil)
+						So(status.Authenticated, ShouldNotBeNil)
+
+						Convey("SignIn", testSignIn(ctx, t, state))
+					})
+				})
+			})
+		})
+	}
+}
+
+func testSignIn(ctx context.Context, t *testing.T, state *State) func() {
+	return func() {
+		Convey("Should log out", func() {
+			// FIXME
+			state.user.MD = nil
+
+			Convey("And become nobody now", func() {
+				status, err := state.client.CheckStatus(
+					state.user.Context(ctx),
+					&identity_proto.StatusReq{},
+					state.user.Trailer())
+				So(err, ShouldBeNil)
+				So(status.Authenticating, ShouldBeNil)
+				So(status.Authenticated, ShouldBeNil)
+
+				Convey("Starting SignIn process", func() {
+					idn := "hellokitty"
+					status, err := state.client.StartSignIn(
+						state.user.Context(ctx),
+						&identity_proto.StartSignInReq{},
+						state.user.Trailer())
+					So(err, ShouldBeNil)
+					So(status.Authenticating, ShouldNotBeNil)
+					So(status.Authenticated, ShouldBeNil)
+
+					Convey("SignIn using regular verifier", func() {
+						state.regularVerificationData.Identity = ""
+						state.regularVerificationData.Code = ""
+						So(state.regularVerificationData.Identity, ShouldEqual, "")
+						So(state.regularVerificationData.Code, ShouldEqual, "")
+						_, err := state.client.Start(
+							state.user.Context(ctx),
+							&identity_proto.StartReq{
+								VerifierName: verifier_mock_regular.New(nil).Info().Name,
+								Identity:     idn,
+							},
+							state.user.Trailer())
+						So(err, ShouldBeNil)
+						So(state.regularVerificationData.Identity, ShouldEqual, idn)
+						So(state.regularVerificationData.Code, ShouldNotEqual, "")
+
+						Convey("Provide wrong verification code", func() {
+							_, err := state.client.Verify(
+								state.user.Context(ctx),
+								&identity_proto.VerifyReq{
+									VerifierName:     verifier_mock_regular.New(nil).Info().Name,
+									Identity:         idn,
+									VerificationCode: "wrong" + state.regularVerificationData.Code,
+								},
+								state.user.Trailer())
+							So(err, ShouldNotBeNil)
+							So(err.Error(), ShouldContainSubstring, identity.ErrVerificationCodeMismatch.Error())
+							// FIXME
+							//So(status.Authenticated, ShouldBeNil)
+							//So(status.Authenticating, ShouldNotBeNil)
+
+							Convey("Then successfully complete it", func() {
+								status, err := state.client.Verify(
+									state.user.Context(ctx),
+									&identity_proto.VerifyReq{
+										VerifierName:     verifier_mock_regular.New(nil).Info().Name,
+										Identity:         idn,
+										VerificationCode: state.regularVerificationData.Code,
+									},
+									state.user.Trailer())
+								So(err, ShouldBeNil)
+								So(status.Authenticating, ShouldBeNil)
+								So(status.Authenticated, ShouldNotBeNil)
+								So(status.Authenticated.User, ShouldNotEqual, "")
+							})
+						})
+					})
+
+					// TODO Test without identity first, to ensure error reporting correctness
+					Convey("SignIn using static password verifier with incorrect password", func() {
+						password := "secret"
+						status, err := state.client.Verify(
+							state.user.Context(ctx),
+							&identity_proto.VerifyReq{
+								VerifierName:     verifier_password.New().Info().Name,
+								VerificationCode: "wrong" + password,
+								IdentityName:     identity_mock_regular.New().Info().Name,
+								Identity:         idn,
+							},
+							state.user.Trailer())
+						So(err, ShouldBeNil)
+						So(status.Authenticated, ShouldBeNil)
+						So(status.Authenticating, ShouldNotBeNil)
+
+						Convey("Then provide correct password", func() {
+							status, err := state.client.Verify(
+								state.user.Context(ctx),
+								&identity_proto.VerifyReq{
+									VerifierName:     verifier_password.New().Info().Name,
+									VerificationCode: password,
+									IdentityName:     identity_mock_regular.New().Info().Name,
+									Identity:         idn,
+								},
+								state.user.Trailer())
+							So(err, ShouldBeNil)
+							So(status.Authenticating, ShouldBeNil)
+							So(status.Authenticated, ShouldNotBeNil)
+							So(status.Authenticated.User, ShouldNotEqual, "")
+						})
+					})
+				})
+			})
 		})
 	}
 }

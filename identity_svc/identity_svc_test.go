@@ -202,9 +202,8 @@ func testSignUp(ctx context.Context, t *testing.T, state *State) func() {
 							state.user.Trailer())
 						So(err, ShouldNotBeNil)
 						So(err.Error(), ShouldContainSubstring, identity.ErrVerificationCodeMismatch.Error())
-						// FIXME
-						//So(status.Authenticated, ShouldBeNil)
-						//So(status.Authenticating, ShouldNotBeNil)
+						So(status.Authenticated, ShouldBeNil)
+						So(status.Authenticating, ShouldNotBeNil)
 
 						Convey("Then successfully complete it", func() {
 							status, err := state.client.Verify(
@@ -334,9 +333,8 @@ func testSignIn(ctx context.Context, t *testing.T, state *State) func() {
 								state.user.Trailer())
 							So(err, ShouldNotBeNil)
 							So(err.Error(), ShouldContainSubstring, identity.ErrVerificationCodeMismatch.Error())
-							// FIXME
-							//So(status.Authenticated, ShouldBeNil)
-							//So(status.Authenticating, ShouldNotBeNil)
+							So(status.Authenticated, ShouldBeNil)
+							So(status.Authenticating, ShouldNotBeNil)
 
 							Convey("Then successfully complete it", func() {
 								status, err := state.client.Verify(

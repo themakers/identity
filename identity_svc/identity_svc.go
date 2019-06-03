@@ -268,7 +268,13 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, q *identity_proto.
 	defer sessionDispose(ctx, sess)
 
 	if _, err := sess.Verify(ctx, q.VerifierName, q.VerificationCode, q.IdentityName, q.Identity); err != nil {
-		return &identity_proto.Status{}, err
+		status, err2 := pis.status(ctx, sess)
+		if err2 != nil {
+			// FIXME
+			panic(err)
+		}
+
+		return status, err
 	}
 
 	return pis.status(ctx, sess)

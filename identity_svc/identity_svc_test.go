@@ -62,11 +62,12 @@ func serveIdentitySvc(ctx context.Context, t *testing.T, verifiers ...identity.V
 
 		Testing: true,
 	})
-
-	idenSvc, err := New(backend, &session.Manager{
+	sessMgr := &session.Manager{
 		Storage:         ssp,
 		DefaultLifetime: 5 * time.Second,
-	}, []identity.Identity{
+	}
+
+	idenSvc, err := New(backend, sessMgr, []identity.Identity{
 		identity_mock_regular.New(),
 	}, verifiers)
 	if err != nil {

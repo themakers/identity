@@ -223,28 +223,26 @@ func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, q *i
 	return pis.status(ctx, sess)
 }
 
-func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Context, q *identity_proto.ListMyIdentitiesAndVerifiersReq) (response *identity_proto.VerifierDetailsResp, err error) {
+func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Context, q *identity_proto.ListMyIdentitiesAndVerifiersReq) (response *identity_proto.ListMyIdentitiesAndVerifiersResp, err error) {
 	sess := pis.is.sessionObtain(ctx)
 	defer sessionDispose(ctx, sess)
 
-	resp := &identity_proto.VerifierDetailsResp{}
+	resp := &identity_proto.ListMyIdentitiesAndVerifiersResp{}
 	idns, vers, err := sess.ListMyIdentitiesAndVerifiers(ctx)
 	if err != nil {
-		return &identity_proto.VerifierDetailsResp{}, err
+		return &identity_proto.ListMyIdentitiesAndVerifiersResp{}, err
 	}
 
 	for _, ver := range vers {
-		resp.Verifiers = append(resp.Verifiers, &identity_proto.VerifierDetails{
-			Name:           ver.Name,
-			IdentityName:   ver.IdentityName,
-			SupportRegular: ver.SupportRegular,
-			SupportReverse: ver.SupportReverse,
-			SupportOAuth2:  ver.SupportOAuth2,
-			SupportStatic:  ver.SupportStatic,
-		})
+		if ver.Standalone {
+			resp.Verifiers = append(resp.Verifiers, ver.Name)
+		}
 	}
 	for _, idn := range idns {
-		resp.IdentitiyNames = append(resp.IdentitiyNames, idn.Name)
+		resp.Identities = append(resp.Identities, &identity_proto.IdentityData{
+			Name:     idn.Name,
+			Identity: idn.Identity,
+		})
 	}
 	return resp, nil
 }
@@ -267,17 +265,18 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, q *identity_proto.
 	sess := pis.is.sessionObtain(ctx)
 	defer sessionDispose(ctx, sess)
 
-	if _, err := sess.Verify(ctx, q.VerifierName, q.VerificationCode, q.IdentityName, q.Identity); err != nil {
-		status, err2 := pis.status(ctx, sess)
-		if err2 != nil {
-			// FIXME
-			panic(err)
-		}
+	verErr := sess.Verify(ctx, q.VerifierName, q.VerificationCode, q.IdentityName, q.Identity)
 
-		return status, err
+	stat, err := pis.status(ctx, sess)
+	if err != nil {
+		return &identity_proto.Status{}, err
 	}
 
-	return pis.status(ctx, sess)
+	if verErr != nil {
+		return stat, status.New(codes.InvalidArgument, verErr.Error()).Err()
+	}
+
+	return stat, verErr
 }
 
 func (pis *PublicIdentityService) Logout(ctx context.Context, q *identity_proto.LogoutReq) (*identity_proto.Status, error) {

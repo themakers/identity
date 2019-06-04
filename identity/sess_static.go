@@ -55,7 +55,7 @@ func (sess *Session) staticStart(ctx context.Context, ver *VerifierSummary, auth
 			}
 		}
 
-		auth.Stages = append(auth.Stages, stage)
+		auth.addStage(stage)
 
 		return res, nil
 	case ObjectiveAttach: //> Add new verifier to existing user
@@ -63,7 +63,7 @@ func (sess *Session) staticStart(ctx context.Context, ver *VerifierSummary, auth
 			return nil, errors.New("not authenticated")
 		}
 
-		auth.Stages = append(auth.Stages, stage)
+		auth.addStage(stage)
 
 		return res, nil
 	}
@@ -71,7 +71,7 @@ func (sess *Session) staticStart(ctx context.Context, ver *VerifierSummary, auth
 	panic("shit happened")
 }
 
-func (sess *Session) staticVerify(ctx context.Context, ver *VerifierSummary, auth *Authentication, inputCode, identityName, identity string) (bool, error) {
+func (sess *Session) staticVerify(ctx context.Context, ver *VerifierSummary, auth *Authentication, inputCode, identityName, identity string) error {
 	switch auth.Objective {
 	case ObjectiveSignIn:
 		var (
@@ -84,24 +84,20 @@ func (sess *Session) staticVerify(ctx context.Context, ver *VerifierSummary, aut
 			user, err = sess.manager.backend.GetUserByIdentity(ctx, identityName, identity)
 		}
 		if err != nil {
-			return false, err
+			return err
 		}
 		if user == nil {
-			return false, errors.New("user not found")
+			return errors.New("user not found")
 		}
 		auth.UserID = user.ID
 
 		verifierData := user.findVerifierData(ver.Name, "")
 		if verifierData == nil {
-			return false, errors.New("no verifier data for this verifier and user")
+			return errors.New("no verifier data for this verifier and user")
 		}
 
-		ok, err := ver.internal.staticRef.StaticVerify(ctx, *verifierData, inputCode)
-		if err != nil {
-			return false, err
-		}
-		if !ok {
-			return false, nil
+		if err := ver.internal.staticRef.StaticVerify(ctx, *verifierData, inputCode); err != nil {
+			return err
 		}
 
 		stage := &AuthenticationStage{
@@ -116,23 +112,18 @@ func (sess *Session) staticVerify(ctx context.Context, ver *VerifierSummary, aut
 			VerifierData:       nil, //> later
 		}
 
-		auth.Stages = append(auth.Stages, stage)
+		auth.addStage(stage)
 
-		return true, nil
+		return nil
 	case ObjectiveSignUp, ObjectiveAttach:
 		stage := auth.findStage(ver.Name, "")
 
-		ok, err := ver.internal.staticRef.StaticVerify(ctx, *stage.VerifierData, inputCode)
-		if err != nil {
-			return false, err
-		}
-		if !ok {
-			return false, nil
+		if err := ver.internal.staticRef.StaticVerify(ctx, *stage.VerifierData, inputCode); err != nil {
+			return err
 		}
 
 		stage.Completed = true
-
-		return true, nil
+		return nil
 	}
 	panic("shit happened")
 }

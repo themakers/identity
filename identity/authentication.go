@@ -44,6 +44,33 @@ type Authentication struct {
 	Version int `bson:"Version" json:"Version"`
 }
 
+func (auth *Authentication) addStage(stage *AuthenticationStage) {
+	//s := auth.findStage(stage.VerifierName, stage.Identity)
+	//if s != nil {
+	//	*s = *stage
+	//} else {
+	//	auth.Stages = append(auth.Stages, stage)
+	//}
+
+	for i, s := range auth.Stages {
+		found := false
+		if s.VerifierName == stage.VerifierName {
+			if stage.Identity != "" {
+				if s.Identity == stage.Identity {
+					found = true
+				}
+			} else {
+				found = true
+			}
+		}
+		if found {
+			auth.Stages[i] = stage
+			return
+		}
+	}
+	auth.Stages = append(auth.Stages, stage)
+}
+
 func (auth *Authentication) findStage(verifierName, identity string) *AuthenticationStage {
 	for _, stage := range auth.Stages {
 		if stage.VerifierName == verifierName {

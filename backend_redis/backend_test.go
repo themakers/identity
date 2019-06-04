@@ -1,4 +1,4 @@
-package backend_mongo
+package backend_redis
 
 import (
 	"context"
@@ -10,9 +10,8 @@ import (
 func TestBackend(t *testing.T) {
 	backend_test.Test(t, func(ctx context.Context) (identity.Backend, func(ctx context.Context) error, error) {
 		back, err := New(Options{
-			URI:              "mongodb://localhost:27017/?replicaSet=rs0",
-			DBName:           "test_identity_backend",
-			CollectionPrefix: "identity_",
+			Address:   "localhost:27017",
+			Namespace: "identity_test",
 		})
 
 		if err != nil {

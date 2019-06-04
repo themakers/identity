@@ -46,19 +46,19 @@ func (v *Verifier) InitStaticVerifier(ctx context.Context, verifierData *identit
 	return identity.M{}, nil
 }
 
-func (v *Verifier) StaticVerify(ctx context.Context, verifierData identity.VerifierData, inputCode string) (bool, error) {
+func (v *Verifier) StaticVerify(ctx context.Context, verifierData identity.VerifierData, inputCode string) (error) {
 	hash := verifierData.AuthenticationData["hash"]
 	salt := verifierData.AuthenticationData["salt"]
 
 	inputHash, err := v.hash(inputCode, []byte(salt))
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	if string(inputHash) == string(hash) {
-		return true, nil
+		return nil
 	} else {
-		return false, nil
+		return identity.ErrVerificationCodeMismatch
 	}
 }
 

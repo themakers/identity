@@ -65,12 +65,12 @@ func (sess *Session) regularStart(ctx context.Context, ver *VerifierSummary, aut
 		return nil, err
 	}
 
-	auth.Stages = append(auth.Stages, stage)
+	auth.addStage(stage)
 
 	return M{}, nil
 }
 
-func (sess *Session) regularVerify(ctx context.Context, ver *VerifierSummary, auth *Authentication, inputCode, identityName, identity string) (bool, error) {
+func (sess *Session) regularVerify(ctx context.Context, ver *VerifierSummary, auth *Authentication, inputCode, identityName, identity string) (error) {
 	if ver.IdentityName != identityName {
 		panic("shit happened")
 	}
@@ -79,7 +79,7 @@ func (sess *Session) regularVerify(ctx context.Context, ver *VerifierSummary, au
 
 	identity, err := idn.NormalizeAndValidateIdentity(identity)
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	switch auth.Objective {
@@ -94,10 +94,10 @@ func (sess *Session) regularVerify(ctx context.Context, ver *VerifierSummary, au
 			}
 		}
 		if err != nil {
-			return false, err
+			return err
 		}
 		if user == nil {
-			return false, errors.New("user not found")
+			return errors.New("user not found")
 		}
 		auth.UserID = user.ID
 	}
@@ -107,9 +107,9 @@ func (sess *Session) regularVerify(ctx context.Context, ver *VerifierSummary, au
 	stage.InputSecurityCode = inputCode
 	if stage.InputSecurityCode == stage.StoredSecurityCode {
 		stage.Completed = true
-		return true, nil
+		return nil
 	} else {
 		stage.Completed = false
-		return false, ErrVerificationCodeMismatch
+		return ErrVerificationCodeMismatch
 	}
 }

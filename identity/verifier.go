@@ -45,7 +45,7 @@ type StaticVerifier interface {
 	Verifier
 
 	InitStaticVerifier(ctx context.Context, verifierData *VerifierData, args M) (res M, err error)
-	StaticVerify(ctx context.Context, verifierData VerifierData, inputCode string) (success bool, err error)
+	StaticVerify(ctx context.Context, verifierData VerifierData, inputCode string) (err error)
 }
 
 ////////////////////////////////////////////////////////////////
@@ -107,10 +107,10 @@ func (sess *Session) Start(ctx context.Context, verifierName string, args M, ide
 //// VERIFY
 ////
 
-func (sess *Session) Verify(ctx context.Context, verifierName, verificationCode, identityName, identity string) (bool, error) {
+func (sess *Session) Verify(ctx context.Context, verifierName, verificationCode, identityName, identity string) (error) {
 	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.token)
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	ver := sess.manager.verifiers[verifierName]
@@ -129,28 +129,22 @@ func (sess *Session) Verify(ctx context.Context, verifierName, verificationCode,
 	if idn != nil {
 		identity, err = idn.Identity.NormalizeAndValidateIdentity(identity)
 		if err != nil {
-			return false, err
+			return err
 		}
 	}
 
-	var success bool
-
 	switch {
 	case ver.SupportRegular:
-		success, err = sess.regularVerify(ctx, ver, auth, verificationCode, identityName, identity)
+		err = sess.regularVerify(ctx, ver, auth, verificationCode, identityName, identity)
 	case ver.SupportOAuth2:
-		success, err = sess.oauth2Verify(ctx, ver, auth, verificationCode, identityName, identity)
+		err = sess.oauth2Verify(ctx, ver, auth, verificationCode, identityName, identity)
 	case ver.SupportStatic:
-		success, err = sess.staticVerify(ctx, ver, auth, verificationCode, identityName, identity)
+		err = sess.staticVerify(ctx, ver, auth, verificationCode, identityName, identity)
 	default:
 		panic("shit happened")
 	}
 	if err != nil {
-		return false, err
-	}
-
-	if !success {
-		return false, nil
+		return err
 	}
 
 	// FIXME Remove???
@@ -160,8 +154,8 @@ func (sess *Session) Verify(ctx context.Context, verifierName, verificationCode,
 	}
 
 	if err := sess.handleAuthentication(ctx, auth); err != nil {
-		return false, err
+		return err
 	}
 
-	return true, nil
+	return nil
 }

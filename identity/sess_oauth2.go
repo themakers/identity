@@ -25,7 +25,7 @@ func (sess *Session) oauth2Start(ctx context.Context, ver *VerifierSummary, auth
 			VerifierData:       nil, //> later
 		}
 
-		auth.Stages = append(auth.Stages, stage)
+		auth.addStage(stage)
 
 		return M{
 			"redirect_url": redirectURL,
@@ -35,17 +35,17 @@ func (sess *Session) oauth2Start(ctx context.Context, ver *VerifierSummary, auth
 	panic("shit happened")
 }
 
-func (sess *Session) oauth2Verify(ctx context.Context, ver *VerifierSummary, auth *Authentication, inputCode, identityName, identity string) (bool, error) {
+func (sess *Session) oauth2Verify(ctx context.Context, ver *VerifierSummary, auth *Authentication, inputCode, identityName, identity string) (error) {
 	// FIXME Check CSRF code
 
 	token, err := ver.internal.oauth2Ref.HandleOAuth2Callback(ctx, inputCode)
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	identityData, verifierData, err := ver.internal.oauth2Ref.GetOAuth2Identity(ctx, token.AccessToken)
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	stage := auth.findStage(ver.Name, ver.Name)
@@ -56,7 +56,7 @@ func (sess *Session) oauth2Verify(ctx context.Context, ver *VerifierSummary, aut
 
 	user, err := sess.manager.backend.GetUserByIdentity(ctx, stage.IdentityName, stage.Identity)
 	if err != nil {
-		return false, err
+		return err
 	}
 
 	if user != nil {
@@ -66,25 +66,25 @@ func (sess *Session) oauth2Verify(ctx context.Context, ver *VerifierSummary, aut
 	switch auth.Objective {
 	case ObjectiveSignIn:
 		if stage.UserID == "" {
-			return false, errors.New("no such user")
+			return errors.New("no such user")
 		}
 		stage.Completed = true
-		return true, nil
+		return nil
 	case ObjectiveSignUp:
 		if stage.UserID != "" {
-			return false, errors.New("already")
+			return errors.New("already")
 		}
 		stage.Completed = true
-		return true, nil
+		return nil
 	case ObjectiveAttach:
 		if stage.UserID != "" && stage.UserID != auth.UserID {
-			return false, errors.New("different user")
+			return errors.New("different user")
 		}
 		if stage.UserID != "" && stage.UserID == auth.UserID {
-			return false, errors.New("already attached")
+			return errors.New("already attached")
 		}
 		stage.Completed = true
-		return true, nil
+		return nil
 	}
 	panic("shit happened")
 }

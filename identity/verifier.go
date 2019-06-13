@@ -3,6 +3,7 @@ package identity
 import (
 	"context"
 	"golang.org/x/oauth2"
+	"log"
 )
 
 ////////////////////////////////////////////////////////////////
@@ -53,6 +54,8 @@ type StaticVerifier interface {
 ////
 
 func (sess *Session) Start(ctx context.Context, verifierName string, args M, identityName, identity string) (M, error) {
+	log.Println("#### START ####", verifierName, args, identityName, identity)
+
 	if verifierName == "" {
 	}
 	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.token)
@@ -107,7 +110,9 @@ func (sess *Session) Start(ctx context.Context, verifierName string, args M, ide
 //// VERIFY
 ////
 
-func (sess *Session) Verify(ctx context.Context, verifierName, verificationCode, identityName, identity string) (error) {
+func (sess *Session) Verify(ctx context.Context, verifierName, verificationCode, identityName, identity string) error {
+	log.Println("#### VERIFY ####", verifierName, verificationCode, identityName, identity)
+
 	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.token)
 	if err != nil {
 		return err

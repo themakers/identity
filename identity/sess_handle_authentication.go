@@ -77,10 +77,7 @@ func (sess *Session) handleAuthentication(ctx context.Context, auth *Authenticat
 
 		// FIXME
 		// TODO Authenticate session
-		if err := sess.sess.SetUser(user.ID); err != nil {
-			return err
-		}
-		sess.become(user.ID)
+		sess.cookie.SetUserID(user.ID)
 
 		if err := sess.manager.backend.RemoveAuthentication(ctx, auth.ID); err != nil {
 			return err

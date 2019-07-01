@@ -1,24 +1,18 @@
 package identity
 
-import (
-	"github.com/themakers/session"
-)
-
 type Options struct {
 }
 
 type Manager struct {
 	backend Backend
-	sessMgr *session.Manager
 
 	verifiers  map[string]*VerifierSummary
 	identities map[string]*IdentitySummary
 }
 
-func New(backend Backend, sessMgr *session.Manager, identities []Identity, verifiers []Verifier) (*Manager, error) {
+func New(backend Backend, identities []Identity, verifiers []Verifier) (*Manager, error) {
 	mgr := &Manager{
 		backend:    backend,
-		sessMgr:    sessMgr,
 		identities: make(map[string]*IdentitySummary),
 		verifiers:  make(map[string]*VerifierSummary),
 	}

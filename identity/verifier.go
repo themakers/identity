@@ -58,7 +58,7 @@ func (sess *Session) Start(ctx context.Context, verifierName string, args M, ide
 
 	if verifierName == "" {
 	}
-	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.token)
+	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.cookie.GetSessionID())
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func (sess *Session) Start(ctx context.Context, verifierName string, args M, ide
 func (sess *Session) Verify(ctx context.Context, verifierName, verificationCode, identityName, identity string) error {
 	log.Println("#### VERIFY ####", verifierName, verificationCode, identityName, identity)
 
-	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.token)
+	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.cookie.GetSessionID())
 	if err != nil {
 		return err
 	}

@@ -41,7 +41,7 @@ func (sess *Session) staticStart(ctx context.Context, ver *VerifierSummary, auth
 	case ObjectiveSignIn:
 		panic("start() could not be called on static verifier during signin")
 	case ObjectiveSignUp: //> Template to construct new user on successful authentication
-		if sess.user != "" {
+		if sess.cookie.GetUserID() != "" {
 			return nil, errors.New("should not be authenticated")
 		}
 		if auth.UserID != "" {
@@ -59,7 +59,7 @@ func (sess *Session) staticStart(ctx context.Context, ver *VerifierSummary, auth
 
 		return res, nil
 	case ObjectiveAttach: //> Add new verifier to existing user
-		if sess.user == "" {
+		if sess.cookie.GetUserID() == "" {
 			return nil, errors.New("not authenticated")
 		}
 

@@ -3,13 +3,14 @@ package identity_svc
 import (
 	"context"
 	"errors"
+	"fmt"
+	"github.com/themakers/identity/cookie"
 	"github.com/themakers/identity/identity"
 	"github.com/themakers/identity/identity_svc/identity_proto"
-	"github.com/themakers/session"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"log"
 )
 
 // TODO: Should it handle 'app passwords' concept?
@@ -24,15 +25,17 @@ const (
 )
 
 type IdentitySvc struct {
-	mgr *identity.Manager
+	cookieCtxKey string
+	mgr          *identity.Manager
 }
 
-func New(backend identity.Backend, sessMgr *session.Manager, identities []identity.Identity, verifiers []identity.Verifier) (*IdentitySvc, error) {
-	is := &IdentitySvc{}
+func New(backend identity.Backend, cookieCtxKey string, identities []identity.Identity, verifiers []identity.Verifier) (*IdentitySvc, error) {
+	is := &IdentitySvc{
+		cookieCtxKey: cookieCtxKey,
+	}
 
 	if mgr, err := identity.New(
 		backend,
-		sessMgr,
 		identities,
 		verifiers,
 	); err != nil {
@@ -57,53 +60,9 @@ func (is *IdentitySvc) Register(public, private *grpc.Server) {
 //// Helpers
 ////
 
-// TODO: Make private
-func GetSessionToken(ctx context.Context) (token string) {
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return ""
-	}
-
-	if at := md.Get(SessionTokenName); len(at) != 0 {
-		return at[0]
-	} else {
-		return ""
-	}
-}
-
 func (is *IdentitySvc) sessionObtain(ctx context.Context) *identity.Session {
-	token := GetSessionToken(ctx)
-	if token == "" {
-		token = session.GenerateRandomToken()
-	}
-
-	return is.mgr.Session(token)
-}
-
-func sessionDispose(ctx context.Context, sess *identity.Session) {
-	token, user, err := sess.Info()
-	if err != nil {
-		panic(err)
-	}
-
-	//token, err := sess.sess.GetID()
-	//if err != nil {
-	//	panic(err)
-	//}
-
-	md := make(metadata.MD)
-
-	md.Set(SessionTokenName, token)
-
-	if user != "" {
-		md.Set(UserName, user)
-	}
-
-	if err := grpc.SetTrailer(ctx, md); err != nil {
-		panic(err)
-	}
-
-	sess.Dispose()
+	//log.Println("qwertyuiop", ctx.Value(is.cookieCtxKey).(cookie.Cookie).GetSessionID())
+	return is.mgr.Session(ctx.Value(is.cookieCtxKey).(cookie.Cookie))
 }
 
 func statusError(err error) error {
@@ -128,7 +87,6 @@ func (pis *PublicIdentityService) status(ctx context.Context, sess *identity.Ses
 
 func (pis *PublicIdentityService) ListSupportedIdentitiesAndVerifiers(ctx context.Context, q *identity_proto.ListSupportedIdentitiesAndVerifiersReq) (response *identity_proto.VerifierDetailsResp, err error) {
 	sess := pis.is.sessionObtain(ctx)
-	defer sessionDispose(ctx, sess)
 
 	resp := &identity_proto.VerifierDetailsResp{}
 	idns, vers, err := sess.ListSupportedIdentitiesAndVerifiers()
@@ -155,19 +113,18 @@ func (pis *PublicIdentityService) ListSupportedIdentitiesAndVerifiers(ctx contex
 }
 
 func (pis *PublicIdentityService) CheckStatus(ctx context.Context, r *identity_proto.StatusReq) (*identity_proto.Status, error) {
+	log.Println("*** CheckStatus ***")
 	sess := pis.is.sessionObtain(ctx)
-	defer sessionDispose(ctx, sess)
+
+	log.Println("*** CheckStatus ***", fmt.Sprintln(sess.Info()))
 
 	return pis.status(ctx, sess)
 }
 
 func (pis *PublicIdentityService) StartSignIn(ctx context.Context, req *identity_proto.StartSignInReq) (*identity_proto.Status, error) {
 	sess := pis.is.sessionObtain(ctx)
-	defer sessionDispose(ctx, sess)
 
-	if _, uid, err := sess.Info(); err != nil {
-		return &identity_proto.Status{}, err
-	} else if uid != "" {
+	if _, uid := sess.Info();  uid != "" {
 		return &identity_proto.Status{}, errors.New("should be unauthenticated")
 	}
 
@@ -180,11 +137,8 @@ func (pis *PublicIdentityService) StartSignIn(ctx context.Context, req *identity
 
 func (pis *PublicIdentityService) StartSignUp(ctx context.Context, req *identity_proto.StartSignUpReq) (resp *identity_proto.Status, err error) {
 	sess := pis.is.sessionObtain(ctx)
-	defer sessionDispose(ctx, sess)
 
-	if _, uid, err := sess.Info(); err != nil {
-		return &identity_proto.Status{}, err
-	} else if uid != "" {
+	if _, uid := sess.Info(); uid != "" {
 		return &identity_proto.Status{}, errors.New("should be unauthenticated")
 	}
 
@@ -197,11 +151,8 @@ func (pis *PublicIdentityService) StartSignUp(ctx context.Context, req *identity
 
 func (pis *PublicIdentityService) StartAttach(ctx context.Context, req *identity_proto.StartAttachReq) (resp *identity_proto.Status, err error) {
 	sess := pis.is.sessionObtain(ctx)
-	defer sessionDispose(ctx, sess)
 
-	if _, uid, err := sess.Info(); err != nil {
-		return &identity_proto.Status{}, err
-	} else if uid == "" {
+	if _, uid := sess.Info(); uid == "" {
 		return &identity_proto.Status{}, errors.New("unauthenticated")
 	}
 
@@ -214,7 +165,6 @@ func (pis *PublicIdentityService) StartAttach(ctx context.Context, req *identity
 
 func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, q *identity_proto.CancelAuthenticationReq) (*identity_proto.Status, error) {
 	sess := pis.is.sessionObtain(ctx)
-	defer sessionDispose(ctx, sess)
 
 	if err := sess.CancelAuthentication(ctx); err != nil {
 		return &identity_proto.Status{}, err
@@ -225,7 +175,6 @@ func (pis *PublicIdentityService) CancelAuthentication(ctx context.Context, q *i
 
 func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Context, q *identity_proto.ListMyIdentitiesAndVerifiersReq) (response *identity_proto.ListMyIdentitiesAndVerifiersResp, err error) {
 	sess := pis.is.sessionObtain(ctx)
-	defer sessionDispose(ctx, sess)
 
 	resp := &identity_proto.ListMyIdentitiesAndVerifiersResp{}
 	idns, vers, err := sess.ListMyIdentitiesAndVerifiers(ctx)
@@ -249,7 +198,6 @@ func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Conte
 
 func (pis *PublicIdentityService) Start(ctx context.Context, q *identity_proto.StartReq) (*identity_proto.StartResp, error) {
 	sess := pis.is.sessionObtain(ctx)
-	defer sessionDispose(ctx, sess)
 
 	directions, err := sess.Start(ctx, q.VerifierName, q.Args, q.IdentityName, q.Identity)
 	if err != nil {
@@ -263,7 +211,6 @@ func (pis *PublicIdentityService) Start(ctx context.Context, q *identity_proto.S
 
 func (pis *PublicIdentityService) Verify(ctx context.Context, q *identity_proto.VerifyReq) (*identity_proto.Status, error) {
 	sess := pis.is.sessionObtain(ctx)
-	defer sessionDispose(ctx, sess)
 
 	verErr := sess.Verify(ctx, q.VerifierName, q.VerificationCode, q.IdentityName, q.Identity)
 
@@ -281,7 +228,6 @@ func (pis *PublicIdentityService) Verify(ctx context.Context, q *identity_proto.
 
 func (pis *PublicIdentityService) Logout(ctx context.Context, q *identity_proto.LogoutReq) (*identity_proto.Status, error) {
 	sess := pis.is.sessionObtain(ctx)
-	defer sessionDispose(ctx, sess)
 
 	// TODO Also delete Authentication on logout
 
@@ -292,8 +238,7 @@ func (pis *PublicIdentityService) Logout(ctx context.Context, q *identity_proto.
 }
 
 func (pis *PublicIdentityService) UserMerge(ctx context.Context, q *identity_proto.UserMergeReq) (*identity_proto.UserMergeResp, error) {
-	sess := pis.is.sessionObtain(ctx)
-	defer sessionDispose(ctx, sess)
+	//sess := pis.is.sessionObtain(ctx)
 
 	// TODO
 	panic("not implemented")
@@ -311,7 +256,6 @@ type PrivateIdentityService struct {
 
 func (pis *PrivateIdentityService) LoginAs(ctx context.Context, q *identity_proto.LoginAsReq) (*identity_proto.LoginAsResp, error) {
 	sess := pis.is.sessionObtain(ctx)
-	defer sessionDispose(ctx, sess)
 
 	uid := q.User
 

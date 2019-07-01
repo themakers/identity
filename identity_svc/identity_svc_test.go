@@ -4,16 +4,18 @@ import (
 	"context"
 	"fmt"
 	. "github.com/smartystreets/goconvey/convey"
+	"github.com/themakers/foundation/default_cookie"
+	"github.com/themakers/foundation/grpcx/grpc_default"
 	"github.com/themakers/identity/backend_mongo"
 	"github.com/themakers/identity/identity"
 	"github.com/themakers/identity/identity_svc/identity_proto"
 	"github.com/themakers/identity/mock/identity_mock_regular"
 	"github.com/themakers/identity/mock/verifier_mock_regular"
 	"github.com/themakers/identity/verifier_password"
-	"github.com/themakers/session"
-	"github.com/themakers/session/session_redis"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"log"
 	"net"
 	"testing"
 	"time"
@@ -26,7 +28,14 @@ import (
 func serveIdentitySvcAndGetClient(ctx context.Context, t *testing.T, verifiers ...identity.Verifier) (client identity_proto.IdentityClient) {
 	port := serveIdentitySvc(ctx, t, verifiers...)
 
-	cc, err := grpc.DialContext(ctx, fmt.Sprintf("127.0.0.1:%d", port), grpc.WithInsecure())
+	cc, err := grpc.DialContext(ctx, fmt.Sprintf("127.0.0.1:%d", port),
+		grpc.WithInsecure(),
+		grpc.WithChainUnaryInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+			err := invoker(ctx, method, req, reply, cc, opts...)
+			//md, _ := metadata.FromIncomingContext(ctx)
+			//log.Println("MD", md)
+			return err
+		}))
 	if err != nil {
 		panic(err)
 	}
@@ -56,18 +65,12 @@ func serveIdentitySvc(ctx context.Context, t *testing.T, verifiers ...identity.V
 		t.FailNow()
 	}
 
-	ssp := session_redis.NewStoragePool(session_redis.Options{
-		Address:   "127.0.0.1:6379",
-		Namespace: "identity_test_session",
-
-		Testing: true,
-	})
-	sessMgr := &session.Manager{
-		Storage:         ssp,
-		DefaultLifetime: 5 * time.Second,
+	log, err := zap.NewDevelopment()
+	if err != nil {
+		panic(err)
 	}
 
-	idenSvc, err := New(backend, sessMgr, []identity.Identity{
+	idenSvc, err := New(backend, default_cookie.DefaultCookieKey, []identity.Identity{
 		identity_mock_regular.New(),
 	}, verifiers)
 	if err != nil {
@@ -76,7 +79,7 @@ func serveIdentitySvc(ctx context.Context, t *testing.T, verifiers ...identity.V
 	}
 
 	{ // gRPC server
-		server := grpc.NewServer()
+		server := grpc.NewServer(grpc_default.DefaultServerOptions(log, "this is", "madness").Pack()...)
 		idenSvc.Register(server, server)
 
 		go func() {
@@ -145,6 +148,7 @@ func TestSpec(t *testing.T) {
 				&identity_proto.ListSupportedIdentitiesAndVerifiersReq{},
 				state.user.Trailer())
 			So(err, ShouldBeNil)
+			log.Println("MD", state.user)
 		})
 
 		Convey("SignUp", testSignUp(ctx, t, state))

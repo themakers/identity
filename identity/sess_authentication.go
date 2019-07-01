@@ -2,6 +2,7 @@ package identity
 
 import (
 	"context"
+	"log"
 )
 
 type Status struct {
@@ -26,43 +27,50 @@ type StatusAuthenticated struct {
 
 func (sess *Session) CheckStatus(ctx context.Context) (Status, error) {
 	status := Status{
-		Token:          sess.token,
+		Token:          sess.cookie.GetSessionID(),
 		Authenticating: nil,
 		Authenticated: nil,
 	}
 
-	if sess.user != "" {
+	if sess.cookie.GetUserID() != "" {
+		log.Println("*** CheckStatus ***", "3")
 		status.Authenticated = &StatusAuthenticated{
-			User: sess.user,
+			User: sess.cookie.GetUserID(),
 		}
 	}
 
-	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.token)
+	log.Println("*** CheckStatus ***", "4", sess, sess.manager)
+
+	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.cookie.GetSessionID())
 	if err != nil {
+		log.Println("*** CheckStatus ***", "5")
 		return Status{}, err
+
 	}
+	log.Println("*** CheckStatus ***", "6")
 	if auth != nil {
+		log.Println("*** CheckStatus ***", "7")
 		status.Authenticating = auth.status()
 	}
+	log.Println("*** CheckStatus ***", "8")
 	return status, nil
 }
 
 func (sess *Session) StartAuthentication(ctx context.Context, objective AuthenticationObjective) error {
-	_, err := sess.manager.backend.CreateAuthentication(ctx, sess.token, objective, sess.user)
+	_, err := sess.manager.backend.CreateAuthentication(ctx, sess.cookie.GetSessionID(), objective, sess.cookie.GetUserID())
 	return err
 }
 
 func (sess *Session) CancelAuthentication(ctx context.Context) error {
-	return sess.manager.backend.RemoveAuthentication(ctx, sess.token)
+	return sess.manager.backend.RemoveAuthentication(ctx, sess.cookie.GetSessionID())
 }
 
 // FIXME Why IdentityData??? Not summary???
 func (sess *Session) ListMyIdentitiesAndVerifiers(ctx context.Context) (idn []IdentityData, ver []VerifierSummary, err error) {
-	userID := sess.user
-
+	userID := sess.cookie.GetUserID()
 	var user *User
 	if userID == "" {
-		auth, err := sess.manager.backend.GetAuthentication(ctx, sess.token)
+		auth, err := sess.manager.backend.GetAuthentication(ctx, sess.cookie.GetSessionID())
 		if err != nil {
 			return nil, nil, err
 		}

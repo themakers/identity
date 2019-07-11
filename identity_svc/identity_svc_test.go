@@ -14,7 +14,9 @@ import (
 	"github.com/themakers/identity/verifier_password"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	"log"
 	"net"
 	"testing"
@@ -79,7 +81,22 @@ func serveIdentitySvc(ctx context.Context, t *testing.T, verifiers ...identity.V
 	}
 
 	{ // gRPC server
-		server := grpc.NewServer(grpc_default.DefaultServerOptions(log, "this is", "madness").Pack()...)
+		server := grpc.NewServer(grpc_default.DefaultServerOptions(log, "this is", "madness", func(rec interface{}) *status.Status {
+			var (
+				code    codes.Code
+				message string
+			)
+
+			if err, ok := rec.(error); ok {
+				code = codes.Internal
+				message = fmt.Sprintf("%s", err.Error())
+			} else {
+				code = codes.Internal
+				message = fmt.Sprintf("%v", rec)
+			}
+
+			return status.New(code, message)
+		}, nil).Pack()...)
 		idenSvc.Register(server, server)
 
 		go func() {

@@ -6,7 +6,6 @@ import (
 	"fmt"
 )
 
-var ErrVerificationCodeMismatch = errors.New("verification code mismatch")
 
 func (sess *Session) regularStart(ctx context.Context, ver *VerifierSummary, auth *Authentication, args M, identityName, identity string) (M, error) {
 	if ver.IdentityName != identityName {
@@ -44,7 +43,7 @@ func (sess *Session) regularStart(ctx context.Context, ver *VerifierSummary, aut
 		switch auth.Objective {
 		case ObjectiveSignIn:
 			if stage.UserID == "" {
-				return nil, errors.New("identity not registered")
+				return nil, ErrIdentityNotRegistered
 			}
 		case ObjectiveSignUp:
 			if stage.UserID != "" {
@@ -52,10 +51,10 @@ func (sess *Session) regularStart(ctx context.Context, ver *VerifierSummary, aut
 			}
 		case ObjectiveAttach:
 			if stage.UserID != "" && stage.UserID != auth.UserID {
-				return nil, errors.New("different user")
+				return nil, ErrAlreadyRegistered
 			}
 			if stage.UserID != "" && stage.UserID == auth.UserID {
-				return nil, errors.New("already attached")
+				return nil, ErrAlreadyAttached
 			}
 		}
 	}
@@ -97,7 +96,7 @@ func (sess *Session) regularVerify(ctx context.Context, ver *VerifierSummary, au
 			return err
 		}
 		if user == nil {
-			return errors.New("user not found")
+			return ErrUserNotFound
 		}
 		auth.UserID = user.ID
 	}

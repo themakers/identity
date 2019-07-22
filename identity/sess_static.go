@@ -2,6 +2,7 @@ package identity
 
 import (
 	"context"
+	"errors"
 )
 
 func (sess *Session) staticStart(ctx context.Context, ver *VerifierSummary, auth *Authentication, args M, identityName, identity string) (M, error) {
@@ -20,7 +21,7 @@ func (sess *Session) staticStart(ctx context.Context, ver *VerifierSummary, auth
 		if user, err := sess.manager.backend.GetUserByIdentity(ctx, identityName, identity); err != nil {
 			return nil, err
 		} else if user != nil {
-			return nil, ErrAlreadyExists
+			return nil, errors.New("user with such identity already exists")
 		}
 
 		stage.IdentityName = identityName
@@ -41,7 +42,7 @@ func (sess *Session) staticStart(ctx context.Context, ver *VerifierSummary, auth
 		panic("start() could not be called on static verifier during signin")
 	case ObjectiveSignUp: //> Template to construct new user on successful authentication
 		if sess.cookie.GetUserID() != "" {
-			return nil, ErrAlreadyRegistered
+			return nil, errors.New("should not be authenticated")
 		}
 		if auth.UserID != "" {
 			panic("shit happened")
@@ -50,7 +51,7 @@ func (sess *Session) staticStart(ctx context.Context, ver *VerifierSummary, auth
 		{ // FIXME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			//> Forbid non-standalone identities
 			if identityName != "" && !sess.manager.identities[identityName].Standalone {
-				return nil, ErrCouldNotCombine
+				return nil, errors.New("could not combine static verifier and non-standalone identity in same stage")
 			}
 		}
 
@@ -59,7 +60,7 @@ func (sess *Session) staticStart(ctx context.Context, ver *VerifierSummary, auth
 		return res, nil
 	case ObjectiveAttach: //> Add new verifier to existing user
 		if sess.cookie.GetUserID() == "" {
-			return nil, ErrNotAuthenticated
+			return nil, errors.New("not authenticated")
 		}
 
 		auth.addStage(stage)
@@ -86,13 +87,13 @@ func (sess *Session) staticVerify(ctx context.Context, ver *VerifierSummary, aut
 			return err
 		}
 		if user == nil {
-			return ErrUserNotFound
+			return errors.New("user not found")
 		}
 		auth.UserID = user.ID
 
 		verifierData := user.findVerifierData(ver.Name, "")
 		if verifierData == nil {
-			return ErrNoVerifierData
+			return errors.New("no verifier data for this verifier and user")
 		}
 
 		if err := ver.internal.staticRef.StaticVerify(ctx, *verifierData, inputCode); err != nil {

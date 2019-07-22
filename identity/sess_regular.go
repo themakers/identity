@@ -2,9 +2,11 @@ package identity
 
 import (
 	"context"
+	"errors"
 	"fmt"
 )
 
+var ErrVerificationCodeMismatch = errors.New("verification code mismatch")
 
 func (sess *Session) regularStart(ctx context.Context, ver *VerifierSummary, auth *Authentication, args M, identityName, identity string) (M, error) {
 	if ver.IdentityName != identityName {
@@ -42,18 +44,18 @@ func (sess *Session) regularStart(ctx context.Context, ver *VerifierSummary, aut
 		switch auth.Objective {
 		case ObjectiveSignIn:
 			if stage.UserID == "" {
-				return nil, ErrIdentityNotRegistered
+				return nil, errors.New("identity not registered")
 			}
 		case ObjectiveSignUp:
 			if stage.UserID != "" {
-				return nil, ErrAlreadyRegistered
+				return nil, errors.New("identity already registered")
 			}
 		case ObjectiveAttach:
 			if stage.UserID != "" && stage.UserID != auth.UserID {
-				return nil, ErrAlreadyRegistered
+				return nil, errors.New("different user")
 			}
 			if stage.UserID != "" && stage.UserID == auth.UserID {
-				return nil, ErrAlreadyAttached
+				return nil, errors.New("already attached")
 			}
 		}
 	}
@@ -95,7 +97,7 @@ func (sess *Session) regularVerify(ctx context.Context, ver *VerifierSummary, au
 			return err
 		}
 		if user == nil {
-			return ErrUserNotFound
+			return errors.New("user not found")
 		}
 		auth.UserID = user.ID
 	}

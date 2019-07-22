@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"errors"
 )
 
 func (sess *Session) oauth2Start(ctx context.Context, ver *VerifierSummary, auth *Authentication, args M, identityName, identity string) (M, error) {
@@ -65,22 +66,22 @@ func (sess *Session) oauth2Verify(ctx context.Context, ver *VerifierSummary, aut
 	switch auth.Objective {
 	case ObjectiveSignIn:
 		if stage.UserID == "" {
-			return ErrUserNotFound
+			return errors.New("no such user")
 		}
 		stage.Completed = true
 		return nil
 	case ObjectiveSignUp:
 		if stage.UserID != "" {
-			return ErrAlreadyRegistered
+			return errors.New("already")
 		}
 		stage.Completed = true
 		return nil
 	case ObjectiveAttach:
 		if stage.UserID != "" && stage.UserID != auth.UserID {
-			return ErrNoVerifierData
+			return errors.New("different user")
 		}
 		if stage.UserID != "" && stage.UserID == auth.UserID {
-			return ErrAlreadyAttached
+			return errors.New("already attached")
 		}
 		stage.Completed = true
 		return nil

@@ -2,7 +2,6 @@ package identity
 
 import (
 	"context"
-	"errors"
 	"fmt"
 )
 
@@ -47,7 +46,7 @@ func (sess *Session) regularStart(ctx context.Context, ver *VerifierSummary, aut
 			}
 		case ObjectiveSignUp:
 			if stage.UserID != "" {
-				return nil, errors.New("identity already registered")
+				return nil, ErrAlreadyRegistered
 			}
 		case ObjectiveAttach:
 			if stage.UserID != "" && stage.UserID != auth.UserID {

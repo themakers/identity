@@ -58,7 +58,7 @@ func (v *Verifier) StaticVerify(ctx context.Context, verifierData identity.Verif
 	if string(inputHash) == string(hash) {
 		return nil
 	} else {
-		return identity.ErrVerificationCodeMismatch
+		return identity.ErrInvalidPassword
 	}
 }
 

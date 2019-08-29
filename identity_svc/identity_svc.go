@@ -199,6 +199,10 @@ func (pis *PublicIdentityService) ListMyIdentitiesAndVerifiers(ctx context.Conte
 func (pis *PublicIdentityService) Start(ctx context.Context, q *identity_proto.StartReq) (*identity_proto.StartResp, error) {
 	sess := pis.is.sessionObtain(ctx)
 
+	for k, v := range q.Values {
+		ctx = context.WithValue(ctx, k, v)
+	}
+
 	directions, err := sess.Start(ctx, q.VerifierName, q.Args, q.IdentityName, q.Identity)
 	if err != nil {
 		return &identity_proto.StartResp{}, err

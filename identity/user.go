@@ -48,12 +48,12 @@ func (u *User) add(ver *VerifierData, idn *IdentityData) {
 }
 
 type IdentityData struct {
-	Name     string `bson:"Name" json:"Name"`
+	Name     string `bson:"Message" json:"Message"`
 	Identity string `bson:"Identity" json:"Identity"`
 }
 
 type VerifierData struct {
-	Name               string `bson:"Name" json:"Name"`
+	Name               string `bson:"Message" json:"Message"`
 	Identity           string `bson:"Identity" json:"Identity"`
 	AuthenticationData B      `bson:"AuthenticationData" json:"AuthenticationData"` // /identity/value
 	AdditionalData     B      `bson:"AdditionalData" json:"AdditionalData"`

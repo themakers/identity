@@ -166,7 +166,7 @@ func (b *Backend) GetUserByIdentity(ctx context.Context, idnName, idn string) (*
 	if err := b.coll(collUsers).FindOne(ctx, bson.M{
 		"Identities": bson.M{
 			"$elemMatch": bson.M{ // FIXME *
-				"Name":     idnName,
+				"Message":     idnName,
 				"Identity": idn,
 			},
 		},

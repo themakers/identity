@@ -1,4 +1,4 @@
-package identity_svc
+package identity_svc_grpc
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/themakers/identity/cookie"
 	"github.com/themakers/identity/identity"
-	"github.com/themakers/identity/identity_svc/identity_proto"
+	"github.com/themakers/identity/identity_svc_grpc/identity_proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

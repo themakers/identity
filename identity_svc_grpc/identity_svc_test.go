@@ -1,4 +1,4 @@
-package identity_svc
+package identity_svc_grpc
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"github.com/themakers/foundation/grpcx/grpc_default"
 	"github.com/themakers/identity/backend_mongo"
 	"github.com/themakers/identity/identity"
-	"github.com/themakers/identity/identity_svc/identity_proto"
+	"github.com/themakers/identity/identity_svc_grpc/identity_proto"
 	"github.com/themakers/identity/mock/identity_mock_regular"
 	"github.com/themakers/identity/mock/verifier_mock_regular"
 	"github.com/themakers/identity/verifier_password"

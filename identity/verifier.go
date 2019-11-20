@@ -118,6 +118,8 @@ func (sess *Session) Verify(ctx context.Context, verifierName, verificationCode,
 		return err
 	}
 
+	/// FIXME Authentication should exist at this point
+
 	ver := sess.manager.verifiers[verifierName]
 
 	idn := sess.manager.identities[identityName]

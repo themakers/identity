@@ -24,7 +24,11 @@ func (idn *Identity) Info() identity.IdentityInfo {
 }
 
 func (idn *Identity) NormalizeAndValidateIdentity(identity string) (result string, err error) {
-	for _, c := range identity {
+	return NormalizeAndValidatePhone(identity)
+}
+
+func NormalizeAndValidatePhone(phone string) (result string, err error) {
+	for _, c := range phone {
 		if unicode.IsDigit(c) {
 			result += string(rune(c))
 		}
@@ -34,6 +38,10 @@ func (idn *Identity) NormalizeAndValidateIdentity(identity string) (result strin
 	} else if len(result) == 10 && result[0] == '9' {
 		result = string(rune('7')) + result[:]
 	}
-	return result, nil
 
+	if len(result) < 10 || len(result) > 15 {
+		return result, errors.New("telephone number is not valid")
+	}
+
+	return result, nil
 }

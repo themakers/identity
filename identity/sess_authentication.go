@@ -2,7 +2,6 @@ package identity
 
 import (
 	"context"
-	"log"
 )
 
 type Status struct {
@@ -33,26 +32,19 @@ func (sess *Session) CheckStatus(ctx context.Context) (Status, error) {
 	}
 
 	if sess.cookie.GetUserID() != "" {
-		log.Println("*** CheckStatus ***", "3")
 		status.Authenticated = &StatusAuthenticated{
 			User: sess.cookie.GetUserID(),
 		}
 	}
 
-	log.Println("*** CheckStatus ***", "4", sess, sess.manager)
-
 	auth, err := sess.manager.backend.GetAuthentication(ctx, sess.cookie.GetSessionID())
 	if err != nil {
-		log.Println("*** CheckStatus ***", "5")
 		return Status{}, err
 
 	}
-	log.Println("*** CheckStatus ***", "6")
 	if auth != nil {
-		log.Println("*** CheckStatus ***", "7")
 		status.Authenticating = auth.status()
 	}
-	log.Println("*** CheckStatus ***", "8")
 	return status, nil
 }
 

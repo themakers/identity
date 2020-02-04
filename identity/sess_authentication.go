@@ -28,7 +28,7 @@ func (sess *Session) CheckStatus(ctx context.Context) (Status, error) {
 	status := Status{
 		Token:          sess.cookie.GetSessionID(),
 		Authenticating: nil,
-		Authenticated: nil,
+		Authenticated:  nil,
 	}
 
 	if sess.cookie.GetUserID() != "" {
@@ -46,6 +46,21 @@ func (sess *Session) CheckStatus(ctx context.Context) (Status, error) {
 		status.Authenticating = auth.status()
 	}
 	return status, nil
+}
+
+func (sess *Session) Logout(ctx context.Context) (*Status, error) {
+	if err := sess.CancelAuthentication(ctx); err != nil {
+		return nil, err
+	}
+
+	sess.cookie.SetUserID("")
+
+	return &Status{
+		Token:          sess.cookie.GetSessionID(),
+		Authenticating: nil,
+		Authenticated:  nil,
+	}, nil
+
 }
 
 func (sess *Session) StartAuthentication(ctx context.Context, objective AuthenticationObjective) error {

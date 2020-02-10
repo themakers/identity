@@ -2,6 +2,7 @@ package identity
 
 import (
 	"context"
+	"errors"
 	"golang.org/x/oauth2"
 	"log"
 )
@@ -118,7 +119,9 @@ func (sess *Session) Verify(ctx context.Context, verifierName, verificationCode,
 		return err
 	}
 
-	/// FIXME Authentication should exist at this point
+	if auth == nil {
+		return errors.New("authentication is invalid, please start again")
+	}
 
 	ver := sess.manager.verifiers[verifierName]
 

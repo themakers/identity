@@ -55,7 +55,7 @@ type StaticVerifier interface {
 ////
 
 func (sess *Session) Start(ctx context.Context, verifierName string, args M, identityName, identity string) (M, error) {
-	log.Println("#### START ####", verifierName, args, identityName, identity)
+	log.Println("#### START ####", verifierName, args, identityName, identity, sess.cookie.GetSessionID())
 
 	if verifierName == "" {
 	}

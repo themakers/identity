@@ -72,9 +72,7 @@ func onCookieMiddleware(next http.Handler, cookieKey string) http.Handler {
 		}
 
 		cookie := New(val, w)
-		defer func() {
-
-		}()
+		defer cookie.SetCookie()
 
 		next.ServeHTTP(w, q.WithContext(context.WithValue(q.Context(), cookieKey, cookie)))
 

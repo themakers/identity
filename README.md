@@ -43,7 +43,10 @@ TheMakers.Identity package provide a both inline and standalone service solution
   	"net/http"
   	"strings"
   )
-  const cookiePrefix = "Session "
+  const (
+  	cookiePrefix = "Session "
+  	cookieName = "cookie"
+  	)
   
   func main() {
   	//STEP ONE
@@ -57,7 +60,6 @@ TheMakers.Identity package provide a both inline and standalone service solution
   	}
   
   
-  	cookieName := "pancake"
   
   	//STEP TWO
   	idenSvc, err := identity_svc_http.New(idenBackend, cookieName, []identity.Identity{ // Create service by providing  storer from first step, string key for cookie object from context,
@@ -72,7 +74,7 @@ TheMakers.Identity package provide a both inline and standalone service solution
   	// STEP THREE
   	publicIdentityMux, _ := idenSvc.Register() // by calling Register method we get the multiplexer with handling all of identity enpoints
   
-  	var chain = BeforeFunc(publicIdentityMux, cookieName)
+  	var chain = onCookieMiddleware(publicIdentityMux, cookieName)
   
   	apiMux := http.NewServeMux() // creating the root multiplexer
   
@@ -88,7 +90,7 @@ TheMakers.Identity package provide a both inline and standalone service solution
   	}
   }
   
-  func BeforeFunc(next http.Handler, cookieKey string) http.Handler {
+  func onCookieMiddleware(next http.Handler, cookieKey string) http.Handler {
   	return http.HandlerFunc(func(w http.ResponseWriter, q *http.Request) {
   
   		val := ""
@@ -101,55 +103,69 @@ TheMakers.Identity package provide a both inline and standalone service solution
   			val = strings.TrimPrefix(val, cookiePrefix)
   		}
   
-  		cookie := new(pancake)
-  
-  		cookiePair := strings.Split(val,":")
-  
-  		if len(cookiePair) == 2 {
-  
-  			cookie.SetSessionID(cookiePair[1])
-  			cookie.SetUserID(cookiePair[0])
-  
-  		}
+  		cookie := New(val, w)
+  		defer cookie.SetCookie()
   
   		next.ServeHTTP(w, q.WithContext(context.WithValue(q.Context(), cookieKey, cookie)))
   
   
-  		http.SetCookie(w, &http.Cookie{
-  			Name:     cookieKey,
-  			Value:    fmt.Sprintf("%s%s", cookiePrefix, fmt.Sprintf("%s:%s", cookie.SetUserID, cookie.GetSessionID())),
-  			HttpOnly: true,
-  			Path:     "/",
-  			SameSite: http.SameSiteLaxMode,
-  			MaxAge:   30 * 24 * 60 * 60, //one month
-  		})
   	})
   }
   
-  type pancake struct {
+  type Cookie struct {
   	userID, sessionID string
+  	w http.ResponseWriter
   }
   
-  func (c *pancake) Init() {
+  func New(val string, w http.ResponseWriter) *Cookie {
+  	cookiePair := strings.Split(val,":")
+  
+  	if len(cookiePair) == 2 {
+  		return &Cookie{
+  			userID: "",
+  			sessionID: "",
+  		}
+  
+  	}
+  	return &Cookie{
+  		userID: cookiePair[0],
+  		sessionID: cookiePair[1],
+  		w: w,
+  	}
+  }
+  func (c *Cookie) SetCookie() {
+  	http.SetCookie(c.w, &http.Cookie{
+  		Name:     cookieName,
+  		Value:    fmt.Sprintf("%s%s", cookiePrefix, fmt.Sprintf("%s:%s", c.userID , c.sessionID)),
+  		HttpOnly: true,
+  		Path:     "/",
+  		SameSite: http.SameSiteLaxMode,
+  		MaxAge:   30 * 24 * 60 * 60, //one month
+  	})
+  }
+  
+  func (c *Cookie) Init() {
   	c.userID = "uid"
   	c.sessionID = "sid"
   }
   
-  func (c *pancake) SetUserID(id string) {
+  func (c *Cookie) SetUserID(id string) {
   	c.userID = id
   }
   
-  func (c *pancake) SetSessionID(id string) {
+  func (c *Cookie) SetSessionID(id string) {
   	c.sessionID = id
   }
   
-  func (c *pancake) GetUserID() string {
+  func (c *Cookie) GetUserID() string {
   	return c.userID
   }
   
-  func (c *pancake) GetSessionID() string {
+  func (c *Cookie) GetSessionID() string {
   	return c.sessionID
   }
+  
+
   
 
   ```

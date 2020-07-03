@@ -11,10 +11,11 @@ import (
 	"net/http"
 	"strings"
 )
+
 const (
 	cookiePrefix = "Session "
-	cookieName = "cookie"
-	)
+	cookieName   = "cookie"
+)
 
 func main() {
 	//STEP 1
@@ -31,8 +32,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-
 
 	//STEP 2
 	// Create service by providing  storer from first step, string key for cookie object from context,
@@ -69,7 +68,7 @@ func main() {
 	// SERVE INCOMING CONNECTIONS
 	server := &http.Server{
 		Handler: chain,
-		Addr: ":8080",
+		Addr:    ":8080",
 	}
 
 	if err := server.ListenAndServe(); err != nil {
@@ -96,38 +95,36 @@ func onCookieMiddleware(next http.Handler, cookieKey string) http.Handler {
 
 		next.ServeHTTP(w, q.WithContext(context.WithValue(q.Context(), cookieKey, cookie)))
 
-
 	})
 }
 
 // Simple Cookie type realizing Cookie interface. Without any amazing things. Just unmarshal cookie from http.cookie
-//  and marshal it and set it into response writer
-
+// and marshal it and set it into response writer
 type Cookie struct {
 	userID, sessionID string
-	w http.ResponseWriter
+	w                 http.ResponseWriter
 }
 
 func New(val string, w http.ResponseWriter) *Cookie {
-	cookiePair := strings.Split(val,":")
+	cookiePair := strings.Split(val, ":")
 
 	if len(cookiePair) == 2 {
 		return &Cookie{
-			userID: "",
+			userID:    "",
 			sessionID: "",
 		}
 
 	}
 	return &Cookie{
-		userID: cookiePair[0],
+		userID:    cookiePair[0],
 		sessionID: cookiePair[1],
-		w: w,
+		w:         w,
 	}
 }
 func (c *Cookie) setCookie() {
 	http.SetCookie(c.w, &http.Cookie{
 		Name:     cookieName,
-		Value:    fmt.Sprintf("%s%s", cookiePrefix, fmt.Sprintf("%s:%s", c.userID , c.sessionID)),
+		Value:    fmt.Sprintf("%s%s", cookiePrefix, fmt.Sprintf("%s:%s", c.userID, c.sessionID)),
 		HttpOnly: true,
 		Path:     "/",
 		SameSite: http.SameSiteLaxMode,
@@ -157,4 +154,3 @@ func (c *Cookie) GetUserID() string {
 func (c *Cookie) GetSessionID() string {
 	return c.sessionID
 }
-

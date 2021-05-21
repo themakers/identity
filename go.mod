@@ -1,4 +1,4 @@
-module identity
+module github.com/themakers/identity
 
 go 1.15
 
